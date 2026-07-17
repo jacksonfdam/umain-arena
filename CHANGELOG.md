@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.5.3] — 2026-07-17
+### Corrigido
+- Badge sem texto em produção: o binding nativo Linux do `resvg-js` ignorava
+  fontes em buffer — render migrado pra `@resvg/resvg-wasm` (binário único
+  embutido, determinístico em qualquer serverless)
+
+## [1.5.2] — 2026-07-17
+### Corrigido
+- Links de perfil com `undefined` quando a view não tem `id` (fallback /u/nick)
+
 ## [1.5.1] — 2026-07-17
 ### Corrigido
 - Falhas de envio pro ranking (função desatualizada, rate limit, token) eram
