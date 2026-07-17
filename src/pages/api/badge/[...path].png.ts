@@ -64,7 +64,16 @@ export function badgeSvg(p: any, avatarUri: string | null): string {
 </svg>`;
 }
 
-export const GET: APIRoute = async ({ params }) => {
+export const GET: APIRoute = async ({ params, request }) => {
+  try {
+    return await handle(params, request);
+  } catch (e: any) {
+    return new Response(JSON.stringify({ error: String(e?.message || e), stack: String(e?.stack || '').slice(0, 600) }),
+      { status: 500, headers: { 'content-type': 'application/json' } });
+  }
+};
+
+const handle: APIRoute = async ({ params, request }) => {
   if (!supabaseAdmin)
     return new Response(NOT_CONFIGURED, { status: 503, headers: { 'content-type': 'application/json' } });
   const parts = (params.path || '').split('/').filter(Boolean);
