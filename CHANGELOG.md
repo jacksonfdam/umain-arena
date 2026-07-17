@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.6.2] — 2026-07-18
+### Corrigido
+- Heartbeat/submit usam o nick **registrado** na sessão (editar o nick no menu
+  não quebra mais o token) e param de tentar após 403
+
 ## [1.6.1] — 2026-07-17
 ### Corrigido
 - `submit-match` auto-recuperável: se a função do banco está desatualizada

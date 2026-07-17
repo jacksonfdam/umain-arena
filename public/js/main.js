@@ -84,6 +84,8 @@ function pvThumb(def) {
 /* ---------------- game lifecycle ---------------- */
 let game = null, currentTeam = 'P', currentChar = CHARACTERS[0].id, selChar = null;
 let submitted = true;   // stats da partida atual já enviados?
+let registeredNick = ''; // nick usado no registro da sessão (token está atrelado a ele)
+let heartbeatOff = false;
 const params = new URLSearchParams(location.search);
 const testMode = params.get('debug') === '1';
 
@@ -104,6 +106,7 @@ async function startGame(team, charId) {
   game.start();
   // registra nick no ranking global (silencioso se a API não estiver no ar)
   const nick = $('nick-input').value.trim();
+  registeredNick = nick; heartbeatOff = false;
   if (nick && !testMode) {
     await authReady;
     api('/api/register', {
@@ -148,9 +151,10 @@ function renderAuthRow() {
 }
 
 /* ---------------- heartbeat (presença/mapa) ---------------- */
-setInterval(() => {
-  const nick = (nickEl.value || '').trim();
-  if (game && nick && !testMode) api('/api/heartbeat', { nick, token: getToken() });
+setInterval(async () => {
+  if (!game || !registeredNick || testMode || heartbeatOff) return;
+  const res = await api('/api/heartbeat', { nick: registeredNick, token: getToken() });
+  if (res && res.error) heartbeatOff = true;   // token inválido etc. — para de martelar
 }, 30_000);
 
 /* ---------------- avatar upload ---------------- */
@@ -238,7 +242,7 @@ function partialPayload() {
   const g = game, p = g.player;
   const rounds = g.roundsWon.P + g.roundsWon.B;
   if (!p.kills && !p.deaths && !rounds && g.time < 30) return null;
-  const nick = (nickEl.value || '').trim();
+  const nick = registeredNick || (nickEl.value || '').trim();
   if (!nick) return null;
   return {
     nick, token: getToken(), won: false, kills: p.kills, deaths: p.deaths,
@@ -267,7 +271,7 @@ async function recordMatchStats(s) {
   st.bestStreak = Math.max(st.bestStreak, s.bestStreak);
   localStorage.setItem(STATS_KEY, JSON.stringify(st));
   // espelha pro ranking global (avisa na tela se falhar)
-  const nick = (nickEl.value || '').trim();
+  const nick = registeredNick || (nickEl.value || '').trim();
   if (nick && !testMode) {
     const res = await api('/api/submit-match', {
       nick, token: getToken(), won: s.won, kills: s.kills, deaths: s.deaths,
