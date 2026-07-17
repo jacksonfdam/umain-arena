@@ -143,8 +143,6 @@ headshots, SEO/AEO, empacotamento open source).
 
 Duas decisões de conteúdo mudaram após o prompt original, por escolha editorial:
 
-- O personagem "Trans Lacrador" foi substituído pela **Doutora do SUS** —
-  para não usar um grupo protegido como alvo de piada.
 - A "Senhora conspiracionista" virou a **Tia Zilá** (nome fictício).
 
 O jogo também mudou de nome: de "AWP Brasil" para **CS BRASIL: Treta Suprema**.
