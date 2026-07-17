@@ -224,6 +224,7 @@ function recordMatchStats(s) {
   st.matches++; if (s.won) st.wins++;
   st.kills += s.kills; st.deaths += s.deaths; st.headshots += s.headshots;
   st.playSeconds = (st.playSeconds || 0) + (s.seconds || 0);
+  st.rounds = (st.rounds || 0) + s.roundsP + s.roundsB;
   st.bestStreak = Math.max(st.bestStreak, s.bestStreak);
   localStorage.setItem(STATS_KEY, JSON.stringify(st));
   // espelha pro ranking global (silencioso se a API não estiver no ar)
@@ -237,8 +238,11 @@ function recordMatchStats(s) {
 function showRanking() {
   const st = loadStats();
   const kd = st.deaths ? (st.kills / st.deaths).toFixed(2) : st.kills.toFixed(2);
-  const m = Math.round((st.playSeconds || 0) / 60);
-  const tempo = m < 60 ? `${m}min` : m < 1440 ? `${Math.floor(m / 60)}h ${m % 60}min` : `${Math.floor(m / 1440)}d ${Math.floor((m % 1440) / 60)}h`;
+  const fmt = (s) => { const m = Math.round(s / 60); return m < 60 ? `${m}min` : m < 1440 ? `${Math.floor(m / 60)}h ${m % 60}min` : `${Math.floor(m / 1440)}d ${Math.floor((m % 1440) / 60)}h`; };
+  const secs = st.playSeconds || 0;
+  const tempo = secs > 0 ? fmt(secs)
+    : (st.rounds || 0) > 0 ? `~${fmt(st.rounds * 99)}`
+    : st.matches > 0 ? `~${fmt(st.matches * 297)}` : '0min';
   const nick = (nickEl.value || 'VOCÊ').trim();
   const social = socialEl.value.trim();
   $('rank-local').innerHTML =

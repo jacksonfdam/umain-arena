@@ -5,7 +5,7 @@ import { Resvg } from '@resvg/resvg-js';
 import sharp from 'sharp';
 import { supabaseAdmin, NOT_CONFIGURED } from '../../../lib/supabase';
 import { FONT_BOLD_B64 } from '../../../lib/font-data';
-import { fmtTime } from '../../../lib/fmt';
+import { displayTime } from '../../../lib/fmt';
 
 export const prerender = false;
 
@@ -27,7 +27,7 @@ async function avatarDataUri(url?: string | null): Promise<string | null> {
 export function badgeSvg(p: any, avatarUri: string | null): string {
   const kd = p.deaths ? (p.kills / p.deaths).toFixed(2) : String(p.kills);
   const cells: [string, string][] = [
-    ['PARTIDAS', String(p.matches)], ['VITÓRIAS', String(p.wins)], ['K/D', kd], ['TEMPO', fmtTime(p.play_seconds)],
+    ['PARTIDAS', String(p.matches)], ['VITÓRIAS', String(p.wins)], ['K/D', kd], ['TEMPO', displayTime(p)],
     ['ABATES', String(p.kills)], ['HEADSHOTS', String(p.headshots)], ['SEQUÊNCIA', `${p.best_streak}×`], ['ROUNDS', String(p.rounds)],
   ];
   const grid = cells.map(([label, v], i) => {

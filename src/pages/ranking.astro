@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { supabaseAdmin } from '../lib/supabase';
-import { fmtTime } from '../lib/fmt';
+import { displayTime } from '../lib/fmt';
 
 export const prerender = false;
 
@@ -37,7 +37,7 @@ if (supabaseAdmin) {
             <td style="padding:8px 6px">{p.kills}</td>
             <td style="padding:8px 6px">{p.headshots}</td>
             <td style="padding:8px 6px">{p.best_streak}×</td>
-            <td style="padding:8px 6px">{fmtTime(p.play_seconds)}</td>
+            <td style="padding:8px 6px">{displayTime(p)}</td>
             <td style="padding:8px 6px">
               <span style="color:#ff8080">{p.matches_p}P</span> × <span style="color:#9dff9d">{p.matches_b}B</span>
             </td>

@@ -1,7 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { supabaseAdmin } from '../../lib/supabase';
-import { fmtTime } from '../../lib/fmt';
+import { displayTime } from '../../lib/fmt';
 
 export const prerender = false;
 
@@ -15,7 +15,7 @@ if (supabaseAdmin) {
 if (configured && !p) return Astro.redirect('/ranking', 302);
 
 const kd = p ? (p.deaths ? (p.kills / p.deaths).toFixed(2) : String(p.kills)) : '0';
-const tempo = p ? fmtTime(p.play_seconds) : '0min';
+const tempo = p ? displayTime(p) : '0min';
 const badgeUrl = `${Astro.site}api/badge/${encodeURIComponent(nick)}.png`;
 const pageUrl = `${Astro.site}u/${encodeURIComponent(nick)}`;
 const title = `${nick} no CS BRASIL: Treta Suprema`;

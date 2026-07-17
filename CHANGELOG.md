@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.4.3] — 2026-07-17
+### Corrigido
+- Tempo "0min" em partidas anteriores ao tracking: agora estima pelos rounds
+  (`~Xh Ymin` = estimado, ~99s/round) na badge, perfil, /ranking e painel local
+
 ## [1.4.2] — 2026-07-17
 ### Corrigido
 - Página `/mapa` quebrada: o Layout não tinha `<slot name="head"/>` — o CSS do
