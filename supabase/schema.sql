@@ -10,6 +10,7 @@ create table if not exists public.players (
   nick        text primary key check (char_length(nick) between 2 and 14),
   token       uuid not null,
   social_link text check (char_length(social_link) <= 60),
+  hidden      boolean not null default false,  -- moderação: esconde do ranking
   created_at  timestamptz not null default now()
 );
 
@@ -51,18 +52,25 @@ begin
   end if;
 end $$;
 
--- Submeter stats de uma partida (só grava se o token bater).
+-- Submeter stats de uma partida (só grava se o token bater + rate limit).
 create or replace function public.submit_match(
   p_nick text, p_token uuid,
   p_won boolean, p_kills int, p_deaths int, p_headshots int, p_best_streak int
 ) returns void language plpgsql security definer set search_path = public as $$
+declare
+  v_last timestamptz;
 begin
   if not exists (select 1 from players where nick = p_nick and token = p_token) then
     raise exception 'token inválido';
   end if;
+  -- rate limit: 1 partida a cada 90s por nick (uma partida real dura ~2-8 min)
+  select updated_at into v_last from stats where nick = p_nick;
+  if v_last is not null and now() - v_last < interval '90 seconds' then
+    raise exception 'aguarde antes de submeter outra partida';
+  end if;
   -- sanity check anti-cheat básico (valores absurdos são descartados)
-  if p_kills < 0 or p_kills > 200 or p_deaths < 0 or p_deaths > 200
-     or p_headshots < 0 or p_headshots > p_kills or p_best_streak < 0 or p_best_streak > 30 then
+  if p_kills < 0 or p_kills > 60 or p_deaths < 0 or p_deaths > 60
+     or p_headshots < 0 or p_headshots > p_kills or p_best_streak < 0 or p_best_streak > 15 then
     raise exception 'stats implausíveis';
   end if;
   insert into stats (nick, matches, wins, kills, deaths, headshots, best_streak)
@@ -77,11 +85,13 @@ begin
     updated_at  = now();
 end $$;
 
--- Leaderboard: top por kills (o client pode ordenar por outras colunas).
+-- Leaderboard: top por kills (o client pode ordenar por outras colunas),
+-- sem jogadores escondidos pela moderação.
 create or replace view public.leaderboard as
 select s.nick, p.social_link, s.matches, s.wins, s.kills, s.deaths,
        s.headshots, s.best_streak,
        round(s.kills::numeric / greatest(s.deaths, 1), 2) as kd
 from stats s join players p on p.nick = s.nick
+where not p.hidden
 order by s.kills desc, s.wins desc
 limit 100;
