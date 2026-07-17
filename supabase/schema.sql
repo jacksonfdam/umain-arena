@@ -96,10 +96,11 @@ begin
   if v_last is not null and now() - v_last < interval '90 seconds' then
     raise exception 'aguarde antes de submeter outra partida';
   end if;
-  -- sanity check anti-cheat básico (valores absurdos são descartados)
-  if p_kills < 0 or p_kills > 60 or p_deaths < 0 or p_deaths > 60
-     or p_headshots < 0 or p_headshots > p_kills or p_best_streak < 0 or p_best_streak > 15
-     or p_rounds < 0 or p_rounds > 6 or p_seconds < 0 or p_seconds > 900 then
+  -- sanity check anti-cheat básico (tetos bem acima do possível em 6 rounds:
+  -- ~1 kill/3s sustentado; o rate limit de 90s já limita a frequência)
+  if p_kills < 0 or p_kills > 150 or p_deaths < 0 or p_deaths > 150
+     or p_headshots < 0 or p_headshots > p_kills or p_best_streak < 0 or p_best_streak > 30
+     or p_rounds < 0 or p_rounds > 6 or p_seconds < 0 or p_seconds > 1500 then
     raise exception 'stats implausíveis';
   end if;
   insert into stats (nick, matches, wins, rounds, matches_p, matches_b, kills, deaths, headshots, best_streak, play_seconds, last_character)
