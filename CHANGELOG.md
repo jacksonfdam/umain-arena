@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.4.1] — 2026-07-17
+### Adicionado
+- Avatar do usuário na badge compartilhável (círculo com anel na cor do time;
+  fallback: inicial do nick) e no topo do perfil `/u/[nick]`
+
 ## [1.4.0] — 2026-07-17
 ### Adicionado
 - **Tempo de jogo** por usuário (min/horas/dias): contado por partida no client

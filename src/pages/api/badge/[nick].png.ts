@@ -2,6 +2,7 @@
 // Render: resvg-js + fonte embutida (serverless da Vercel não tem fontes de sistema).
 import type { APIRoute } from 'astro';
 import { Resvg } from '@resvg/resvg-js';
+import sharp from 'sharp';
 import { supabaseAdmin, NOT_CONFIGURED } from '../../../lib/supabase';
 import { FONT_BOLD_B64 } from '../../../lib/font-data';
 import { fmtTime } from '../../../lib/fmt';
@@ -11,7 +12,19 @@ export const prerender = false;
 const fontBuffers = [Buffer.from(FONT_BOLD_B64, 'base64')];
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-export function badgeSvg(p: any): string {
+// avatar do perfil → data URI 120×120 (null se não houver/falhar)
+async function avatarDataUri(url?: string | null): Promise<string | null> {
+  if (!url) return null;
+  try {
+    const r = await fetch(url, { signal: AbortSignal.timeout(4000) });
+    if (!r.ok) return null;
+    const buf = Buffer.from(await r.arrayBuffer());
+    const png = await sharp(buf).resize(120, 120, { fit: 'cover' }).png().toBuffer();
+    return 'data:image/png;base64,' + png.toString('base64');
+  } catch { return null; }
+}
+
+export function badgeSvg(p: any, avatarUri: string | null): string {
   const kd = p.deaths ? (p.kills / p.deaths).toFixed(2) : String(p.kills);
   const cells: [string, string][] = [
     ['PARTIDAS', String(p.matches)], ['VITÓRIAS', String(p.wins)], ['K/D', kd], ['TEMPO', fmtTime(p.play_seconds)],
@@ -23,24 +36,24 @@ export function badgeSvg(p: any): string {
     <text x="${x}" y="${y + 30}" font-size="15" fill="#8a8064" font-family="DejaVu Sans" letter-spacing="1">${label}</text>`;
   }).join('');
   const side = p.matches_p >= p.matches_b ? ['PETISTA', '#e03232'] : ['BOLSONARISTA', '#1faa4d'];
+  const avatar = avatarUri
+    ? `<defs><clipPath id="cav"><circle cx="748" cy="96" r="56"/></clipPath></defs>
+       <image href="${avatarUri}" x="692" y="40" width="112" height="112" clip-path="url(#cav)"/>
+       <circle cx="748" cy="96" r="56" fill="none" stroke="${side[1]}" stroke-width="4"/>`
+    : `<circle cx="748" cy="96" r="56" fill="${side[1]}" opacity="0.25"/>
+       <circle cx="748" cy="96" r="56" fill="none" stroke="${side[1]}" stroke-width="4"/>
+       <text x="748" y="118" font-size="64" font-weight="bold" fill="${side[1]}" font-family="DejaVu Sans" text-anchor="middle">${esc((p.nick[0] || '?').toUpperCase())}</text>`;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="840" height="440" viewBox="0 0 840 440">
   <rect width="840" height="440" fill="#0c0e11"/>
   <rect width="840" height="6" fill="#e03232"/><rect y="434" width="840" height="6" fill="#1faa4d"/>
   <text x="60" y="70" font-size="26" font-weight="bold" fill="#ffd23f" font-family="DejaVu Sans" letter-spacing="4">CS BRASIL</text>
-  <text x="780" y="70" font-size="18" fill="${side[1]}" font-family="DejaVu Sans" text-anchor="end" font-weight="bold">${side[0]} · ${p.matches_p}P × ${p.matches_b}B</text>
+  <text x="670" y="70" font-size="18" fill="${side[1]}" font-family="DejaVu Sans" text-anchor="end" font-weight="bold">${side[0]} · ${p.matches_p}P × ${p.matches_b}B</text>
   <text x="60" y="150" font-size="58" font-weight="bold" fill="#f2ead8" font-family="DejaVu Sans">${esc(p.nick)}</text>
   <text x="60" y="195" font-size="20" fill="#b8d94a" font-family="DejaVu Sans">${esc(p.social || 'arena Treta Suprema')}</text>
   <rect x="40" y="240" width="760" height="1.5" fill="#3a3325"/>
+  ${avatar}
   ${grid}
 </svg>`;
-}
-
-export function renderBadge(p: any): Buffer {
-  const resvg = new Resvg(badgeSvg(p), {
-    font: { fontBuffers, loadSystemFonts: false, defaultFontFamily: 'DejaVu Sans' },
-    background: '#0c0e11',
-  });
-  return resvg.render().asPng();
 }
 
 export const GET: APIRoute = async ({ params }) => {
@@ -48,11 +61,15 @@ export const GET: APIRoute = async ({ params }) => {
     return new Response(NOT_CONFIGURED, { status: 503, headers: { 'content-type': 'application/json' } });
   const nick = (params.nick || '').slice(0, 14);
   const { data } = await supabaseAdmin
-    .from('stats').select('*, players!inner(nick, social_link)').eq('nick', nick).maybeSingle();
+    .from('stats').select('*, players!inner(nick, social_link, avatar_url)').eq('nick', nick).maybeSingle();
   if (!data) return new Response('not found', { status: 404 });
   const p = { ...data, social: (data as any).players?.social_link };
-  const png = renderBadge(p);
-  return new Response(new Uint8Array(png), {
+  const avatarUri = await avatarDataUri((data as any).players?.avatar_url);
+  const resvg = new Resvg(badgeSvg(p, avatarUri), {
+    font: { fontBuffers, loadSystemFonts: false, defaultFontFamily: 'DejaVu Sans' },
+    background: '#0c0e11',
+  });
+  return new Response(new Uint8Array(resvg.render().asPng()), {
     headers: { 'content-type': 'image/png', 'cache-control': 'public, max-age=300' },
   });
 };

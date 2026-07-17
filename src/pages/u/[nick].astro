@@ -30,7 +30,12 @@ const desc = p ? `${p.kills} abates · K/D ${kd} · ${p.wins} vitórias · ${p.h
   {!configured && <h1>{nick}</h1><p>Ranking ainda não configurado.</p>}
   {p && (
     <>
-      <h1 style="margin-bottom:4px">{p.nick}</h1>
+      <div style="display:flex;align-items:center;gap:16px">
+        {p.players.avatar_url
+          ? <img src={p.players.avatar_url} alt={`Avatar de ${nick}`} width="72" height="72" style="border-radius:50%;border:2px solid #4a5a2a">
+          : <div style="width:72px;height:72px;border-radius:50%;border:2px solid #4a5a2a;background:#161a12;display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--cs);font-family:'Arial Black',sans-serif">{p.nick[0].toUpperCase()}</div>}
+        <h1 style="margin-bottom:4px">{p.nick}</h1>
+      </div>
       <p style="margin-top:0">
         {p.players.social_link && <span>{p.players.social_link} · </span>}
         <span style="color:#ff8080">{p.matches_p} partidas de Petista</span> ×
