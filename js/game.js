@@ -170,6 +170,8 @@ export class Game {
     this.keys = {};
     this._kd = e => {
       if (e.code === 'Tab') { e.preventDefault(); this._showScoreboard(true); }
+      // em pointer lock, engole atalhos do navegador (Ctrl+S/D/A/R…) — Ctrl+W o Chrome não deixa prevenir, use C pra agachar
+      if ((e.ctrlKey || e.metaKey) && document.pointerLockElement) e.preventDefault();
       this.keys[e.code] = true;
       if (this.radioOpen) {
         const n = { Digit1: 1, Digit2: 2, Digit3: 3 }[e.code];
@@ -180,7 +182,7 @@ export class Game {
       if (!this._acceptInput()) return;
       if (e.code === 'KeyZ') { this._radioShow('z'); return; }
       if (e.code === 'KeyX') { this._radioShow('x'); return; }
-      if (e.code === 'KeyC') { this._radioShow('c'); return; }
+      if (e.code === 'KeyV') { this._radioShow('c'); return; }
       if (e.code === 'Digit1') this._switchWeapon('awp');
       if (e.code === 'Digit2') this._switchWeapon('pistol');
       if (e.code === 'Digit3') this._switchWeapon('knife');
@@ -206,6 +208,7 @@ export class Game {
       this.player.pitch = Math.max(-1.45, Math.min(1.45, this.player.pitch));
     };
     this._cc = e => e.preventDefault();
+    this._blur = () => { this.keys = {}; };   // alt-tab com tecla pressionada não deixa tecla presa
     this._plc = () => {
       if (!document.pointerLockElement && !this.testMode && (this.state === 'live' || this.state === 'countdown') && !this.paused)
         this.setPaused(true);
@@ -217,6 +220,7 @@ export class Game {
     document.addEventListener('mousemove', this._mm);
     document.addEventListener('contextmenu', this._cc);
     document.addEventListener('pointerlockchange', this._plc);
+    window.addEventListener('blur', this._blur);
   }
 
   _acceptInput() {
@@ -347,6 +351,7 @@ export class Game {
   setPaused(v) {
     if (this.state !== 'live' && this.state !== 'countdown') v = false;
     this.paused = v;
+    if (v) this.keys = {};
     this.el.pause.classList.toggle('hidden', !v);
     if (v && document.pointerLockElement) document.exitPointerLock();
   }
@@ -611,8 +616,8 @@ export class Game {
       this.camera.rotation.z = Math.min(0.5, (this.camera.rotation.z || 0) + dt * 0.8);
       return;
     }
-    // crouch (CTRL) — slower, steadier aim
-    const wantCrouch = (this.keys.ControlLeft || this.keys.ControlRight) && p.grounded;
+    // crouch (CTRL ou C) — slower, steadier aim
+    const wantCrouch = (this.keys.ControlLeft || this.keys.ControlRight || this.keys.KeyC) && p.grounded;
     p.crouchF = Math.max(0, Math.min(1, p.crouchF + (wantCrouch ? dt * 7 : -dt * 7)));
     const sprint = (this.keys.ShiftLeft || this.keys.ShiftRight) && p.crouchF < 0.3;
     const maxSp = (sprint ? 6.6 : 4.7) * (p.scoped ? 0.5 : 1) * (1 - 0.5 * p.crouchF);
@@ -620,7 +625,8 @@ export class Game {
     let iz = (this.keys.KeyS ? 1 : 0) - (this.keys.KeyW ? 1 : 0);
     const il = Math.hypot(ix, iz) || 1; ix /= il; iz /= il;
     const sin = Math.sin(p.yaw), cos = Math.cos(p.yaw);
-    const wx = ix * cos - iz * sin, wz = ix * sin + iz * cos;
+    // camera: forward = (-sin, -cos), right = (cos, -sin)  →  wish = right*ix + forward*(-iz)
+    const wx = ix * cos + iz * sin, wz = -ix * sin + iz * cos;
     const accel = p.grounded ? 42 : 8;
     p.vel.x += wx * accel * dt; p.vel.z += wz * accel * dt;
     if (p.grounded) {
@@ -930,6 +936,7 @@ export class Game {
     document.removeEventListener('mousemove', this._mm);
     document.removeEventListener('contextmenu', this._cc);
     document.removeEventListener('pointerlockchange', this._plc);
+    window.removeEventListener('blur', this._blur);
     this.el.hud.classList.add('hidden');
     this.el.pause.classList.add('hidden');
     this.el.matchEnd.classList.add('hidden');

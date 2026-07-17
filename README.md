@@ -32,13 +32,13 @@ Abra `http://localhost:8123` no Chrome/Edge/Firefox **de desktop**.
 | W A S D | Mover |
 | Mouse | Mirar |
 | Shift | Correr |
-| **Ctrl** | **Agachar — mira mais estável** |
+| **Ctrl ou C** | **Agachar — mira mais estável** |
 | Espaço | Pular |
 | Clique esq. | Atirar |
 | Clique dir. | Luneta da AWP |
 | R | Recarregar |
 | 1 / 2 / 3 | AWP / Pistola / Faca |
-| **Z / X / C** | **Rádio estilo CS (comandos de voz)** |
+| **Z / X / V** | **Rádio estilo CS (comandos de voz)** |
 | Tab | Placar |
 | Esc | Pausar |
 
