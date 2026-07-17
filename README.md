@@ -2,7 +2,6 @@
 
 [![built with Kimi K3](https://img.shields.io/badge/built%20with-Kimi%20K3-6b5bff?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI+PGNpcmNsZSBjeD0iOCIgY3k9IjgiIHI9IjciIGZpbGw9IiNmZmYiLz48L3N2Zz4=)](https://www.kimi.com/)
 [![license: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![deploy](https://img.shields.io/badge/deploy-vercel-black?logo=vercel)](https://vercel.com)
 [![astro](https://img.shields.io/badge/site-astro-ff5d01?logo=astro)](https://astro.build)
 
 ![CS BRASIL: Treta Suprema — arena de sniper estilo CS 1.6 numa Brasília fictícia](public/og-image.png)

@@ -29,7 +29,11 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+      - name: Extrair notas do CHANGELOG
+        run: |
+          awk "/^## \\[${{ github.ref_name }}\\]/{f=1;next}/^## \\[/{f=0}f" CHANGELOG.md > release-body.md
+          [ -s release-body.md ] || echo "Ver commits abaixo." > release-body.md
       - name: Criar GitHub Release
-        run: gh release create "${{ github.ref_name }}" --generate-notes --title "CS BRASIL ${{ github.ref_name }}"
+        run: gh release create "${{ github.ref_name }}" --notes-file release-body.md --title "CS BRASIL ${{ github.ref_name }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
