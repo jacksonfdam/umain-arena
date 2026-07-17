@@ -378,6 +378,7 @@ export class Game {
     const p = this.player;
     if (p.weapon === w || !p.alive) return;
     p.weapon = w; p.reloadUntil = 0; p.drawUntil = this.time + 0.35;
+    this.vm.reloadDip = 0;   // evita arma travada inclinada ao trocar no meio da recarga
     this._scope(false, true);
     this.vm.awp.visible = w === 'awp';
     this.vm.pistol.visible = w === 'pistol';
@@ -681,15 +682,18 @@ export class Game {
     // reload completion
     if (this._reloading()) {
       this.vm.reloadDip = Math.min(1, this.vm.reloadDip + dt * 4);
-    } else if (p.reloadUntil > 0) {
-      p.reloadUntil = 0;
-      for (const k of ['awp', 'pistol']) {
-        const am = p.ammo[k], wm = WEAPONS[k].mag;
-        if (am.mag < wm && am.res > 0) { const need = wm - am.mag, take = Math.min(need, am.res); am.mag += take; am.res -= take; }
+    } else {
+      this.vm.reloadDip = Math.max(0, this.vm.reloadDip - dt * 6); // safety: nunca trava inclinado
+      if (p.reloadUntil > 0) {
+        p.reloadUntil = 0;
+        for (const k of ['awp', 'pistol']) {
+          const am = p.ammo[k], wm = WEAPONS[k].mag;
+          if (am.mag < wm && am.res > 0) { const need = wm - am.mag, take = Math.min(need, am.res); am.mag += take; am.res -= take; }
+        }
+        this.el.reloadNote.classList.add('hidden');
+        this.sfx.reloadEnd();
+        this.vm.reloadDip = 0;
       }
-      this.el.reloadNote.classList.add('hidden');
-      this.sfx.reloadEnd();
-      this.vm.reloadDip = 0;
     }
     // view model animation
     this.vm.kick = Math.max(0, this.vm.kick - dt * 6);
