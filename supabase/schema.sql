@@ -12,6 +12,8 @@ create table if not exists public.players (
   nick        text not null unique check (char_length(nick) between 2 and 14),
   token       uuid not null,
   social_link text check (char_length(social_link) <= 60),
+  avatar_url  text,                            -- OAuth avatar ou upload no Storage
+  auth_user   uuid,                            -- Fase 3: link com auth.users(id)
   hidden      boolean not null default false,  -- moderação: esconde do ranking
   created_at  timestamptz not null default now()
 );
@@ -90,7 +92,7 @@ end $$;
 -- Leaderboard: top por kills (o client pode ordenar por outras colunas),
 -- sem jogadores escondidos pela moderação.
 create or replace view public.leaderboard as
-select s.nick, p.social_link, s.matches, s.wins, s.kills, s.deaths,
+select s.nick, p.social_link, p.avatar_url, s.matches, s.wins, s.kills, s.deaths,
        s.headshots, s.best_streak,
        round(s.kills::numeric / greatest(s.deaths, 1), 2) as kd
 from stats s join players p on p.nick = s.nick
@@ -117,6 +119,15 @@ create table if not exists public.presence (
 alter table public.presence enable row level security;
 create policy "presence: leitura pública" on public.presence
   for select using (true);
+
+-- =============================================================================
+-- STORAGE (avatars do ranking) — rode no dashboard: Storage → New bucket
+-- "avatars" (PUBLIC). Policies:
+--   select: público (true)
+--   insert/update/delete: só o dono — ver comentário da Fase 3 no client
+--   (auth.uid()::text = (storage.foldername(name))[1])
+-- Avatares são redimensionados pra 128×128 no client antes do upload.
+-- =============================================================================
 
 -- "online agora" = heartbeat nos últimos 2 minutos
 create or replace view public.online_now as
