@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.2.0] — 2026-07-17
+Ranking global (Fase 2) — código completo, ativa ao configurar o Supabase.
+
+### Adicionado
+- Stats novos por jogador: rounds jogados e partidas como Petista × Bolsonarista
+- Página pública de perfil `/u/[nick]` com badge de stats compartilhável
+  (PNG dinâmica em `/api/badge/[nick].png`, aparece no card ao postar o link)
+- Página `/ranking` com o leaderboard global (top 100)
+- Tela RANKING do jogo mostra o top 10 global sem sair do canvas, com links
+  pro ranking completo e pro perfil
+- Registro automático de nick no primeiro jogo (token UUID no navegador) e
+  envio automático de stats ao fim de cada partida via `/api/*` (SSR, sem
+  chave no client)
+
 ## [1.1.0] — 2026-07-17
 O jogo agora é a rota principal (`/`), menu redesenhado e troca de time livre.
 

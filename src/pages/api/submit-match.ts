@@ -23,7 +23,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   try { body = await request.json(); } catch {
     return new Response(JSON.stringify({ error: 'bad_json' }), { status: 400, headers: { 'content-type': 'application/json' } });
   }
-  const { nick, token, won, kills, deaths, headshots, bestStreak } = body ?? {};
+  const { nick, token, won, kills, deaths, headshots, bestStreak, rounds, team } = body ?? {};
   if (typeof nick !== 'string' || typeof token !== 'string')
     return new Response(JSON.stringify({ error: 'missing_fields' }), { status: 400, headers: { 'content-type': 'application/json' } });
 
@@ -31,6 +31,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     p_nick: nick.slice(0, 14), p_token: token,
     p_won: !!won, p_kills: kills | 0, p_deaths: deaths | 0,
     p_headshots: headshots | 0, p_best_streak: bestStreak | 0,
+    p_rounds: rounds | 0, p_team: team === 'P' || team === 'B' ? team : null,
   });
   if (error)
     return new Response(JSON.stringify({ error: error.message }), { status: 403, headers: { 'content-type': 'application/json' } });

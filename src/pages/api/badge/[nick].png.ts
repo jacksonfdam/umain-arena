@@ -1,0 +1,46 @@
+// GET /api/badge/[nick].png — badge compartilhável com stats (og:image).
+import type { APIRoute } from 'astro';
+import sharp from 'sharp';
+import { supabaseAdmin, NOT_CONFIGURED } from '../../../lib/supabase';
+
+export const prerender = false;
+
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+function badgeSvg(p: any): string {
+  const kd = p.deaths ? (p.kills / p.deaths).toFixed(2) : String(p.kills);
+  const cells: [string, string][] = [
+    ['PARTIDAS', String(p.matches)], ['VITÓRIAS', String(p.wins)], ['K/D', kd],
+    ['ABATES', String(p.kills)], ['HEADSHOTS', String(p.headshots)], ['SEQUÊNCIA', `${p.best_streak}×`],
+  ];
+  const grid = cells.map(([label, v], i) => {
+    const x = 60 + (i % 3) * 250, y = 300 + Math.floor(i / 3) * 110;
+    return `<text x="${x}" y="${y}" font-size="44" font-weight="bold" fill="#ffd23f" font-family="Arial Black,Arial">${v}</text>
+    <text x="${x}" y="${y + 32}" font-size="17" fill="#8a8064" font-family="Arial" letter-spacing="2">${label}</text>`;
+  }).join('');
+  const side = p.matches_p >= p.matches_b ? ['PETISTA', '#e03232'] : ['BOLSONARISTA', '#1faa4d'];
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="840" height="440" viewBox="0 0 840 440">
+  <rect width="840" height="440" fill="#0c0e11"/>
+  <rect width="840" height="6" fill="#e03232"/><rect y="434" width="840" height="6" fill="#1faa4d"/>
+  <text x="60" y="70" font-size="26" font-weight="bold" fill="#ffd23f" font-family="Arial Black,Arial" letter-spacing="4">CS BRASIL</text>
+  <text x="780" y="70" font-size="18" fill="${side[1]}" font-family="Arial" text-anchor="end" font-weight="bold">${side[0]} · ${p.matches_p}P × ${p.matches_b}B</text>
+  <text x="60" y="150" font-size="58" font-weight="bold" fill="#f2ead8" font-family="Arial Black,Arial">${esc(p.nick)}</text>
+  <text x="60" y="195" font-size="20" fill="#b8d94a" font-family="Arial">${esc(p.social || 'arena Treta Suprema')}</text>
+  <rect x="40" y="240" width="760" height="1.5" fill="#3a3325"/>
+  ${grid}
+</svg>`;
+}
+
+export const GET: APIRoute = async ({ params }) => {
+  if (!supabaseAdmin)
+    return new Response(NOT_CONFIGURED, { status: 503, headers: { 'content-type': 'application/json' } });
+  const nick = (params.nick || '').slice(0, 14);
+  const { data } = await supabaseAdmin
+    .from('stats').select('*, players!inner(nick, social_link)').eq('nick', nick).maybeSingle();
+  if (!data) return new Response('not found', { status: 404 });
+  const p = { ...data, social: (data as any).players?.social_link };
+  const png = await sharp(Buffer.from(badgeSvg(p))).png().toBuffer();
+  return new Response(new Uint8Array(png), {
+    headers: { 'content-type': 'image/png', 'cache-control': 'public, max-age=300' },
+  });
+};

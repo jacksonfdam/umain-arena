@@ -99,6 +99,10 @@ async function startGame(team, charId) {
   });
   window.__game = game;
   game.start();
+  // registra nick no ranking global (silencioso se a API não estiver no ar)
+  const nick = $('nick-input').value.trim();
+  if (nick && !testMode)
+    api('/api/register', { nick, token: getToken(), social: $('social-input').value.trim() });
   try { window.va?.('event', { name: 'game_start', data: { team, character: charId } }); } catch {}
   if (!testMode) { try { renderer.domElement.requestPointerLock()?.catch?.(() => {}); } catch {} }
 }
@@ -139,7 +143,23 @@ const socialEl = $('social-input');
 socialEl.value = localStorage.getItem(SOCIAL_KEY) || '';
 socialEl.oninput = () => localStorage.setItem(SOCIAL_KEY, socialEl.value);
 
-/* ---------------- local stats (futuro ranking global via Supabase) ---------------- */
+/* ---------------- global ranking API (via /api/* do site) ---------------- */
+const TOKEN_KEY = 'awpbr_token';
+function getToken() {
+  let t = localStorage.getItem(TOKEN_KEY);
+  if (!t) { t = crypto.randomUUID(); localStorage.setItem(TOKEN_KEY, t); }
+  return t;
+}
+async function api(path, body) {
+  try {
+    const r = await fetch(path, body
+      ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }
+      : undefined);
+    return r.ok ? await r.json() : null;
+  } catch { return null; }
+}
+
+/* ---------------- local stats (espelhados pro ranking global) ---------------- */
 const STATS_KEY = 'awpbr_stats';
 function loadStats() {
   return Object.assign({ matches: 0, wins: 0, kills: 0, deaths: 0, headshots: 0, bestStreak: 0 },
@@ -151,6 +171,13 @@ function recordMatchStats(s) {
   st.kills += s.kills; st.deaths += s.deaths; st.headshots += s.headshots;
   st.bestStreak = Math.max(st.bestStreak, s.bestStreak);
   localStorage.setItem(STATS_KEY, JSON.stringify(st));
+  // espelha pro ranking global (silencioso se a API não estiver no ar)
+  const nick = (nickEl.value || '').trim();
+  if (nick && !testMode) api('/api/submit-match', {
+    nick, token: getToken(), won: s.won, kills: s.kills, deaths: s.deaths,
+    headshots: s.headshots, bestStreak: s.bestStreak,
+    rounds: s.roundsP + s.roundsB, team: s.team,
+  });
 }
 function showRanking() {
   const st = loadStats();
@@ -163,6 +190,25 @@ function showRanking() {
     `<div><b>${st.matches}</b>partidas</div><div><b>${st.wins}</b>vitórias</div><div><b>${kd}</b>K/D</div>` +
     `<div><b>${st.kills}</b>abates</div><div><b>${st.headshots}</b>headshots</div><div><b>${st.bestStreak}×</b>melhor sequência</div>`;
   show('ranking-panel');
+  renderGlobal(nick);
+}
+async function renderGlobal(nick) {
+  const box = $('rank-global');
+  box.innerHTML = '<h3>🌐 RANKING GLOBAL</h3><div class="rg-off">carregando…</div>';
+  const data = await api('/api/leaderboard');
+  if (!data || !data.players) {
+    box.innerHTML = '<h3>🌐 RANKING GLOBAL</h3><div class="rg-off">indisponível no momento</div>';
+    return;
+  }
+  const rows = data.players.slice(0, 10).map((p, i) =>
+    `<tr class="${p.nick === nick ? 'me' : ''}"><td>${i + 1}</td><td>${p.nick}</td><td>${p.kd}</td><td>${p.kills}</td><td>${p.wins}</td></tr>`).join('');
+  box.innerHTML = '<h3>🌐 RANKING GLOBAL (top 10)</h3>' +
+    (rows
+      ? `<table><tr><th>#</th><th>JOGADOR</th><th>K/D</th><th>ABATES</th><th>VIT.</th></tr>${rows}</table>`
+      : '<div class="rg-off">ainda vazio — seja o primeiro!</div>') +
+    `<div class="rg-links"><a href="/ranking" target="_blank" style="color:var(--cs)">RANKING COMPLETO ↗</a>` +
+    (nick ? `<a href="/u/${encodeURIComponent(nick)}" target="_blank" style="color:var(--cs)">MEU PERFIL ↗</a>` : '') +
+    '</div>';
 }
 
 function pickTeam(team) {

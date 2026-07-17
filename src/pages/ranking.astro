@@ -1,0 +1,48 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { supabaseAdmin } from '../lib/supabase';
+
+export const prerender = false;
+
+let players: any[] = [], configured = !!supabaseAdmin;
+if (supabaseAdmin) {
+  const { data } = await supabaseAdmin.from('leaderboard').select('*');
+  players = data ?? [];
+}
+---
+<Layout title="Ranking global — CS BRASIL: Treta Suprema" description="Leaderboard global do CS BRASIL: os maiores abatedores da arena Treta Suprema.">
+  <h1>🌐 RANKING GLOBAL</h1>
+  {!configured && <p>Ranking ainda não configurado (envs do Supabase pendentes).</p>}
+  {configured && players.length === 0 && <p>Ainda ninguém na arena. Seja o primeiro a cravar seu nome na treta: <a href="/">▶ JOGAR</a></p>}
+  {players.length > 0 && (
+    <table style="width:100%;border-collapse:collapse;font-size:14px">
+      <thead>
+        <tr style="color:#8a8064;font-size:11px;letter-spacing:2px;text-align:left">
+          <th>#</th><th>JOGADOR</th><th>PART.</th><th>VIT.</th><th>K/D</th><th>ABATES</th><th>HS</th><th>SEQ.</th><th>LADO</th>
+        </tr>
+      </thead>
+      <tbody>
+        {players.map((p, i) => (
+          <tr style={`border-top:1px solid #2a2a20;${i < 3 ? 'color:#ffd23f;font-weight:bold' : 'color:#c9bfa4'}`}>
+            <td style="padding:8px 6px">{i + 1}</td>
+            <td style="padding:8px 6px">
+              {p.avatar_url && <img src={p.avatar_url} alt="" width="22" height="22" style="border-radius:50%;vertical-align:-6px;margin-right:6px">}
+              <a href={`/u/${encodeURIComponent(p.nick)}`} style="color:inherit">{p.nick}</a>
+              {p.social_link && <span style="color:#5a6b3a;font-size:11px"> · {p.social_link}</span>}
+            </td>
+            <td style="padding:8px 6px">{p.matches}</td>
+            <td style="padding:8px 6px">{p.wins}</td>
+            <td style="padding:8px 6px">{p.kd}</td>
+            <td style="padding:8px 6px">{p.kills}</td>
+            <td style="padding:8px 6px">{p.headshots}</td>
+            <td style="padding:8px 6px">{p.best_streak}×</td>
+            <td style="padding:8px 6px">
+              <span style="color:#ff8080">{p.matches_p}P</span> × <span style="color:#9dff9d">{p.matches_b}B</span>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+  <p style="margin-top:18px;font-size:13px">Atualiza a cada partida. Seu perfil público fica em <code>/u/seu-nick</code> — compartilhe a badge nas redes.</p>
+</Layout>

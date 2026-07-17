@@ -23,6 +23,9 @@ create table if not exists public.stats (
   nick        text primary key references public.players(nick) on delete cascade,
   matches     int not null default 0,
   wins        int not null default 0,
+  rounds      int not null default 0,
+  matches_p   int not null default 0,   -- partidas como Petista
+  matches_b   int not null default 0,   -- partidas como Bolsonarista
   kills       int not null default 0,
   deaths      int not null default 0,
   headshots   int not null default 0,
@@ -59,7 +62,8 @@ end $$;
 -- Submeter stats de uma partida (só grava se o token bater + rate limit).
 create or replace function public.submit_match(
   p_nick text, p_token uuid,
-  p_won boolean, p_kills int, p_deaths int, p_headshots int, p_best_streak int
+  p_won boolean, p_kills int, p_deaths int, p_headshots int, p_best_streak int,
+  p_rounds int default 0, p_team text default null
 ) returns void language plpgsql security definer set search_path = public as $$
 declare
   v_last timestamptz;
@@ -74,14 +78,20 @@ begin
   end if;
   -- sanity check anti-cheat básico (valores absurdos são descartados)
   if p_kills < 0 or p_kills > 60 or p_deaths < 0 or p_deaths > 60
-     or p_headshots < 0 or p_headshots > p_kills or p_best_streak < 0 or p_best_streak > 15 then
+     or p_headshots < 0 or p_headshots > p_kills or p_best_streak < 0 or p_best_streak > 15
+     or p_rounds < 0 or p_rounds > 6 then
     raise exception 'stats implausíveis';
   end if;
-  insert into stats (nick, matches, wins, kills, deaths, headshots, best_streak)
-  values (p_nick, 1, p_won::int, p_kills, p_deaths, p_headshots, p_best_streak)
+  insert into stats (nick, matches, wins, rounds, matches_p, matches_b, kills, deaths, headshots, best_streak)
+  values (p_nick, 1, p_won::int, p_rounds,
+          (p_team = 'P')::int, (p_team = 'B')::int,
+          p_kills, p_deaths, p_headshots, p_best_streak)
   on conflict (nick) do update set
     matches     = stats.matches + 1,
     wins        = stats.wins + p_won::int,
+    rounds      = stats.rounds + p_rounds,
+    matches_p   = stats.matches_p + (p_team = 'P')::int,
+    matches_b   = stats.matches_b + (p_team = 'B')::int,
     kills       = stats.kills + p_kills,
     deaths      = stats.deaths + p_deaths,
     headshots   = stats.headshots + p_headshots,
@@ -92,7 +102,8 @@ end $$;
 -- Leaderboard: top por kills (o client pode ordenar por outras colunas),
 -- sem jogadores escondidos pela moderação.
 create or replace view public.leaderboard as
-select s.nick, p.social_link, p.avatar_url, s.matches, s.wins, s.kills, s.deaths,
+select s.nick, p.social_link, p.avatar_url, s.matches, s.wins, s.rounds,
+       s.matches_p, s.matches_b, s.kills, s.deaths,
        s.headshots, s.best_streak,
        round(s.kills::numeric / greatest(s.deaths, 1), 2) as kd
 from stats s join players p on p.nick = s.nick
