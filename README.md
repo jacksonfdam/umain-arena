@@ -17,7 +17,7 @@ fictícia e satírica. Personagens 100% fictícios, sem gore — só arquétipos
 
 Monorepo com duas zonas:
 
-- **Jogo** (`public/game/`) — vanilla JS + Three.js vendored, **zero build**:
+- **Jogo** (`public/` — rota `/` do site) — vanilla JS + Three.js vendored, **zero build**:
   roda sozinho com qualquer servidor estático. Nunca vira framework.
 - **Site** (raiz, [Astro](https://astro.build)) — landing `/`, `/personagens`,
   `/como-jogar` (SEO/AEO real) + **API routes SSR** (`/api/*`) pro ranking
@@ -28,7 +28,7 @@ Monorepo com duas zonas:
 Só o jogo (zero dependências):
 
 ```bash
-cd public/game
+cd public
 python3 -m http.server 8123
 # abra http://localhost:8123
 ```
@@ -59,6 +59,7 @@ npm run preview       # serve dist/client estaticamente
 | R | Recarregar |
 | 1 / 2 / 3 | AWP / Pistola / Faca |
 | **Z / X / V** | **Rádio estilo CS (comandos de voz)** |
+| **M** | **Trocar de time (a qualquer momento)** |
 | Tab | Placar |
 | Esc | Pausar |
 
@@ -67,7 +68,7 @@ vence quem levar 3 rounds. AWP mata com 1 tiro; headshot tem som próprio. Multi
 disparam anúncios estilo Unreal Tournament. Defina seu **nick** no menu principal
 (fica salvo, com stats locais na tela RANKING).
 
-## Áudios (pasta `public/game/audio/`)
+## Áudios (pasta `public/audio/`)
 
 O jogo carrega `audio/manifest.json`:
 
@@ -105,7 +106,7 @@ bash scripts/fetch-audio.sh
 
 - **Contribuidores**: rodam o script (ou montam a própria pasta seguindo
   `manifest.example.json`). Sem os arquivos, o jogo usa sons sintetizados.
-- **Criar/atualizar o pacote**: `cd public/game/audio && zip -r ../../../../audio-pack.zip . -x '*.DS_Store'`
+- **Criar/atualizar o pacote**: `cd public/audio && zip -r ../../../../audio-pack.zip . -x '*.DS_Store'`
 
 ### Sobre sons "reais" do CS 1.6
 
@@ -137,31 +138,31 @@ astro.config.mjs    Astro 7 + adapter Vercel (SSR endpoints)
 vercel.json         build (fetch-audio + astro build) + cache headers
 src/
   layouts/Layout.astro   shell (nav, footer, CSS global)
-  pages/index.astro      landing (hero, FAQ, JSON-LD)
+  pages/sobre.astro      landing/FAQ (JSON-LD VideoGame)
   pages/personagens.astro
   pages/como-jogar.astro
   pages/api/leaderboard.ts    GET ranking (service key no servidor)
   pages/api/submit-match.ts   POST partida (rate limit por IP + RPC)
   lib/supabase.ts        client admin (envs SUPABASE_URL/SERVICE_ROLE_KEY)
-public/
-  game/               O JOGO (vanilla, zero build — ver public/game/js/)
+public/               O JOGO na rota / (vanilla, zero build)
+  index.html style.css js/ vendor/ audio/
   og-image.png robots.txt sitemap.xml llms.txt
-scripts/fetch-audio.sh   baixa o pacote de áudio pra public/game/audio/
+scripts/fetch-audio.sh   baixa o pacote de áudio pra public/audio/
 supabase/schema.sql      schema do ranking (Fase 2)
 ```
 
 ## Trocar placeholders por assets reais
 
-- **Modelos:** personagens são montados em `public/game/js/characters.js`
+- **Modelos:** personagens são montados em `public/js/characters.js`
   (`buildCharacter`). Para GLTF, carregue o modelo em `mkBot`
-  (`public/game/js/game.js`) e adapte `poseCharacter`.
-- **Texturas:** tudo sai de `initTextures()` em `public/game/js/textures.js`.
+  (`public/js/game.js`) e adapte `poseCharacter`.
+- **Texturas:** tudo sai de `initTextures()` em `public/js/textures.js`.
 - **Sons:** veja a seção Áudios acima.
-- **Mapa:** colisores são AABBs declarados junto de cada mesh em `public/game/js/map.js`.
+- **Mapa:** colisores são AABBs declarados junto de cada mesh em `public/js/map.js`.
 
 ## Licenças / créditos
 
-- Three.js r160 — licença MIT (© Three.js authors), arquivo em `public/game/vendor/`.
+- Three.js r160 — licença MIT (© Three.js authors), arquivo em `public/vendor/`.
 - Código, texturas, personagens e logo: originais, gerados proceduralmente.
 - Áudios em `audio/`: conteúdo fornecido pelo usuário (memes); verifique direitos
   antes de publicar comercialmente. Sons de CS 1.6 **não inclusos** (Valve).

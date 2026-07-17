@@ -28,7 +28,7 @@ cd csbrasil
 npm install
 npm run fetch-audio      # baixa o pacote de áudio (não versionado)
 npm run dev              # site completo (Astro) — jogo em /game/
-# ou só o jogo, sem dependências: cd public/game && python3 -m http.server 8123
+# ou só o jogo, sem dependências: cd public && python3 -m http.server 8123
 ```
 
 Sem o pacote de áudio o jogo funciona com sons sintetizados (fallback).
@@ -44,9 +44,9 @@ Sem o pacote de áudio o jogo funciona com sons sintetizados (fallback).
   é ignorado; novos sons entram no pacote via `audio/manifest.example.json`.
 
 **Código — duas zonas**
-- **Jogo (`public/game/`)**: vanilla JS com ES modules, **sem framework e sem
+- **Jogo (`public/`)**: vanilla JS com ES modules, **sem framework e sem
   build** — decisão de projeto (o jogo deve rodar arrastando a pasta pra
-  qualquer host estático). Three.js vendored em `public/game/vendor/` — não
+  qualquer host estático). Three.js vendored em `public/vendor/` — não
   adicione CDNs nem deps de runtime no jogo sem abrir issue antes.
 - **Site (raiz, Astro)**: landing, páginas de conteúdo e API routes. Aqui
   framework é bem-vindo — mas mantenha páginas leves e o jogo intocado.

@@ -16,8 +16,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Syntax check do jogo (public/game/js)
-        run: for f in public/game/js/*.js; do node --input-type=module --check < "$f"; done
+      - name: Syntax check do jogo (public/js)
+        run: for f in public/js/*.js; do node --input-type=module --check < "$f"; done
       - name: Astro build
         run: npm run build
 

@@ -187,6 +187,7 @@ export class Game {
       if (e.code === 'Digit1') this._switchWeapon('awp');
       if (e.code === 'Digit2') this._switchWeapon('pistol');
       if (e.code === 'Digit3') this._switchWeapon('knife');
+      if (e.code === 'KeyM') this._switchTeam();
       if (e.code === 'KeyR') this._startReload();
       if (e.code === 'Space') e.preventDefault();
     };
@@ -380,6 +381,44 @@ export class Game {
   onResize() {
     this.camera.aspect = innerWidth / innerHeight;
     this.camera.updateProjectionMatrix();
+  }
+
+  /* ================= team switch (M) ================= */
+  _switchTeam() {
+    if (!this.player.alive || (this.state !== 'live' && this.state !== 'countdown')) return;
+    const p = this.player;
+    const oldTeam = this.playerTeam;
+    const newTeam = oldTeam === 'P' ? 'B' : 'P';
+    this.playerTeam = newTeam; this.enemyTeam = oldTeam;
+    p.team = newTeam;
+    // rebalanceia 4×4: um bot do time novo deserta pro time velho
+    const candidates = this.bots.filter(b => b.team === newTeam);
+    const swapBot = candidates[(Math.random() * candidates.length) | 0];
+    if (swapBot) {
+      swapBot.team = oldTeam;
+      const defs = CHARACTERS.filter(c => c.team === oldTeam && c.id !== p.def.id);
+      const newDef = defs[(Math.random() * defs.length) | 0];
+      swapBot.def = newDef; swapBot.name = newDef.name;
+      this.scene.remove(swapBot.mesh.group);
+      swapBot.mesh.group.traverse(o => { if (o.geometry) o.geometry.dispose(); });
+      swapBot.mesh = buildCharacter(newDef);
+      swapBot.mesh.group.traverse(o => { o.userData.botOwner = swapBot; });
+      this.scene.add(swapBot.mesh.group);
+      swapBot.target = null; swapBot.path = null; swapBot.hp = 100; swapBot.alive = true;
+      const s = this.world.spawns[oldTeam][(Math.random() * 4) | 0];
+      swapBot.pos.set(s.x, 0, s.z);
+      swapBot.yaw = oldTeam === 'P' ? 0 : Math.PI;
+      swapBot.mesh.group.rotation.set(0, swapBot.yaw, 0);
+      swapBot.mesh.group.position.copy(swapBot.pos);
+      swapBot.mesh.group.visible = true;
+    }
+    // respawn do jogador no lado novo
+    const s = this.world.spawns[newTeam][(Math.random() * 4) | 0];
+    p.pos.set(s.x, 0, s.z); p.vel.set(0, 0, 0);
+    p.yaw = newTeam === 'P' ? Math.PI : 0; p.pitch = 0; p.hp = 100;
+    this._scope(false, true);
+    this._banner(`VOCÊ AGORA É ${TEAM_LABEL[newTeam]}`, 'trocou de lado na treta — sem penalty, só julgamento');
+    this.sfx.uiClick();
   }
 
   /* ================= weapons ================= */
