@@ -96,6 +96,7 @@ async function startGame(team, charId) {
   });
   window.__game = game;
   game.start();
+  try { window.va?.('event', { name: 'game_start', data: { team, character: charId } }); } catch {}
   if (!testMode) { try { renderer.domElement.requestPointerLock()?.catch?.(() => {}); } catch {} }
 }
 function quitToMenu() {

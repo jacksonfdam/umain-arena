@@ -331,6 +331,7 @@ export class Game {
       `<div><b>${this.player.deaths}</b>suas mortes</div>`;
     this.el.matchEnd.classList.remove('hidden');
     if (document.pointerLockElement) document.exitPointerLock();
+    try { window.va?.('event', { name: 'match_end', data: { winner, roundsP: this.roundsWon.P, roundsB: this.roundsWon.B } }); } catch {}
     mine ? this.sfx.matchWin() : this.sfx.roundLose();
   }
 

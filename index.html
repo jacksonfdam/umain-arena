@@ -246,6 +246,18 @@
 
 <div id="game-container"></div>
 
+<!-- Vercel Web Analytics + Speed Insights (static HTML — sem pacote npm).
+     Só carrega fora de localhost. Ative no dashboard: Analytics → Enable. -->
+<script>
+  if (!/^(localhost|127\.|0\.0\.0\.0)/.test(location.hostname)) {
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    var _s1 = document.createElement('script'); _s1.defer = true;
+    _s1.src = '/_vercel/insights/script.js'; document.head.appendChild(_s1);
+    var _s2 = document.createElement('script'); _s2.defer = true;
+    _s2.src = '/_vercel/speed-insights/script.js'; document.head.appendChild(_s2);
+  }
+</script>
+
 <script type="module" src="js/main.js"></script>
 </body>
 </html>
