@@ -2,8 +2,9 @@
 interface Props {
   title: string;
   description?: string;
+  ogImage?: string;
 }
-const { title, description = 'FPS gratuito de navegador estilo CS 1.6: arena de sniper satírica Petistas × Bolsonaristas numa Brasília fictícia.' } = Astro.props;
+const { title, description = 'FPS gratuito de navegador estilo CS 1.6: arena de sniper satírica Petistas × Bolsonaristas numa Brasília fictícia.', ogImage = 'https://csbrasil.online/og-image.png' } = Astro.props;
 ---
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -17,8 +18,9 @@ const { title, description = 'FPS gratuito de navegador estilo CS 1.6: arena de 
 <meta property="og:site_name" content="CS BRASIL: Treta Suprema">
 <meta property="og:title" content={title}>
 <meta property="og:description" content={description}>
-<meta property="og:image" content="https://csbrasil.online/og-image.png">
+<meta property="og:image" content={ogImage}>
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content={ogImage}>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='8' height='16' fill='%23e03232'/><rect x='8' width='8' height='16' fill='%231faa4d'/></svg>">
 <style is:global>
 :root{--red:#e03232;--green:#1faa4d;--yellow:#ffd23f;--dark:#0c0e11;--cs:#b8d94a}

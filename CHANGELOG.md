@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.1] — 2026-07-17
+### Corrigido
+- Badge de perfil renderizava texto como caixas (□□□): serverless da Vercel
+  não tem fontes de sistema — render agora via `@resvg/resvg-js` com
+  DejaVu Sans Bold embutida no bundle
+- og:image do perfil era sobrescrita pela padrão do Layout (crawler pegava a
+  imagem errada) — `ogImage` agora é prop do Layout e `/u/[nick]` usa a badge
+
 ## [1.3.0] — 2026-07-17
 Fase 3: login social, avatar e mapa ao vivo.
 

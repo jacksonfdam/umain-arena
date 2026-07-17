@@ -19,16 +19,11 @@ const pageUrl = `${Astro.site}u/${encodeURIComponent(nick)}`;
 const title = `${nick} no CS BRASIL: Treta Suprema`;
 const desc = p ? `${p.kills} abates · K/D ${kd} · ${p.wins} vitórias · ${p.headshots} headshots na arena Treta Suprema` : 'Perfil de jogador';
 ---
-<Layout title={title} description={desc}>
+<Layout title={title} description={desc} ogImage={badgeUrl}>
   <Fragment slot="head">
     <meta property="og:type" content="profile">
-    <meta property="og:title" content={title}>
-    <meta property="og:description" content={desc}>
-    <meta property="og:image" content={badgeUrl}>
     <meta property="og:image:width" content="840">
     <meta property="og:image:height" content="440">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content={badgeUrl}>
   </Fragment>
   {!configured && <h1>{nick}</h1><p>Ranking ainda não configurado.</p>}
   {p && (
