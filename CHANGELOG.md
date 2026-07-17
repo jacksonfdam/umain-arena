@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.3.0] — 2026-07-17
+Fase 3: login social, avatar e mapa ao vivo.
+
+### Adicionado
+- Login com **Google, GitHub, LinkedIn e X** (Supabase Auth) — botões no menu
+  principal; avatar do provedor entra no perfil automaticamente
+- **Upload de foto de perfil** (tela RANKING): redimensiona pra 128×128 no
+  client e sobe pro bucket `avatars` com policy por dono
+- **Mapa da treta** (`/mapa`): jogadores online agora + partidas por cidade
+  nos últimos 7 dias, via Leaflet/OpenStreetMap. Geo aproximado (cidade) dos
+  headers da Vercel — IP nunca é armazenado
+- Heartbeat de presença a cada 30s durante o jogo (`/api/heartbeat`)
+- `city_daily`: histórico agregado de partidas por cidade
+- `GET /api/config`: entrega URL + anon key (públicas) pro client ligar OAuth
+
 ## [1.2.0] — 2026-07-17
 Ranking global (Fase 2) — código completo, ativa ao configurar o Supabase.
 

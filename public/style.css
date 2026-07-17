@@ -56,6 +56,16 @@ body{font-family:"Arial Black",Impact,Haettenschweiler,"Segoe UI",sans-serif;col
 #rank-global tr.me td{color:var(--yellow)}
 #rank-global .rg-links{margin-top:8px;font-size:12px;display:flex;gap:16px;justify-content:center}
 #rank-global .rg-off{color:#5a6b3a;font-size:12px}
+#auth-row{grid-column:1/-1;display:flex;gap:8px;justify-content:center;align-items:center;min-height:30px}
+#auth-row .auth-btn{width:34px;height:34px;border-radius:6px;border:1px solid #4a5a2a;background:#10130c;
+  color:var(--cs);font-weight:bold;font-size:14px;cursor:pointer;font-family:Arial,sans-serif}
+#auth-row .auth-btn:hover{border-color:var(--cs)}
+#auth-row .auth-chip{display:flex;align-items:center;gap:8px;color:#c9bfa4;font-size:12px;font-family:Arial,sans-serif}
+#auth-row .auth-chip img{width:26px;height:26px;border-radius:50%;border:1px solid #4a5a2a}
+#auth-row .auth-chip button{background:none;border:1px solid #4a5a2a;border-radius:4px;color:#8a8064;cursor:pointer;font-size:11px;padding:2px 8px}
+#avatar-row{display:flex;gap:10px;align-items:center}
+#avatar-row .btn{font-size:11px;padding:7px 14px;letter-spacing:1px}
+#avatar-note{font-size:11px;color:var(--cs);font-family:Arial,sans-serif}
 
 /* ---------- team select ---------- */
 .team-row{display:flex;gap:34px;flex-wrap:wrap;justify-content:center}

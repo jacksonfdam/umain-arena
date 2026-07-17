@@ -6,6 +6,7 @@ import { buildWorld } from './map.js';
 import { Sfx } from './audio.js';
 import { Game } from './game.js';
 import { VERSION } from './version.js';
+import { Auth } from './auth.js';
 
 /* ---------------- settings & nickname ---------------- */
 const SETTINGS_KEY = 'awpbr_settings';
@@ -101,8 +102,13 @@ async function startGame(team, charId) {
   game.start();
   // registra nick no ranking global (silencioso se a API não estiver no ar)
   const nick = $('nick-input').value.trim();
-  if (nick && !testMode)
-    api('/api/register', { nick, token: getToken(), social: $('social-input').value.trim() });
+  if (nick && !testMode) {
+    await authReady;
+    api('/api/register', {
+      nick, token: getToken(), social: $('social-input').value.trim(),
+      accessToken: auth.accessToken,
+    });
+  }
   try { window.va?.('event', { name: 'game_start', data: { team, character: charId } }); } catch {}
   if (!testMode) { try { renderer.domElement.requestPointerLock()?.catch?.(() => {}); } catch {} }
 }
@@ -111,6 +117,54 @@ function quitToMenu() {
   if (document.pointerLockElement) document.exitPointerLock();
   show('main-menu');
 }
+
+/* ---------------- auth (OAuth + avatar) ---------------- */
+const auth = new Auth();
+auth.onChange = () => renderAuthRow();
+const authReady = auth.init().then(ok => renderAuthRow());
+
+const PROVIDERS = [
+  ['google', 'G', 'Google'], ['github', 'GH', 'GitHub'],
+  ['linkedin_oidc', 'in', 'LinkedIn'], ['twitter', 'X', 'X/Twitter'],
+];
+function renderAuthRow() {
+  const row = $('auth-row');
+  if (!auth.ok) { row.innerHTML = ''; return; }
+  if (auth.user) {
+    const av = auth.avatarUrl();
+    row.innerHTML = `<div class="auth-chip">` +
+      (av ? `<img src="${av}" alt="">` : '') +
+      `<span>${auth.displayName() || 'logado'}</span><button id="auth-out">SAIR</button></div>`;
+    $('auth-out').onclick = () => auth.logout();
+  } else {
+    row.innerHTML = `<span style="font-size:11px;color:#5a6b3a;font-family:Arial">entrar:</span>` +
+      PROVIDERS.map(([id, label, name]) =>
+        `<button class="auth-btn" data-p="${id}" title="Entrar com ${name}">${label}</button>`).join('');
+    row.querySelectorAll('.auth-btn').forEach(b => b.onclick = () => auth.login(b.dataset.p));
+  }
+  $('avatar-row').classList.toggle('hidden', !auth.user);
+}
+
+/* ---------------- heartbeat (presença/mapa) ---------------- */
+setInterval(() => {
+  const nick = (nickEl.value || '').trim();
+  if (game && nick && !testMode) api('/api/heartbeat', { nick, token: getToken() });
+}, 30_000);
+
+/* ---------------- avatar upload ---------------- */
+$('avatar-btn').onclick = () => $('avatar-file').click();
+$('avatar-file').onchange = async e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  $('avatar-note').textContent = 'enviando…';
+  const url = await auth.uploadAvatar(f);
+  if (url) {
+    const nick = (nickEl.value || '').trim();
+    await api('/api/register', { nick, token: getToken(), social: socialEl.value.trim(), accessToken: auth.accessToken, avatarUrl: url });
+    $('avatar-note').textContent = 'foto atualizada! ✓';
+  } else $('avatar-note').textContent = 'falhou — tente outra imagem';
+  e.target.value = '';
+};
 
 /* ---------------- menu wiring ---------------- */
 $('btn-jogar').onclick = () => { sfx.uiClick(); show('team-select'); };
@@ -208,7 +262,7 @@ async function renderGlobal(nick) {
       : '<div class="rg-off">ainda vazio — seja o primeiro!</div>') +
     `<div class="rg-links"><a href="/ranking" target="_blank" style="color:var(--cs)">RANKING COMPLETO ↗</a>` +
     (nick ? `<a href="/u/${encodeURIComponent(nick)}" target="_blank" style="color:var(--cs)">MEU PERFIL ↗</a>` : '') +
-    '</div>';
+    `<a href="/mapa" target="_blank" style="color:var(--cs)">MAPA AO VIVO ↗</a></div>`;
 }
 
 function pickTeam(team) {

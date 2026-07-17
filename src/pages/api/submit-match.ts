@@ -2,6 +2,7 @@
 // A validação do token do jogador acontece dentro do RPC (schema.sql).
 import type { APIRoute } from 'astro';
 import { supabaseAdmin, NOT_CONFIGURED } from '../../lib/supabase';
+import { geoFrom } from '../../lib/geo';
 
 export const prerender = false;
 
@@ -37,5 +38,21 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     return new Response(JSON.stringify({ error: error.message }), { status: 403, headers: { 'content-type': 'application/json' } });
 
   hits.set(ip, now);
+  // geo: presença + histórico agregado por cidade (nunca IP bruto)
+  const g = geoFrom(request);
+  if (g) {
+    const today = new Date().toISOString().slice(0, 10);
+    await supabaseAdmin.from('presence').upsert({
+      nick: nick.slice(0, 14), last_seen: new Date().toISOString(),
+      city: g.city, country: g.country, lat: g.lat, lon: g.lon,
+    });
+    if (g.city) {
+      const { data: row } = await supabaseAdmin
+        .from('city_daily').select('matches').eq('day', today).eq('city', g.city).maybeSingle();
+      await supabaseAdmin.from('city_daily').upsert({
+        day: today, city: g.city, country: g.country, matches: (row?.matches ?? 0) + 1,
+      });
+    }
+  }
   return new Response(JSON.stringify({ ok: true }), { headers: { 'content-type': 'application/json' } });
 };
