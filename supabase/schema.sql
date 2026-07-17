@@ -48,7 +48,9 @@ alter table public.stats add column if not exists rounds int not null default 0;
 alter table public.stats add column if not exists matches_p int not null default 0;
 alter table public.stats add column if not exists matches_b int not null default 0;
 alter table public.stats add column if not exists play_seconds bigint not null default 0;
-alter table public.city_daily add column if not exists rounds int not null default 0;alter table public.stats   enable row level security;
+alter table public.city_daily add column if not exists rounds int not null default 0;
+
+alter table public.stats   enable row level security;
 
 -- Leitura pública (o ranking é público).
 drop policy if exists "players: leitura pública" on public.players;
