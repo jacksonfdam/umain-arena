@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.7.6] — 2026-07-18
+### Adicionado
+- Mapa: nome da cidade sempre visível (tooltip amarelo permanente) e popup com
+  **lista de jogadores + total por cidade** (via presence, cidades com 0
+  partidas mas com jogadores também aparecem)
+
 ## [1.7.5] — 2026-07-18
 ### Corrigido
 - Proporções do card de badge: cabeçalho compacto, grade 3×3 com margem real,

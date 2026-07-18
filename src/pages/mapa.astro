@@ -16,28 +16,37 @@ if (supabaseAdmin) {
     totals.matches += r.matches; totals.kills += r.kills;
     totals.mp += r.matches_p; totals.mb += r.matches_b;
   }
-  // histórico TOTAL por cidade (todas as datas)
+  // histórico TOTAL por cidade (todas as datas) + jogadores por cidade (presence)
   const { data: cd } = await supabaseAdmin.from('city_daily').select('*');
   const agg = new Map<string, any>();
   for (const r of cd ?? []) {
-    const cur = agg.get(r.city) || { city: r.city, country: r.country, matches: 0, rounds: 0 };
+    const cur = agg.get(r.city) || { city: r.city, country: r.country, matches: 0, rounds: 0, players: new Set<string>(), lat: null, lon: null };
     cur.matches += r.matches; cur.rounds += r.rounds ?? 0; agg.set(r.city, cur);
   }
-  cities = [...agg.values()].sort((a, b) => b.matches - a.matches);
+  const { data: pres } = await supabaseAdmin.from('presence').select('nick,city,country,lat,lon').not('city', 'is', null);
+  for (const p of pres ?? []) {
+    const cur = agg.get(p.city) || { city: p.city, country: p.country, matches: 0, rounds: 0, players: new Set<string>(), lat: null, lon: null };
+    cur.players.add(p.nick);
+    if (!cur.lat && p.lat) { cur.lat = p.lat; cur.lon = p.lon; }
+    agg.set(p.city, cur);
+  }
+  cities = [...agg.values()].sort((a, b) => b.matches - a.matches)
+    .map(c => ({ ...c, players: [...c.players].sort() }));
 }
 const sideTotal = Math.max(1, totals.mp + totals.mb);
 const pctP = Math.round((totals.mp / sideTotal) * 100), pctB = 100 - pctP;
 const mapData = { online: online.filter(o => o.lat && o.lon), cities: cities.filter(c => c.lat && c.lon) };
-// city_daily não guarda lat/lon — usa presença recente como fonte de coordenadas
-if (supabaseAdmin) {
-  const { data: pres } = await supabaseAdmin.from('presence').select('city,lat,lon').not('lat', 'is', null);
-  const coords = new Map((pres ?? []).map((p: any) => [p.city, p]));
-  for (const c of cities) { const p = coords.get(c.city); if (p) { c.lat = p.lat; c.lon = p.lon; } }
-}
-mapData.cities = cities.filter(c => c.lat && c.lon);
 ---
 <Layout title="Mapa da treta ao vivo — CS BRASIL" description="Jogadores online agora e partidas por cidade no CS BRASIL: Treta Suprema.">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" slot="head">
+  <style slot="head">
+    .map-tip{background:rgba(8,12,8,.88)!important;border:1px solid #4a5a2a!important;color:#d8e0b0!important;
+      font:10px Consolas,monospace;padding:1px 6px;box-shadow:none!important}
+    .map-tip:before{display:none}
+    .map-pop .leaflet-popup-content-wrapper{background:#10130c;color:#d8e0b0;border:1px solid #4a5a2a;font-family:Consolas,monospace;font-size:12px}
+    .map-pop .leaflet-popup-tip{background:#10130c;border:1px solid #4a5a2a}
+    .map-pop a{color:#b8d94a}
+  </style>
   <h1>🗺️ MAPA DA TRETA</h1>
   {configured && (
     <div style="display:flex;gap:22px;flex-wrap:wrap;font-family:Consolas,monospace;font-size:14px;color:#c9bfa4;margin-bottom:10px">
@@ -64,10 +73,18 @@ mapData.cities = cities.filter(c => c.lat && c.lon);
     }).addTo(map);
     const maxM = Math.max(1, ...mapData.cities.map(c => c.matches));
     for (const c of mapData.cities) {
-      L.circleMarker([c.lat, c.lon], {
+      const m = L.circleMarker([c.lat, c.lon], {
         radius: 6 + 18 * (c.matches / maxM), color: '#ffd23f', weight: 2,
         fillColor: '#ffd23f', fillOpacity: 0.25,
-      }).addTo(map).bindPopup(`<b>${c.city}</b><br>${c.matches} partidas · ${c.rounds} rounds (histórico)`);
+      }).addTo(map);
+      // nome da cidade sempre visível (amarelo)…
+      m.bindTooltip(`${c.city} · ${c.matches}`, { permanent: true, direction: 'top', offset: [0, -8], className: 'map-tip' });
+      // …e popup com a lista de jogadores + total
+      const shown = c.players.slice(0, 12), more = c.players.length - shown.length;
+      const plist = c.players.length
+        ? `<br><b>${c.players.length} jogador${c.players.length > 1 ? 'es' : ''}:</b> ${shown.join(', ')}${more > 0 ? ` +${more}` : ''}`
+        : '';
+      m.bindPopup(`<b>${c.city}</b><br>${c.matches} partidas · ${c.rounds} rounds (histórico)${plist}`, { className: 'map-pop' });
     }
     for (const o of mapData.online) {
       L.circleMarker([o.lat, o.lon], {
