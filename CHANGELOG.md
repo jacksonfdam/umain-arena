@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.12.3] — 2026-07-18
+### Corrigido
+- **Modo de armas também filtra o mapa**: em SÓ PISTOLAS/FACA/AWP os pickups
+  incompatíveis somem do chão (não só da mão do jogador)
+- Home: RANKING/COMO JOGAR/CONFIG viraram botões laterais menores; dropdown
+  de armas agora é custom com **ícones SVG das armas** (mesmo CSS do dropdown
+  de mapa)
+
 ## [1.12.2] — 2026-07-18
 ### Mudado
 - **Nick obrigatório** pra jogar: sem nome, o JOGAR não deixa passar (campo

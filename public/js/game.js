@@ -44,6 +44,15 @@ export class Game {
     this.scene.add(this.camera);
     this.world = MAPS[resolveMapId(mapId)].build(this.scene, textures);
     this.flashTex = textures.flash;
+    // modo de armas também muda o mapa: pickups fora do modo somem (e suas meshes)
+    if (this.world.pickups) {
+      const keep = [];
+      for (const pk of this.world.pickups) {
+        if (this._pickupAllowed(pk.weapon)) keep.push(pk);
+        else if (pk.mesh) this.scene.remove(pk.mesh);
+      }
+      this.world.pickups = keep;
+    }
 
     // teams & rosters
     this.playerTeam = playerTeam;

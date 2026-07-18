@@ -105,23 +105,21 @@
         <span id="avatar-note"></span>
       </div>
       <label class="map-label">ARMAS
-        <select id="wpn-mode">
-          <option value="all">TODAS</option>
-          <option value="pistols">SÓ PISTOLAS</option>
-          <option value="knife">SÓ FACA</option>
-          <option value="awp">SÓ AWP</option>
-        </select>
+        <div class="dd" id="wpn-dd">
+          <button class="dd-btn" id="wpn-dd-btn" type="button"><span id="wpn-dd-label"></span><span class="dd-arrow">▾</span></button>
+          <div class="dd-list hidden" id="wpn-dd-list"></div>
+        </div>
       </label>
       <label class="map-label">MAPA
         <select id="map-select"></select>
       </label>
     </div>
     <button id="btn-jogar" class="btn btn-big">JOGAR</button>
-    <div class="menu-secondary">
-      <button id="btn-ranking" class="btn">RANKING</button>
-      <button id="btn-howto" class="btn">COMO JOGAR</button>
-      <button id="btn-settings" class="btn">CONFIGURAÇÕES</button>
-    </div>
+  </div>
+  <div class="side-actions">
+    <button id="btn-ranking" class="btn btn-side">RANKING</button>
+    <button id="btn-howto" class="btn btn-side">COMO JOGAR</button>
+    <button id="btn-settings" class="btn btn-side">CONFIG.</button>
   </div>
   <p class="footnote">Sátira política fictícia. Nenhum político real foi consultado (ou poupado).</p>
 </div>
