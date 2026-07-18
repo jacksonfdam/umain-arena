@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { supabaseAdmin } from '../lib/supabase';
 import { displayTime } from '../lib/fmt';
-import { socialHref, socialAvatar, socialNet, socialHandle, NET_INFO } from '../lib/social';
+import { normalizeSocialUrl, socialAvatar, socialNet, NET_INFO, netIcon } from '../lib/social';
 import { CHARS, charSvg } from '../lib/charsvg';
 import { sideOf } from '../lib/side';
 
@@ -13,6 +13,11 @@ if (supabaseAdmin) {
   const { data } = await supabaseAdmin.from('leaderboard').select('*');
   players = data ?? [];
 }
+const PAGE_SIZE = 25;
+const page = Math.max(1, parseInt(Astro.url.searchParams.get('page') || '1', 10) || 1);
+const totalPages = Math.max(1, Math.ceil(players.length / PAGE_SIZE));
+const curPage = Math.min(page, totalPages);
+const rows = players.slice((curPage - 1) * PAGE_SIZE, curPage * PAGE_SIZE);
 ---
 <Layout title="Ranking global — CS BRASIL: Treta Suprema" description="Leaderboard global do CS BRASIL: os maiores abatedores da arena Treta Suprema.">
   <h1>🌐 RANKING GLOBAL</h1>
@@ -26,9 +31,9 @@ if (supabaseAdmin) {
         </tr>
       </thead>
       <tbody>
-        {players.map((p, i) => (
-          <tr style={`border-top:1px solid #2a2a20;${i < 3 ? 'color:#ffd23f;font-weight:bold' : 'color:#c9bfa4'}`}>
-            <td>{i + 1}</td>
+        {rows.map((p, i) => (
+          <tr style={`${(curPage - 1) * PAGE_SIZE + i < 3 ? 'color:#ffd23f;font-weight:bold' : 'color:#c9bfa4'}`}>
+            <td>{(curPage - 1) * PAGE_SIZE + i + 1}</td>
             <td>
               {(() => {
                 const av = p.avatar_url || socialAvatar(p.social_link);
@@ -47,10 +52,9 @@ if (supabaseAdmin) {
               {(p.socials?.length ? p.socials : (p.social_link ? [{ net: socialNet(p.social_link), url: p.social_link }] : [])).map((s: any) => {
                 const net = s.net || socialNet(s.url), info = NET_INFO[net] || NET_INFO.site;
                 return (
-                  <a href={s.url} target="_blank" rel="noopener" title={info.label}
-                     style={`display:inline-block;min-width:20px;height:20px;line-height:20px;text-align:center;margin-left:5px;vertical-align:-4px;font-size:10px;font-weight:bold;color:${info.color};border:1px solid ${info.color};padding:0 3px;text-decoration:none`}>
-                    {info.short}
-                  </a>
+                  <a href={normalizeSocialUrl(s.url)} target="_blank" rel="noopener" title={info.label}
+                     style={`display:inline-block;margin-left:6px;vertical-align:-3px;color:${info.color};text-decoration:none`}
+                     set:html={netIcon(net, 15)} />
                 );
               })}
             </td>
@@ -69,6 +73,13 @@ if (supabaseAdmin) {
         ))}
       </tbody>
     </table>
+  )}
+  {players.length > 0 && (
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:16px;font-size:13px;align-items:center">
+      {curPage > 1 && <a href={`/ranking?page=${curPage - 1}`}>← ANTERIOR</a>}
+      <span style="color:var(--amber-dim)">página {curPage}/{totalPages} · {players.length} jogadores</span>
+      {curPage < totalPages && <a href={`/ranking?page=${curPage + 1}`}>PRÓXIMA →</a>}
+    </div>
   )}
   <p style="margin-top:18px;font-size:13px">Atualiza a cada partida. Seu perfil público fica em <code>/u/seu-nick</code> — compartilhe a badge nas redes.</p>
 </Layout>

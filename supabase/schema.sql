@@ -46,6 +46,7 @@ alter table public.players add column if not exists avatar_url text;
 alter table public.players add column if not exists auth_user uuid;
 alter table public.players add column if not exists hidden boolean not null default false;
 alter table public.players add column if not exists socials jsonb not null default '[]'::jsonb;
+alter table public.players add column if not exists flagged_count int not null default 0;
 alter table public.stats add column if not exists rounds int not null default 0;
 alter table public.stats add column if not exists matches_p int not null default 0;
 alter table public.stats add column if not exists matches_b int not null default 0;
@@ -80,30 +81,75 @@ begin
   end if;
 end $$;
 
--- Submeter stats de uma partida (só grava se o token bater + rate limit).
+-- Log de submits pra rate limit por IP e moderação (retenção 7 dias —
+-- apagar registros velhos periodicamente; dado operacional de segurança).
+create table if not exists public.submit_log (
+  id         bigint generated always as identity primary key,
+  nick       text,
+  ip         text,
+  created_at timestamptz not null default now()
+);
+alter table public.submit_log enable row level security;  -- sem policy pública: só o servidor lê/escreve
+
+-- Marca um jogador como suspeito; 3+ flags = some do ranking automaticamente.
+create or replace function public._flag(p_nick text)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  update players set flagged_count = flagged_count + 1 where nick = p_nick;
+  update players set hidden = true where nick = p_nick and flagged_count >= 3;
+end $$;
+
+-- Submeter stats de uma partida (token + rate limits + CONSISTÊNCIA FÍSICA anti-trainer).
 create or replace function public.submit_match(
   p_nick text, p_token uuid,
   p_won boolean, p_kills int, p_deaths int, p_headshots int, p_best_streak int,
   p_rounds int default 0, p_team text default null, p_seconds int default 0,
-  p_character text default null
+  p_character text default null, p_ip text default null
 ) returns void language plpgsql security definer set search_path = public as $$
 declare
   v_last timestamptz;
+  v_ip_last timestamptz;
+  v_ip_today int;
 begin
   if not exists (select 1 from players where nick = p_nick and token = p_token) then
     raise exception 'token inválido';
   end if;
-  -- rate limit: 1 partida a cada 90s por nick (uma partida real dura ~2-8 min)
+  -- rate limit por nick: 1 partida a cada 90s
   select updated_at into v_last from stats where nick = p_nick;
   if v_last is not null and now() - v_last < interval '90 seconds' then
     raise exception 'aguarde antes de submeter outra partida';
   end if;
-  -- sanity check anti-cheat básico (tetos bem acima do possível em 6 rounds:
-  -- ~1 kill/3s sustentado; o rate limit de 90s já limita a frequência)
+  -- rate limit por IP: 60s entre submits + teto de 200/dia (anti nick-hopping)
+  if p_ip is not null then
+    select max(created_at) into v_ip_last from submit_log where ip = p_ip;
+    if v_ip_last is not null and now() - v_ip_last < interval '60 seconds' then
+      raise exception 'muitas partidas seguidas — respira um pouco';
+    end if;
+    select count(*) into v_ip_today from submit_log where ip = p_ip and created_at > now() - interval '1 day';
+    if v_ip_today >= 200 then
+      raise exception 'limite diário de partidas atingido';
+    end if;
+  end if;
+  -- tetos absolutos (folga pra jogo real)
   if p_kills < 0 or p_kills > 150 or p_deaths < 0 or p_deaths > 150
      or p_headshots < 0 or p_headshots > p_kills or p_best_streak < 0 or p_best_streak > 30
      or p_rounds < 0 or p_rounds > 6 or p_seconds < 0 or p_seconds > 1500 then
+    perform public._flag(p_nick);
     raise exception 'stats implausíveis';
+  end if;
+  -- CONSISTÊNCIA FÍSICA (anti-trainer):
+  -- a) kills por round: respawn de 2,5s => teto teórico ~40/round; 45 com folga
+  if p_kills > 45 * greatest(p_rounds, 1) then
+    perform public._flag(p_nick);
+    raise exception 'kills além do fisicamente possível';
+  end if;
+  -- b) tempo mínimo por round (~80s): speed hack não produz partida instantânea
+  if p_rounds > 0 and p_seconds > 0 and p_seconds < p_rounds * 80 then
+    perform public._flag(p_nick);
+    raise exception 'partida rápida demais pra ser verdade';
+  end if;
+  if p_ip is not null then
+    insert into submit_log (nick, ip) values (p_nick, p_ip);
   end if;
   insert into stats (nick, matches, wins, rounds, matches_p, matches_b, kills, deaths, headshots, best_streak, play_seconds, last_character)
   values (p_nick, 1, p_won::int, p_rounds,
@@ -136,7 +182,7 @@ select p.id, s.nick, p.social_link, p.socials, p.avatar_url, s.matches, s.wins, 
 from stats s join players p on p.nick = s.nick
 where not p.hidden
 order by s.kills desc, s.wins desc
-limit 100;
+limit 500;
 
 -- ---------------------------------------------------------------------------
 -- PRESENÇA & MAPA ("mapa da treta ao vivo")

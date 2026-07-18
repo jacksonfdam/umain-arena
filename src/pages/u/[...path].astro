@@ -2,7 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import { supabaseAdmin } from '../../lib/supabase';
 import { displayTime } from '../../lib/fmt';
-import { socialHref, socialAvatar, socialNet, NET_INFO } from '../../lib/social';
+import { normalizeSocialUrl, socialAvatar, socialNet, NET_INFO, netIcon } from '../../lib/social';
 import { CHARS, charSvg } from '../../lib/charsvg';
 import { sideOf } from '../../lib/side';
 
@@ -70,10 +70,9 @@ const desc = p ? `${p.kills} kills · K/D ${kd} · ${p.wins > 0 ? p.wins : "—"
             {(p.players.socials?.length ? p.players.socials : (p.players.social_link ? [{ net: socialNet(p.players.social_link), url: p.players.social_link }] : [])).map((s: any) => {
               const net = s.net || socialNet(s.url), info = NET_INFO[net] || NET_INFO.site;
               return (
-                <a href={s.url} target="_blank" rel="noopener" title={info.label}
-                   style={`display:inline-block;min-width:24px;height:24px;line-height:24px;text-align:center;margin-right:6px;font-size:11px;font-weight:bold;color:${info.color};border:1px solid ${info.color};padding:0 5px;text-decoration:none`}>
-                  {info.short}
-                </a>
+                <a href={normalizeSocialUrl(s.url)} target="_blank" rel="noopener" title={info.label}
+                   style={`display:inline-block;margin-right:8px;color:${info.color};text-decoration:none`}
+                   set:html={netIcon(net, 20)} />
               );
             })}
           </div>

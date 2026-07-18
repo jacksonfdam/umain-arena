@@ -5,9 +5,21 @@ import { buildSocialUrl } from '../../lib/social';
 
 export const prerender = false;
 
+const regHits = new Map<string, number[]>();
+
 export const POST: APIRoute = async ({ request }) => {
   if (!supabaseAdmin)
     return new Response(NOT_CONFIGURED, { status: 503, headers: { 'content-type': 'application/json' } });
+
+  // rate limit de registro: 10/min por IP (anti nick-farming)
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
+  const now = Date.now();
+  const prev = regHits.get(ip) || [];
+  const recent = prev.filter(t => now - t < 60_000);
+  if (recent.length >= 10)
+    return new Response(JSON.stringify({ error: 'rate_limited' }), { status: 429, headers: { 'content-type': 'application/json' } });
+  recent.push(now); regHits.set(ip, recent);
+
   let body: any;
   try { body = await request.json(); } catch {
     return new Response(JSON.stringify({ error: 'bad_json' }), { status: 400, headers: { 'content-type': 'application/json' } });

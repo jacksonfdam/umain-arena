@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.10.0] — 2026-07-18
+### Adicionado
+- **Anti-trainer (servidor)**: consistência física no RPC — kills ≤ 45/round
+  e ≥ 80s/round (impossível pra trainer de speed/autoshot), rate limit por IP
+  via `submit_log` (60s + 200/dia), flags automáticas (3 = sai do ranking)
+  — migration 009
+- **Paginação no /ranking** (25/página) e view com limite de 500 jogadores
+- **Ícones de marca reais** (simple-icons CC0) nos chips sociais
+- URLs sociais auto-normalizadas (conserta links quebrados de dados antigos)
+- `SECURITY.md`: modelo de segurança honesto + SQL de moderação
+
 ## [1.9.0] — 2026-07-18
 ### Adicionado
 - **Tema terminal Y2K/Half-Life** no site: âmbar em fundo escuro, monospace,
