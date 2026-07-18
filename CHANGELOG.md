@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.7.4] — 2026-07-18
+### Adicionado
+- **Mortes (deaths)** no ranking, perfil, painel local e badge (agora em grade
+  3×3 com MORTES entre KILLS e HEADSHOTS)
+
 ## [1.7.3] — 2026-07-18
 ### Mudado
 - Vitórias zeradas aparecem como "—" (não parece mais bug) no ranking, perfil,

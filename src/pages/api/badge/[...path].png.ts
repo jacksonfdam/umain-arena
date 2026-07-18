@@ -94,14 +94,15 @@ function badgeSvg(p: any, avatarUri: string | null, charId: string | null): stri
   const cName = charName(charId);
 
   const cells: [string, string][] = [
-    ['PARTIDAS', String(p.matches)], ['VITÓRIAS', p.wins > 0 ? String(p.wins) : '—'], ['K/D', kd], ['TEMPO', displayTime(p)],
-    ['KILLS', String(p.kills)], ['HEADSHOTS', String(p.headshots)], ['SEQUÊNCIA', `${p.best_streak}×`], ['ROUNDS', String(p.rounds)],
+    ['PARTIDAS', String(p.matches)], ['VITÓRIAS', p.wins > 0 ? String(p.wins) : '—'], ['K/D', kd],
+    ['KILLS', String(p.kills)], ['MORTES', String(p.deaths)], ['HEADSHOTS', String(p.headshots)],
+    ['SEQUÊNCIA', `${p.best_streak}×`], ['ROUNDS', String(p.rounds)], ['TEMPO', displayTime(p)],
   ];
   const grid = cells.map(([label, v], i) => {
-    const x = 46 + (i % 4) * 194, y = 255 + Math.floor(i / 4) * 90;
-    return `<rect x="${x}" y="${y}" width="182" height="76" rx="10" fill="#12160e" stroke="#2a2e20"/>
-    <text x="${x + 16}" y="${y + 44}" font-size="32" font-weight="bold" fill="#ffd23f" font-family="DejaVu Sans">${v}</text>
-    <text x="${x + 16}" y="${y + 64}" font-size="13" fill="#8a8064" font-family="DejaVu Sans" letter-spacing="1">${label}</text>`;
+    const x = 46 + (i % 3) * 260, y = 246 + Math.floor(i / 3) * 66;
+    return `<rect x="${x}" y="${y}" width="248" height="58" rx="10" fill="#12160e" stroke="#2a2e20"/>
+    <text x="${x + 16}" y="${y + 36}" font-size="26" font-weight="bold" fill="#ffd23f" font-family="DejaVu Sans">${v}</text>
+    <text x="${x + 16}" y="${y + 50}" font-size="11" fill="#8a8064" font-family="DejaVu Sans" letter-spacing="1">${label}</text>`;
   }).join('');
 
   // skyline fictional Brasília no rodapé
