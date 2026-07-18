@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1] — 2026-07-18
+### Mudado
+- Botões de login social removidos do menu (OAuth fica pra era multiplayer)
+- Upload de foto agora fica **na tela principal**, visível quando a rede não é
+  X/GitHub (esses puxam avatar sozinhos)
+- Logo menor e mais pra cima no menu
+
 ## [1.8.0] — 2026-07-18
 ### Adicionado
 - **Seletor de rede social** no menu (X, GitHub, Instagram, LinkedIn, TikTok,

@@ -6,7 +6,6 @@ import { buildWorld } from './map.js';
 import { Sfx } from './audio.js';
 import { Game } from './game.js';
 import { VERSION } from './version.js';
-import { Auth } from './auth.js';
 
 /* ---------------- settings & nickname ---------------- */
 const SETTINGS_KEY = 'awpbr_settings';
@@ -109,11 +108,7 @@ async function startGame(team, charId) {
   const nick = $('nick-input').value.trim();
   registeredNick = nick; heartbeatOff = false;
   if (nick && !testMode) {
-    await authReady;
-    api('/api/register', {
-      nick, token: getToken(), social: socialUrl(),
-      accessToken: auth.accessToken,
-    });
+    api('/api/register', { nick, token: getToken(), social: socialUrl() });
   }
   try { window.va?.('event', { name: 'game_start', data: { team, character: charId } }); } catch {}
   if (!testMode) { try { renderer.domElement.requestPointerLock()?.catch?.(() => {}); } catch {} }
@@ -122,33 +117,6 @@ function quitToMenu() {
   if (game) { game.dispose(); game = null; }
   if (document.pointerLockElement) document.exitPointerLock();
   show('main-menu');
-}
-
-/* ---------------- auth (OAuth + avatar) ---------------- */
-const auth = new Auth();
-auth.onChange = () => renderAuthRow();
-const authReady = auth.init().then(ok => renderAuthRow());
-
-const PROVIDERS = [
-  ['google', 'G', 'Google'], ['github', 'GH', 'GitHub'],
-  ['linkedin_oidc', 'in', 'LinkedIn'], ['twitter', 'X', 'X/Twitter'],
-];
-function renderAuthRow() {
-  const row = $('auth-row');
-  if (!auth.ok) { row.innerHTML = ''; return; }
-  if (auth.user) {
-    const av = auth.avatarUrl();
-    row.innerHTML = `<div class="auth-chip">` +
-      (av ? `<img src="${av}" alt="">` : '') +
-      `<span>${auth.displayName() || 'logado'}</span><button id="auth-out">SAIR</button></div>`;
-    $('auth-out').onclick = () => auth.logout();
-  } else {
-    row.innerHTML = `<span style="font-size:11px;color:#5a6b3a;font-family:Arial">entrar:</span>` +
-      PROVIDERS.map(([id, label, name]) =>
-        `<button class="auth-btn" data-p="${id}" title="Entrar com ${name}">${label}</button>`).join('');
-    row.querySelectorAll('.auth-btn').forEach(b => b.onclick = () => auth.login(b.dataset.p));
-  }
-  $('avatar-row').classList.toggle('hidden', !(auth.user || (nickEl.value || '').trim()));
 }
 
 /* ---------------- heartbeat (presença/mapa) ---------------- */
@@ -215,8 +183,14 @@ const SOCIAL_NET_KEY = 'awpbr_social_net';
 socialEl.value = localStorage.getItem(SOCIAL_KEY) || '';
 socialEl.oninput = () => localStorage.setItem(SOCIAL_KEY, socialEl.value);
 socialNetEl.value = localStorage.getItem(SOCIAL_NET_KEY) || '';
-function syncSocialState() { socialEl.disabled = !socialNetEl.value; }
+function syncSocialState() {
+  socialEl.disabled = !socialNetEl.value;
+  // upload visível só quando a rede NÃO for X/GitHub (esses puxam avatar sozinhos)
+  const autoAvatar = ['x', 'github'].includes(socialNetEl.value);
+  $('avatar-row').classList.toggle('hidden', autoAvatar || !(nickEl.value || '').trim());
+}
 socialNetEl.onchange = () => { localStorage.setItem(SOCIAL_NET_KEY, socialNetEl.value); syncSocialState(); };
+nickEl.addEventListener('input', syncSocialState);
 syncSocialState();
 
 // monta a URL social a partir da rede escolhida + handle (sem login)
