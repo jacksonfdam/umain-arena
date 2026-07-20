@@ -4,7 +4,7 @@
 // Blue Line train down the middle as central cover, rock pillars, benches and a
 // Pressbyrån-style kiosk. Same buildWorld contract.
 import * as THREE from 'three';
-import { createBuilder, buildNav, makeSpawns, mkTex, canvas, signTexture, createPickups } from './map_kit.js';
+import { createBuilder, buildNav, makeSpawns, mkTex, canvas, signTexture, createPickups, PICKUP_PRIMARIES } from './map_kit.js';
 
 const HALF_X = 15, HALF_Z = 27, WALL_H = 7;
 
@@ -84,9 +84,14 @@ export function buildMidTbana(scene, T) {
 
   // weapon pickups on the two platforms
   const { pickups, place } = createPickups(root);
-  const RIFLES = ['awp', 'ak', 'm4', 'shotgun', 'mp5'];
-  for (const sx of [-1, 1]) RIFLES.forEach((k, i) => place(k, sx * 13, [-8, -4, 0, 4, 8][i], sx > 0 ? Math.PI / 2 : -Math.PI / 2));
-  for (const s of [-1, 1]) ['deagle', 'pistol', 'deagle', 'pistol'].forEach((k, i) => place(k, [-6, -2, 2, 6][i], 22 * s));
+  for (const sx of [-1, 1]) {
+    const half = sx < 0 ? PICKUP_PRIMARIES.slice(0, 7) : PICKUP_PRIMARIES.slice(7);
+    half.forEach((k, i) => place(k, sx * 13, -8 + i * 2.7, sx > 0 ? Math.PI / 2 : -Math.PI / 2));
+  }
+  for (const s of [-1, 1]) {
+    const row = s > 0 ? ['he', 'flash', 'smoke', 'usp'] : ['deagle', 'usp', 'glock', 'elite'];
+    row.forEach((k, i) => place(k, [-6, -2, 2, 6][i], 22 * s));
+  }
   place('awp', -6, 0); place('awp', 6, 0);
 
   // lighting — cool underground with warm platform lamps

@@ -4,7 +4,7 @@
 // landmark you fight around, framed by glass buildings, a birch median and a
 // painted bike lane. Same buildWorld contract.
 import * as THREE from 'three';
-import { createBuilder, buildNav, makeSpawns, mkTex, canvas, signTexture, createPickups } from './map_kit.js';
+import { createBuilder, buildNav, makeSpawns, mkTex, canvas, signTexture, createPickups, PICKUP_PRIMARIES } from './map_kit.js';
 
 const HALF_X = 22, HALF_Z = 28;
 const DALA = 0xd94f2a, DALA_DK = 0xb23a1c;
@@ -84,9 +84,14 @@ export function buildMidDalahast(scene, T) {
 
   // pickups
   const { pickups, place } = createPickups(root);
-  const RIFLES = ['awp', 'ak', 'm4', 'shotgun', 'mp5'];
-  for (const sx of [-1, 1]) RIFLES.forEach((k, i) => place(k, sx * 12, [-8, -4, 0, 4, 8][i], sx > 0 ? Math.PI / 2 : -Math.PI / 2));
-  for (const s of [-1, 1]) ['deagle', 'pistol', 'shotgun', 'pistol', 'deagle'].forEach((k, i) => place(k, [-8, -4, 0, 4, 8][i], (HALF_Z - 9) * s, s > 0 ? Math.PI : 0));
+  for (const sx of [-1, 1]) {
+    const half = sx < 0 ? PICKUP_PRIMARIES.slice(0, 7) : PICKUP_PRIMARIES.slice(7);
+    half.forEach((k, i) => place(k, sx * 12, -8 + i * 2.7, sx > 0 ? Math.PI / 2 : -Math.PI / 2));
+  }
+  for (const s of [-1, 1]) {
+    const row = s > 0 ? ['he', 'usp', 'flash', 'glock', 'smoke'] : ['deagle', 'usp', 'glock', 'elite', 'deagle'];
+    row.forEach((k, i) => place(k, [-8, -4, 0, 4, 8][i], (HALF_Z - 9) * s, s > 0 ? Math.PI : 0));
+  }
   place('awp', -6, 6); place('awp', 6, -6);
 
   // lighting — crisp Nordic afternoon

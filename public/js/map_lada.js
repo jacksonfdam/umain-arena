@@ -4,7 +4,7 @@
 // a parked tractor, an apple orchard, hay bales and a gated dirt yard.
 // Same buildWorld contract.
 import * as THREE from 'three';
-import { createBuilder, buildNav, makeSpawns, mkTex, canvas, signTexture, createPickups } from './map_kit.js';
+import { createBuilder, buildNav, makeSpawns, mkTex, canvas, signTexture, createPickups, PICKUP_PRIMARIES } from './map_kit.js';
 
 const HALF_X = 22, HALF_Z = 28;
 const FALU = 0x8f3a2f, FALU_DK = 0x6f2c23, TRIM = 0xf2efe6;
@@ -125,9 +125,11 @@ export function buildMidLada(scene, T) {
 
   // pickups
   const { pickups, place } = createPickups(root);
-  const RIFLES = ['awp', 'ak', 'm4', 'shotgun', 'mp5'];
-  RIFLES.forEach((k, i) => { const a = (i / RIFLES.length) * Math.PI * 2; place(k, Math.cos(a) * 5, Math.sin(a) * 5, a); });
-  for (const s of [-1, 1]) ['deagle', 'pistol', 'shotgun', 'pistol', 'deagle'].forEach((k, i) => place(k, [-8, -4, 0, 4, 8][i], (HALF_Z - 9) * s, s > 0 ? Math.PI : 0));
+  PICKUP_PRIMARIES.forEach((k, i) => { const a = (i / PICKUP_PRIMARIES.length) * Math.PI * 2; place(k, Math.cos(a) * 5, Math.sin(a) * 5, a); });
+  for (const s of [-1, 1]) {
+    const row = s > 0 ? ['he', 'usp', 'flash', 'glock', 'smoke'] : ['deagle', 'usp', 'glock', 'elite', 'deagle'];
+    row.forEach((k, i) => place(k, [-8, -4, 0, 4, 8][i], (HALF_Z - 9) * s, s > 0 ? Math.PI : 0));
+  }
   place('awp', -16, 4); place('awp', 15, 0);
 
   // lighting — golden late-afternoon farm light

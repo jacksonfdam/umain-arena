@@ -34,6 +34,18 @@ export const GRENADES = {
   smoke: { name: 'Smoke', short: 'SMOKE', fuse: 1.5, radius: 3.6, life: 14, count: 1, color: 0xdadada },
 };
 export const GRENADE_ORDER = ['he', 'flash', 'smoke'];
+// Bots spawn with one of these; their cadence/damage/sound derive from the WEAPONS table.
+const BOT_WEAPONS = ['ak', 'm4', 'famas', 'galil', 'aug', 'sg552', 'mp5', 'p90', 'ump', 'mac10', 'm249', 'deagle', 'awp', 'scout'];
+const pickBotWeapon = () => BOT_WEAPONS[(Math.random() * BOT_WEAPONS.length) | 0];
+// Shot cadence multiplier + per-shot damage vs the player, tuned so no class is trivially OP/UP.
+// (bot-vs-bot stays one-shot to keep rounds brisk.)
+function botShotProfile(w) {
+  const d = WEAPONS[w] || WEAPONS.ak;
+  if (d.bolt) return { mul: 1.5, dmg: 70 };                 // AWP / Scout: slow, near-lethal
+  if (d.pellets) return { mul: 1.1, dmg: 34 };              // shotgun
+  if (d.slot === 'secondary') return { mul: 0.85, dmg: 30 };
+  return { mul: d.auto ? 0.7 : 0.95, dmg: Math.max(22, Math.min(42, d.dmg)) };  // rifles / SMGs / LMG
+}
 const ROUND_TIME = 99, ROUNDS_TO_WIN = 3, RESPAWN_DELAY = 2.5, PICKUP_RESPAWN = 8;
 const BOT_SPEED = 3.3, BOT_EYE = 1.5;
 const TEAM_LABEL = { P: 'DESIGNERS', B: 'DEVELOPERS' };
@@ -105,7 +117,7 @@ export class Game {
         isPlayer: false, name: def.name, def, team,
         mesh: c, pos: new THREE.Vector3(), yaw: 0, hp: 100, alive: true,
         respawnAt: 0, kills: 0, deaths: 0,
-        target: null, reactAt: 0, nextShotAt: 0, skill: 0.85 + Math.random() * 0.35, weapon: 'awp',
+        target: null, reactAt: 0, nextShotAt: 0, skill: 0.85 + Math.random() * 0.35, weapon: pickBotWeapon(),
         path: null, pathIdx: 0, repathAt: 0, roamIdx: 0, phase: 0, think: Math.random() * 0.2,
         deadT: 0, strafeT: Math.random() * 10, revealedAt: -99,
       };
@@ -725,7 +737,7 @@ export class Game {
     ent.alive = false; ent.hp = 0; ent.deaths++;
     ent.respawnAt = this.time + RESPAWN_DELAY;
     // CS: drop the weapon on the ground where it died
-    this._dropWeapon(ent.pos.x, ent.pos.z, ent.isPlayer ? (ent.weapon === 'knife' ? 'awp' : ent.weapon) : 'awp');
+    this._dropWeapon(ent.pos.x, ent.pos.z, (ent.weapon && ent.weapon !== 'knife') ? ent.weapon : 'awp');
     if (attacker) {
       attacker.kills++; this.roundKills[attacker.team]++;
       this.sfx.voice(attacker.team);   // killer's side celebrates (meme audio)
@@ -1230,7 +1242,7 @@ export class Game {
       g.position.y = b.pos.y + Math.max(-0.6, 0 - b.deadT * 0.3);
       if (this.time >= b.respawnAt && (this.state === 'live')) {
         const s = this.world.spawns[b.team][(Math.random() * 4) | 0];
-        b.pos.set(s.x, 0, s.z); b.hp = 100; b.alive = true;
+        b.pos.set(s.x, 0, s.z); b.hp = 100; b.alive = true; b.weapon = pickBotWeapon();
         b.target = null; b.path = null; b.yaw = b.team === 'P' ? 0 : Math.PI;
         g.rotation.set(0, b.yaw, 0); g.position.copy(b.pos); g.visible = true;
       }
@@ -1274,7 +1286,8 @@ export class Game {
       moving = Math.min(1, Math.abs(strafe) * 0.5 + (dist0 > 25 ? 0.6 : 0));
       // fire
       if (this.time > b.reactAt && this.time > b.nextShotAt && Math.abs(dy) < 0.3) {
-        b.nextShotAt = this.time + (2.1 + Math.random() * 1.4) / (b.skill * 1.5);
+        const prof = botShotProfile(b.weapon);
+        b.nextShotAt = this.time + (2.1 + Math.random() * 1.4) / (b.skill * 1.5) * prof.mul;
         b.revealedAt = this.time;
         const dist = Math.hypot(dx, dz);
         const eSpeed = e.isPlayer ? Math.hypot(e.vel.x, e.vel.z) : BOT_SPEED;
@@ -1295,12 +1308,12 @@ export class Game {
         let end = hitsW ? hitsW.point : from.clone().add(dir.clone().multiplyScalar(120));
         if (hit) {
           end = teye;
-          const dmg = e.isPlayer ? 63 : 100;   // 1.5x damage
-          this._damage(e, dmg, b, 'AWP');
+          const dmg = e.isPlayer ? prof.dmg : 100;   // bots one-shot each other; scaled vs player
+          this._damage(e, dmg, b, (WEAPONS[b.weapon] || {}).short || 'AWP');
         } else if (hitsW && Math.random() < 0.5) this._puff(hitsW.point, hitsW.face ? hitsW.face.normal : null);
         this._tracer(from.clone().add(dir.clone().multiplyScalar(0.7)), end);
         this._flash(from.clone().add(dir.clone().multiplyScalar(0.85)));
-        this.sfx.shotAwp();
+        this.sfx.shotWeapon(b.weapon);
       }
     } else {
       // --- roam toward enemy half

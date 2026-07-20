@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.14.0] — 2026-07-20
+### Added
+- **Full arsenal on every arena**: the 12 new weapons and the three grenades now
+  spawn as ground pickups on all maps (Midsommar, Tunnelbana, Moderna Museum,
+  Dala Horse Square, Lada) — not just the Pool map. The AWP Arena stays AWP-only
+  by design.
+- **Bots use the whole arsenal**: each bot spawns with a random weapon (rifles,
+  SMGs, LMG, snipers, Desert Eagle) that drives its fire cadence, per-shot damage
+  and **sound** — you now hear (and see in the killfeed) what killed you. Bots
+  drop their actual weapon on death for you to pick up.
+
 ## [1.13.0] — 2026-07-20
 ### Added
 - **5 new maps** (7 in total, all in the map picker): **Midsummer Meadow**
