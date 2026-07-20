@@ -98,6 +98,10 @@ audio/
   headshot = `headshot`.
 - **Adding tracks:** copy the file into the folder and register the path in
   `audio/manifest.json` (same keys). Without a manifest, the game uses synthesized sounds.
+- **Generating voice lines:** `scripts/gen-voice.sh "your line" [out.mp3]` synthesizes
+  a neutral team voice line (macOS `say` + `lame`). It asks only the **tone**
+  (normal/grave/agudo/animado/calmo) and whether the voice is **male**. Skip the
+  prompts with env vars for batches, e.g. `TOM=4 MASC=s scripts/gen-voice.sh "Ship it!"`.
 
 ### Audio pack (open source)
 
