@@ -1,27 +1,22 @@
 {
   "voice": {
     "P": [
-      "audio/petista/ingame/lula-e-neymar-47.mp3",
-      "audio/petista/ingame/lula-esquece-o-pai-ta-estourado.mp3",
-      "audio/petista/ingame/lula-ze-gotinha.mp3",
-      "audio/petista/ingame/pense-no-lula.mp3",
-      "audio/petista/ingame/setembro-vai-entrar-o-grosso-lula.mp3"
+      "audio/designers/ingame/designers-line-01.mp3",
+      "audio/designers/ingame/designers-line-02.mp3",
+      "audio/designers/ingame/designers-line-03.mp3"
     ],
     "B": [
-      "audio/bolsonaro/ingame/bolsonaro-acabou-porra.mp3",
-      "audio/bolsonaro/ingame/bolsonaro-jacare.mp3",
-      "audio/bolsonaro/ingame/bolsonaro-popcorn-and-ice-cream.mp3",
-      "audio/bolsonaro/ingame/cana_doce.mp3",
-      "audio/bolsonaro/ingame/chega-de-frescura-e-mimimi.mp3",
-      "audio/bolsonaro/ingame/como-e-bom-o-socialismo-bolsonaro-alto.mp3"
+      "audio/developers/ingame/developers-line-01.mp3",
+      "audio/developers/ingame/developers-line-02.mp3",
+      "audio/developers/ingame/developers-line-03.mp3"
     ]
   },
   "round": {
     "P": [
-      "audio/petista/round/ta-na-hora-do-jair-ja-ir-embora.mp3"
+      "audio/designers/round/designers-win.mp3"
     ],
     "B": [
-      "audio/bolsonaro/round/nos-vai-descer-vai-descer-hd-completo.mp3"
+      "audio/developers/round/developers-win.mp3"
     ]
   },
   "general": {
