@@ -4,6 +4,8 @@ public/audio/*
 !public/audio/cs/LEIA-ME.txt
 !public/audio/manifest.example.json
 audio-pack.zip
+public/audio.zip
+*.audio-pack.zip
 # local-only CS/CZ sound sources (Valve IP) — never commit/deploy these
 cstrike/
 improved_cs_cz_weapon_sounds/
