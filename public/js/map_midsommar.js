@@ -77,9 +77,13 @@ export function buildMidsommar(scene, T) {
     const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
     m.position.set(x, y + h / 2, z);
     m.castShadow = opts.cast !== false; m.receiveShadow = true;
-    if (opts.ry) m.rotation.y = opts.ry;
-    if (opts.rx) m.rotation.x = opts.rx;
-    if (opts.rz) m.rotation.z = opts.rz;
+    // 'YXZ' applies yaw before pitch (matrix Ry·Rx): a roof slab is pitched in the cabin's local
+    // frame, then the cabin is yawed about world Y. Default 'XYZ' applied pitch after the yaw, so
+    // 90°-yawed cabins (ry = π/2) rendered a flat/inverted roof.
+    if (opts.rx || opts.ry || opts.rz) {
+      m.rotation.order = 'YXZ';
+      m.rotation.set(opts.rx || 0, opts.ry || 0, opts.rz || 0);
+    }
     root.add(m);
     if (opts.collide !== false) {
       const pad = opts.pad || 0;
