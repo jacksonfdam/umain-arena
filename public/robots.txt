@@ -3,4 +3,4 @@ Allow: /
 Disallow: /audio/
 Disallow: /vendor/
 
-Sitemap: https://csbrasil.online/sitemap.xml
+Sitemap: https://umain-arena.vercel.app/sitemap.xml

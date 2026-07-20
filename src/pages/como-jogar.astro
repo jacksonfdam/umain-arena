@@ -1,18 +1,18 @@
 ---
 import Layout from '../layouts/Layout.astro';
 const rows = [
-  ['W A S D', 'Mover'], ['MOUSE', 'Mirar'], ['SHIFT', 'Correr'],
-  ['CTRL ou C', 'Agachar (mira mais estável)'], ['ESPAÇO', 'Pular'],
-  ['CLIQUE ESQ.', 'Atirar'], ['CLIQUE DIR.', 'Luneta da AWP'],
-  ['R', 'Recarregar'], ['1 / 2 / 3', 'AWP / Pistola / Faca'],
-  ['Z / X / V', 'Comandos de voz (rádio)'], ['TAB', 'Placar'], ['ESC', 'Pausar'],
+  ['W A S D', 'Move'], ['MOUSE', 'Aim'], ['SHIFT', 'Sprint'],
+  ['CTRL or C', 'Crouch (steadier aim)'], ['SPACE', 'Jump'],
+  ['LEFT CLICK', 'Shoot'], ['RIGHT CLICK', 'AWP Sniper scope'],
+  ['R', 'Reload'], ['1 / 2 / 3', 'AWP Sniper / Pistol / Knife'],
+  ['Z / X / V', 'Voice commands (radio)'], ['TAB', 'Scoreboard'], ['ESC', 'Pause'],
 ];
 ---
-<Layout title="Como jogar — CS BRASIL: Treta Suprema">
-  <h1>COMO JOGAR</h1>
-  <p>Abra o <a href="/">jogo</a> num navegador de desktop, defina seu nick, escolha time e personagem, e clique em JOGAR.</p>
+<Layout title="How to play — Umain Arena">
+  <h1>HOW TO PLAY</h1>
+  <p>Open the <a href="/">game</a> in a desktop browser, set your nick, pick a team and a character, and hit PLAY.</p>
 
-  <h2>Controles</h2>
+  <h2>Controls</h2>
   <table style="border-collapse:collapse;width:100%;max-width:520px">
     {rows.map(([k, a]) => (
       <tr>
@@ -22,19 +22,19 @@ const rows = [
     ))}
   </table>
 
-  <h2>Regras</h2>
+  <h2>Rules</h2>
   <ul>
-    <li>Partidas 4×4 (você + 3 bots aliados × 4 bots inimigos), com respawn de 2,5s.</li>
-    <li>Cada round dura 1:39. O time com mais kills leva o round; 3 rounds vencem a partida.</li>
-    <li>AWP mata com 1 tiro; headshot tem som e marca próprios. Multikills disparam anúncios estilo Unreal Tournament.</li>
-    <li>Agachar (Ctrl ou C) deixa a mira mais estável — essencial pra AWP sem luneta.</li>
-    <li>Seus stats ficam salvos no navegador (tela RANKING no menu). Ranking global em breve.</li>
+    <li>4v4 matches (you + 3 allied bots vs 4 enemy bots), with a 2.5s respawn.</li>
+    <li>Each round lasts 1:39. The team with more kills wins the round; 3 rounds win the match.</li>
+    <li>The AWP Sniper is a one-shot kill; headshots have their own sound and marker. Multikills trigger Unreal Tournament-style announcements.</li>
+    <li>Crouching (Ctrl or C) steadies your aim — essential for no-scope AWP shots.</li>
+    <li>Your stats are saved in your browser (RANKING screen in the menu). Global ranking coming soon.</li>
   </ul>
 
-  <h2>Dicas</h2>
+  <h2>Tips</h2>
   <ul>
-    <li>A AWP sem luneta é imprecisa: atire parado e agachado, ou use a luneta (botão direito).</li>
-    <li>O radar mostra aliados sempre e inimigos por 1,6s quando atiram.</li>
-    <li>A urna quebrada no centro é a melhor cobertura do mid.</li>
+    <li>The AWP Sniper is inaccurate without the scope: shoot while still and crouched, or use the scope (right click).</li>
+    <li>The radar always shows allies, and shows enemies for 1.6s when they fire.</li>
+    <li>The cover at the center is the best spot to hold mid.</li>
   </ul>
 </Layout>

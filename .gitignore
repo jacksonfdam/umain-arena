@@ -11,3 +11,8 @@ dist/
 .astro/
 .env
 .env.*
+supabase/.temp/
+.vercel
+
+# IDE
+.idea/

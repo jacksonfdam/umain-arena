@@ -1,87 +1,87 @@
-# IDEAS.md — Roadmap comunitário
+# IDEAS.md — Community roadmap
 
-Ideias válidas pra onde o CS BRASIL pode ir. Quer pegar alguma? Abra uma
-issue com a tag da ideia antes de codar (ver `CONTRIBUTING.md`).
-Níveis: 🟢 fácil · 🟡 médio · 🔴 grande.
+Valid ideas for where Umain Arena could go. Want to pick one up? Open an
+issue with the idea's tag before you start coding (see `CONTRIBUTING.md`).
+Levels: 🟢 easy · 🟡 medium · 🔴 large.
 
-## Prioridade #1: Dificuldades extras
+## Priority #1: Extra difficulties
 
-Hoje os bots têm skill fixa. A primeira grande evolução do jogo é ter
-**níveis de dificuldade selecionáveis** no menu (antes de qualquer ranking
-online — dificuldade é o que dá replayability):
+Right now the bots have a fixed skill level. The game's first big evolution is
+having **selectable difficulty levels** in the menu (before any online
+ranking — difficulty is what gives replayability):
 
-- 🟢 **Fácil** — bots lentos pra reagir (0,8s+), mira ruim, menos dano.
-- 🟢 **Médio** (atual) — padrão equilibrado.
-- 🟡 **Difícil** — reação 0,2s, mira quase perfeita, strafe rápido, rush
-  coordenado em grupo.
-- 🟡 **Treta Insana** — Difícil + modificadores: sem crosshair, sem radar,
-  friendly fire ligado, uma vida por round (sem respawn).
-- 🟡 **Modificadores avulsos** (combináveis com qualquer nível): modo só
-  headshot mata, HUD mínimo, HP 50, velocidade ×1.5.
+- 🟢 **Easy** — slow to react (0.8s+), poor aim, less damage.
+- 🟢 **Medium** (current) — balanced default.
+- 🟡 **Hard** — 0.2s reaction, near-perfect aim, fast strafe, coordinated
+  group rush.
+- 🟡 **Insane** — Hard + modifiers: no crosshair, no radar,
+  friendly fire on, one life per round (no respawn).
+- 🟡 **Standalone modifiers** (combinable with any level): headshot-only
+  kills, minimal HUD, HP 50, speed ×1.5.
 
-A base já está pronta: `skill`, `reactAt`, `nextShotAt` e dano dos bots em
-`js/game.js` são parâmetros fáceis de escalar por nível.
+The foundation is ready: `skill`, `reactAt`, `nextShotAt` and bot damage in
+`js/game.js` are parameters easy to scale per level.
 
 ## Gameplay
 
-- 🟢 **Modo CS clássico** — sem respawn dentro do round (eliminação), com
-  timer e vitória por eliminação ou tempo.
-- 🟢 **Customizar partida** — tempo de round, nº de bots (1×1 até 5×5),
-  friendly fire on/off, só faca, só AWP.
-- 🟢 **Novos personagens fictícios** — novos arquétipos nos dois times
-  (seguindo as regras de conteúdo do CONTRIBUTING).
-- 🟡 **Novas armas** — escopeta (spread em cone), rifle automático, granada
-  de confete (efeito visual, sem gore).
-- 🟡 **Bots mais espertos** — usar cobertura, recuar com HP baixo, rush
-  coordenado em grupo.
-- 🟡 **Killcam / replay** — ver a kill do ângulo do matador por 3s.
-- 🟡 **Conquistas locais** — primeiro headshot, 10 kills de faca, etc.
+- 🟢 **Classic CS mode** — no respawn within the round (elimination), with
+  a timer and victory by elimination or time.
+- 🟢 **Custom match** — round time, number of bots (1v1 up to 5v5),
+  friendly fire on/off, knife only, AWP only.
+- 🟢 **New fictional characters** — new personas on both teams
+  (following the CONTRIBUTING content rules).
+- 🟡 **New weapons** — shotgun (cone spread), automatic rifle, confetti
+  grenade (visual effect, no gore).
+- 🟡 **Smarter bots** — use cover, retreat on low HP, coordinated
+  group rush.
+- 🟡 **Killcam / replay** — see the kill from the killer's angle for 3s.
+- 🟡 **Local achievements** — first headshot, 10 knife kills, etc.
   (localStorage).
 
-## Mapas
+## Maps
 
-- 🟢 **Variações do mapa atual** — o `js/map.js` é declarativo; dá pra gerar
-  "noite", "chuva", "carnaval" mudando luz/props.
-- 🟡 **Novos mapas temáticos** — estádio de futebol, praia com calçadão,
-  festa junina, terminal de ônibus. Mesmo esquema simétrico de arena.
-- 🟡 **Editor de mapa** — exportar/importar layout em JSON.
+- 🟢 **Variations of the current map** — `js/map.js` is declarative; you can
+  generate "night", "rain", "party" by changing lights/props.
+- 🟡 **New themed maps** — stadium, beach boardwalk, warehouse, transit
+  terminal. Same symmetrical arena scheme.
+- 🟡 **Map editor** — export/import layout as JSON.
 
-## Gráficos & tecnologia
+## Graphics & tech
 
-- 🟡 **Modelos de maior qualidade via Blender + MCP** — gerar personagens e
-  props em GLB com o Blender MCP (pipeline assistida por IA) e carregar no
-  lugar dos bonecos de caixas, mantendo a mesma API (`buildCharacter`).
-- 🟡 **PWA offline** — service worker cacheando o jogo inteiro.
-- ✅ ~~**Site Astro ao redor do jogo**~~ — FEITO: landing `/`, `/personagens`,
-  `/como-jogar` e API routes `/api/*` (SSR) pro ranking. Próximos passos:
-  ligar o Supabase e a página de ranking/mapa públicos.
-- 🔴 **Port Unity/Godot** — cliente separado pra builds mobile/desktop,
-  compartilhando assets e conceitos (o web continua sendo o principal).
-- 🔴 **Mobile** — controles touch (joysticks virtuais, aim assist).
-  Depende de decisão de engine (ver port acima).
+- 🟡 **Higher-quality models via Blender + MCP** — generate characters and
+  props as GLB with the Blender MCP (AI-assisted pipeline) and load them in
+  place of the box figures, keeping the same API (`buildCharacter`).
+- 🟡 **Offline PWA** — service worker caching the whole game.
+- ✅ ~~**Astro site around the game**~~ — DONE: landing `/`, `/personagens`,
+  `/como-jogar` and API routes `/api/*` (SSR) for the ranking. Next steps:
+  wire up Supabase and the public ranking/map pages.
+- 🔴 **Unity/Godot port** — a separate client for mobile/desktop builds,
+  sharing assets and concepts (the web version stays the main one).
+- 🔴 **Mobile** — touch controls (virtual joysticks, aim assist).
+  Depends on the engine decision (see the port above).
 
-## Online & backend (repo privado futuro)
+## Online & backend (future private repo)
 
-- 🟡 **Ranking online** — leaderboard global e por semana (Supabase: auth +
-  Postgres). Validação anti-cheat no servidor.
-- 🟡 **Mapa da treta ao vivo** — presença em tempo real por cidade num mapa
-  Leaflet (Edge Function + GeoIP; geo aproximado, sem IP bruto, histórico
-  agregado — schema já preparado em `supabase/schema.sql`).
-- 🟡 **Perfis de jogador** — nick único, stats, personagem favorito.
-- 🔴 **Multiplayer real** — salas 4×4 via WebSocket/WebRTC com servidor
-  autoritativo.
-- 🔴 **Clans e torneios** — tabela de confrontos, temporadas.
+- 🟡 **Online ranking** — global and weekly leaderboards (Supabase: auth +
+  Postgres). Server-side anti-cheat validation.
+- 🟡 **Live player map** — real-time presence per city on a Leaflet
+  map (Edge Function + GeoIP; approximate geo, no raw IP, aggregated
+  history — schema already prepared in `supabase/schema.sql`).
+- 🟡 **Player profiles** — unique nick, stats, favorite character.
+- 🔴 **Real multiplayer** — 4v4 rooms via WebSocket/WebRTC with an
+  authoritative server.
+- 🔴 **Clans and tournaments** — bracket table, seasons.
 
-## Áudio & conteúdo
+## Audio & content
 
-- 🟢 **Novos packs de voz** — mais falas fictícias por time (sempre originais
-  ou licenciadas, ver regras de conteúdo).
-- 🟢 **Novos grafites/pôsteres** — slogans fictícios em `js/textures.js`.
-- 🟡 **Trilha sonora procedural** — música de menu gerada em WebAudio
-  (funkão 8-bit?).
+- 🟢 **New voice packs** — more fictional lines per team (always original
+  or licensed, see the content rules).
+- 🟢 **New graffiti/posters** — fictional slogans in `js/textures.js`.
+- 🟡 **Procedural soundtrack** — menu music generated in WebAudio
+  (8-bit chiptune?).
 
-## Governança
+## Governance
 
-- 🟢 **Traduções** — EN/ES do UI (o jogo é pt-BR first).
-- 🟢 **Acessibilidade** — modo daltônico, remapear teclas, escala de HUD.
-- 🟡 **CI** — GitHub Actions: syntax check + smoke test headless a cada PR.
+- 🟢 **Translations** — localized UI for other languages.
+- 🟢 **Accessibility** — colorblind mode, key remapping, HUD scaling.
+- 🟡 **CI** — GitHub Actions: syntax check + headless smoke test on every PR.

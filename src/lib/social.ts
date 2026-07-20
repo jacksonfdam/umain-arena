@@ -1,8 +1,8 @@
-// Links e avatares sociais.
+// Social links and avatars.
 
-// normaliza URLs sociais de qualquer formato: handle cru, @handle, url parcial
-// ("x.com/foo"), url completa, e o bug do prefixo duplicado
-// ("linkedin.com/in/https://www.linkedin.com/in/foo") — pega sempre a última ocorrência.
+// normalizes social URLs of any format: raw handle, @handle, partial url
+// ("x.com/foo"), full url, and the duplicated-prefix bug
+// ("linkedin.com/in/https://www.linkedin.com/in/foo") — always takes the last occurrence.
 export function normalizeSocialUrl(s?: string | null): string | null {
   if (!s) return null;
   const v = s.trim();
@@ -12,12 +12,12 @@ export function normalizeSocialUrl(s?: string | null): string | null {
   return /^https?:\/\//i.test(v) ? v : 'https://' + v.replace(/^@/, '');
 }
 
-// normaliza o link social pra URL clicável ("x.com/foo" → "https://x.com/foo")
+// normalizes the social link to a clickable URL ("x.com/foo" → "https://x.com/foo")
 export function socialHref(s?: string | null): string | null {
   return normalizeSocialUrl(s);
 }
 
-// identifica a rede pela URL
+// identifies the network from the URL
 export function socialNet(s?: string | null): string {
   if (!s) return 'site';
   const v = s.toLowerCase();
@@ -30,7 +30,7 @@ export function socialNet(s?: string | null): string {
   return 'site';
 }
 
-// handle final da URL ("https://x.com/foo/" → "foo")
+// final handle from the URL ("https://x.com/foo/" → "foo")
 export function socialHandle(s?: string | null): string {
   if (!s) return '';
   const m = s.match(/\/@?([A-Za-z0-9._-]+)\/?$/) || s.match(/^@?([A-Za-z0-9._-]+)$/);
@@ -39,13 +39,13 @@ export function socialHandle(s?: string | null): string {
 
 import { NET_SVG } from './net-svg';
 
-// chip de ícone SVG da rede (pra usar inline nas páginas)
+// SVG icon chip for the network (to use inline in pages)
 export function netIcon(net: string, size = 14): string {
   const d = NET_SVG[net] || NET_SVG.site;
   return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-2px"><path d="${d}"/></svg>`;
 }
 
-// info visual por rede (chip de ícone)
+// visual info per network (icon chip)
 export const NET_INFO: Record<string, { label: string; short: string; color: string }> = {
   x: { label: 'X / Twitter', short: '𝕏', color: '#e8e8e8' },
   github: { label: 'GitHub', short: 'GH', color: '#c9d1d9' },
@@ -56,7 +56,7 @@ export const NET_INFO: Record<string, { label: string; short: string; color: str
   site: { label: 'Site', short: '⌂', color: '#b8d94a' },
 };
 
-// monta URL a partir de rede + handle cru
+// builds URL from network + raw handle
 const NET_PREFIX: Record<string, string> = {
   x: 'https://x.com/', github: 'https://github.com/', instagram: 'https://instagram.com/',
   linkedin: 'https://linkedin.com/in/', tiktok: 'https://tiktok.com/@', youtube: 'https://youtube.com/@',
@@ -68,15 +68,15 @@ export function buildSocialUrl(net: string, handle: string): string {
   return (NET_PREFIX[net] || '') + h;
 }
 
-// extrai handle de twitter/x.com/rubenmarcus_dev, twitter.com/@foo ou @foo
+// extracts handle from twitter/x.com/rubenmarcus_dev, twitter.com/@foo or @foo
 export function twitterHandle(s?: string | null): string | null {
   if (!s) return null;
   const m = s.match(/(?:x\.com|twitter\.com)\/@?([A-Za-z0-9_]{1,15})/) || s.match(/^@([A-Za-z0-9_]{1,15})$/);
   return m ? m[1] : null;
 }
 
-// avatar por rede social — X via unavatar.io, GitHub direto (oficial).
-// Instagram/LinkedIn/TikTok não têm fetch público: aí o usuário faz upload.
+// avatar by social network — X via unavatar.io, GitHub directly (official).
+// Instagram/LinkedIn/TikTok have no public fetch: in that case the user uploads.
 export function socialAvatar(s?: string | null): string | null {
   if (!s) return null;
   const gh = s.match(/github\.com\/@?([A-Za-z0-9-]{1,39})/);

@@ -1,4 +1,4 @@
-// POST /api/heartbeat — presença "online agora" com geo aproximado (cidade).
+// POST /api/heartbeat — "online now" presence with approximate geo (city).
 import type { APIRoute } from 'astro';
 import { supabaseAdmin, NOT_CONFIGURED } from '../../lib/supabase';
 import { geoFrom } from '../../lib/geo';
@@ -19,7 +19,7 @@ export const POST: APIRoute = async ({ request }) => {
   const { data: player } = await supabaseAdmin
     .from('players').select('nick').eq('nick', nick.slice(0, 14)).eq('token', token).maybeSingle();
   if (!player)
-    return new Response(JSON.stringify({ error: 'token inválido' }), { status: 403, headers: { 'content-type': 'application/json' } });
+    return new Response(JSON.stringify({ error: 'invalid token' }), { status: 403, headers: { 'content-type': 'application/json' } });
 
   const g = geoFrom(request);
   await supabaseAdmin.from('presence').upsert({

@@ -16,7 +16,7 @@ if (supabaseAdmin) {
     totals.matches += r.matches; totals.kills += r.kills;
     totals.mp += r.matches_p; totals.mb += r.matches_b;
   }
-  // histórico TOTAL por cidade (todas as datas) + jogadores por cidade (presence)
+  // TOTAL history per city (all dates) + players per city (presence)
   const { data: cd } = await supabaseAdmin.from('city_daily').select('*');
   const agg = new Map<string, any>();
   for (const r of cd ?? []) {
@@ -37,7 +37,7 @@ const sideTotal = Math.max(1, totals.mp + totals.mb);
 const pctP = Math.round((totals.mp / sideTotal) * 100), pctB = 100 - pctP;
 const mapData = { online: online.filter(o => o.lat && o.lon), cities: cities.filter(c => c.lat && c.lon) };
 ---
-<Layout title="Mapa da treta ao vivo — CS BRASIL" description="Jogadores online agora e partidas por cidade no CS BRASIL: Treta Suprema.">
+<Layout title="Live map — Umain Arena" description="Players online now and matches by city in Umain Arena.">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" slot="head">
   <style slot="head">
     .map-tip{background:rgba(8,12,8,.88)!important;border:1px solid #4a5a2a!important;color:#d8e0b0!important;
@@ -47,14 +47,14 @@ const mapData = { online: online.filter(o => o.lat && o.lon), cities: cities.fil
     .map-pop .leaflet-popup-tip{background:#10130c;border:1px solid #4a5a2a}
     .map-pop a{color:#b8d94a}
   </style>
-  <h1>🗺️ MAPA DA TRETA</h1>
+  <h1>🗺️ LIVE MAP</h1>
   {configured && (
     <div style="display:flex;gap:22px;flex-wrap:wrap;font-family:Consolas,monospace;font-size:14px;color:#c9bfa4;margin-bottom:10px">
-      <span><b style="color:var(--yellow);font-size:20px">{totals.players}</b> jogadores</span>
-      <span><b style="color:var(--yellow);font-size:20px">{totals.matches}</b> partidas</span>
+      <span><b style="color:var(--yellow);font-size:20px">{totals.players}</b> players</span>
+      <span><b style="color:var(--yellow);font-size:20px">{totals.matches}</b> matches</span>
       <span><b style="color:var(--yellow);font-size:20px">{totals.kills}</b> kills</span>
       <span style="flex:1;min-width:220px">
-        <span style="color:#ff8080">{pctP}% petistas</span> × <span style="color:#9dff9d">{pctB}% bolsonaristas</span>
+        <span style="color:#ff8080">{pctP}% designers</span> × <span style="color:#9dff9d">{pctB}% developers</span>
         <span style="display:flex;height:8px;border-radius:4px;overflow:hidden;margin-top:4px;border:1px solid #3a3325">
           <span style={`width:${pctP}%;background:#e03232`}></span>
           <span style={`width:${pctB}%;background:#1faa4d`}></span>
@@ -62,8 +62,8 @@ const mapData = { online: online.filter(o => o.lat && o.lon), cities: cities.fil
       </span>
     </div>
   )}
-  <p><strong style="color:#9dff9d">{online.length}</strong> jogadores online agora · em amarelo, o histórico total de partidas por cidade (localização aproximada, nível cidade — sem IP).</p>
-  {!configured && <p>Mapa ainda não configurado.</p>}
+  <p><strong style="color:#9dff9d">{online.length}</strong> players online now · in yellow, the all-time total of matches per city (approximate, city-level location — no IP).</p>
+  {!configured && <p>Map not configured yet.</p>}
   <div id="map" style="height:520px;border-radius:10px;border:1px solid #3a3325;background:#10130c"></div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" is:inline></script>
   <script is:inline define:vars={{ mapData }}>
@@ -77,19 +77,19 @@ const mapData = { online: online.filter(o => o.lat && o.lon), cities: cities.fil
         radius: 6 + 18 * (c.matches / maxM), color: '#ffd23f', weight: 2,
         fillColor: '#ffd23f', fillOpacity: 0.25,
       }).addTo(map);
-      // nome da cidade sempre visível (amarelo)…
+      // city name always visible (yellow)…
       m.bindTooltip(`${c.city} · ${c.matches}`, { permanent: true, direction: 'top', offset: [0, -8], className: 'map-tip' });
-      // …e popup com a lista de jogadores + total
+      // …and popup with the player list + total
       const shown = c.players.slice(0, 12), more = c.players.length - shown.length;
       const plist = c.players.length
-        ? `<br><b>${c.players.length} jogador${c.players.length > 1 ? 'es' : ''}:</b> ${shown.join(', ')}${more > 0 ? ` +${more}` : ''}`
+        ? `<br><b>${c.players.length} player${c.players.length > 1 ? 's' : ''}:</b> ${shown.join(', ')}${more > 0 ? ` +${more}` : ''}`
         : '';
-      m.bindPopup(`<b>${c.city}</b><br>${c.matches} partidas · ${c.rounds} rounds (histórico)${plist}`, { className: 'map-pop' });
+      m.bindPopup(`<b>${c.city}</b><br>${c.matches} matches · ${c.rounds} rounds (all-time)${plist}`, { className: 'map-pop' });
     }
     for (const o of mapData.online) {
       L.circleMarker([o.lat, o.lon], {
         radius: 5, color: '#9dff9d', weight: 2, fillColor: '#9dff9d', fillOpacity: 0.9,
-      }).addTo(map).bindPopup(`<b>${o.nick}</b> online agora${o.city ? ' · ' + o.city : ''}`);
+      }).addTo(map).bindPopup(`<b>${o.nick}</b> online now${o.city ? ' · ' + o.city : ''}`);
     }
   </script>
 </Layout>

@@ -1,7 +1,7 @@
 {
-  "name": "csbrasil",
+  "name": "umain-arena",
   "version": "1.0.0",
-  "description": "CS BRASIL: Treta Suprema — FPS de navegador estilo CS 1.6 (site Astro + jogo vanilla)",
+  "description": "Umain Arena — browser FPS, Designers vs Developers (Astro site + vanilla game)",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -10,12 +10,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rubenmarcus/csbrasil.git"
+    "url": "git+https://github.com/jacksonfdam/umain-arena.git"
   },
   "bugs": {
-    "url": "https://github.com/rubenmarcus/csbrasil/issues"
+    "url": "https://github.com/jacksonfdam/umain-arena/issues"
   },
-  "homepage": "https://github.com/rubenmarcus/csbrasil#readme",
+  "homepage": "https://github.com/jacksonfdam/umain-arena#readme",
   "dependencies": {
     "@astrojs/vercel": "^11.0.3",
     "@resvg/resvg-js": "^2.6.2",

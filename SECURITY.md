@@ -1,67 +1,66 @@
-# Modelo de segurança — CS BRASIL
+# Security model — Umain Arena
 
-## A verdade técnica primeiro
+## The technical truth first
 
-Este é um jogo **sem servidor autoritativo** (por enquanto): a partida roda
-100% no browser do jogador. Isso significa que **o client é, por definição,
-não-confiável** — um atacante com um trainer (edição de memória/JS, como o da
-screenshot do pentester) consegue god mode, speed, autoshot etc. no PRÓPRIO
-jogo dele. **Nenhum anti-cheat client-side para isso** — é teatro de
-obfuscação, e nós não fazemos teatro.
+This is a game **with no authoritative server** (for now): the match runs
+100% in the player's browser. That means **the client is, by definition,
+untrusted** — an attacker with a trainer (memory/JS editing) can get god mode,
+speed, autoshot etc. in THEIR OWN game. **No client-side anti-cheat fixes this** —
+it's obfuscation theater, and we don't do theater.
 
-O que dá pra defender de verdade hoje é a **integridade do ranking** — e é
-aí que concentrarmos tudo: validação estatística e moderação no servidor.
+What can actually be defended today is the **integrity of the ranking** — and
+that's where we focus everything: statistical validation and moderation on the server.
 
-A fix real é o multiplayer autoritativo (fase futura), onde o servidor
-testemunha as kills. Até lá, as camadas abaixo.
+The real fix is authoritative multiplayer (a future phase), where the server
+witnesses the kills. Until then, the layers below.
 
-## Camadas ativas
+## Active layers
 
-1. **Token por nick** (UUID no navegador) — impede roubo de nick/stats alheios.
-2. **Rate limit por nick** (90s) e **por IP** (60s + 200 partidas/dia, via
-   `submit_log`) — contra floods e nick-hopping.
-3. **Tetos absolutos** — 150 kills/deaths, streak 30, 1500s por partida.
-4. **Consistência física (anti-trainer)**:
-   - kills ≤ 45 por round (respawn de 2,5s torna mais impossível);
-   - ≥ 80s por round (speed hack não produz partida instantânea).
-5. **Flags automáticas** — tentativa implausível = +1 flag; **3 flags = sai
-   do ranking sozinho** (`players.hidden`).
-6. **Registro com rate limit** (10/min por IP) contra nick-farming.
-7. **RLS em todas as tabelas**; escrita só via RPC validado; `service_role`
-   key existe apenas nas env vars da Vercel.
-8. **Sem segredos no client** — a anon key é pública por design (a segurança
-   é o RLS, não esconder a chave).
+1. **Per-nick token** (UUID in the browser) — prevents theft of someone else's nick/stats.
+2. **Rate limit per nick** (90s) and **per IP** (60s + 200 matches/day, via
+   `submit_log`) — against floods and nick-hopping.
+3. **Absolute caps** — 150 kills/deaths, streak 30, 1500s per match.
+4. **Physical consistency (anti-trainer)**:
+   - kills ≤ 45 per round (the 2.5s respawn makes more than that impossible);
+   - ≥ 80s per round (a speed hack can't produce an instant match).
+5. **Automatic flags** — an implausible attempt = +1 flag; **3 flags = removed
+   from the ranking automatically** (`players.hidden`).
+6. **Registration with rate limit** (10/min per IP) against nick-farming.
+7. **RLS on every table**; writes only via validated RPC; the `service_role`
+   key exists only in Vercel's env vars.
+8. **No secrets on the client** — the anon key is public by design (security
+   comes from RLS, not from hiding the key).
 
-## LGPD / privacidade
+## GDPR / privacy
 
-- `submit_log` guarda IP + nick + timestamp **apenas** para segurança
-  operacional (anti-abuso), com **retenção máxima de 7 dias** — apague
-  periodicamente: `delete from submit_log where created_at < now() - interval '7 days';`
-- Geo no mapa é nível cidade (header da Vercel), IP nunca é persistido.
+- `submit_log` stores IP + nick + timestamp **only** for operational
+  security (anti-abuse), with a **maximum retention of 7 days** — purge it
+  periodically: `delete from submit_log where created_at < now() - interval '7 days';`
+- Map geo is at the city level (Vercel header), the IP is never persisted.
 
-## Moderação (SQL pronto)
+## Moderation (ready-made SQL)
 
 ```sql
--- esconder um jogador do ranking
+-- hide a player from the ranking
 update players set hidden = true where nick = 'NICK';
--- desbanir + zerar flags
+-- unban + reset flags
 update players set hidden = false, flagged_count = 0 where nick = 'NICK';
--- suspeitos acumulando flags
+-- suspects accumulating flags
 select nick, flagged_count, hidden from players where flagged_count > 0 order by flagged_count desc;
--- submits recentes de um IP
+-- recent submits from an IP
 select * from submit_log where ip = '1.2.3.4' order by created_at desc limit 50;
 ```
 
-## O que NÃO fazemos (de propósito)
+## What we do NOT do (on purpose)
 
-- Assinatura/HMAC de payload no client — para scripts de `curl` ingênuos, mas
-  qualquer trainer extrai o segredo do JS. Custo sem benefício real.
-- Anti-cheat client-side (detecção de devtools, debugger traps) — bypassado
-  em minutos por quem usa trainer. Não vale a manutenção.
+- Client-side payload signing/HMAC — works against naive `curl` scripts, but
+  any trainer extracts the secret from the JS. Cost without real benefit.
+- Client-side anti-cheat (devtools detection, debugger traps) — bypassed
+  in minutes by anyone using a trainer. Not worth the maintenance.
 
-## Roadmap de segurança
+## Security roadmap
 
-- **Multiplayer autoritativo** (fase futura): servidor valida kills/dano —
-  o único fix completo contra trainer.
-- Sessões de partida assinadas pelo servidor (partida só conta se iniciada e
-  encerrada com o servidor observando).
+- **Authoritative multiplayer** (future phase): the server validates kills/damage —
+  the only complete fix against trainers.
+- Match sessions signed by the server (a match only counts if started and
+  ended with the server watching).

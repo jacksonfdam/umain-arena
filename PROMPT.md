@@ -1,30 +1,30 @@
-# O prompt que gerou este jogo
+# The prompt that generated this game
 
-Este jogo foi criado do zero — código, mapa, personagens, texturas, sons
-sintetizados, logo e UI — pelo **Kimi K3** (Kimi Code CLI) a partir do prompt
-abaixo, escrito por [@rubenmarcus](https://github.com/rubenmarcus).
-Depois disso, o jogo foi refinado em iterações curtas de conversa (troca de
-personagens, pacote de vozes, sons de arma, crouch, radar, rádio estilo CS,
-headshots, SEO/AEO, empacotamento open source).
+This game was created from scratch — code, map, characters, textures, synthesized
+sounds, logo and UI — by **Kimi K3** (Kimi Code CLI) from the prompt below,
+written by [@rubenmarcus](https://github.com/rubenmarcus).
+After that, the game was refined in short conversation iterations (character
+swaps, voice pack, weapon sounds, crouch, radar, CS-style radio, headshots,
+SEO/AEO, open source packaging).
 
-> ## Prompt original
+> ## Original prompt
 >
 > I want you to create a complete Three.js browser FPS game, ready to run and publish on kimi.page.
 >
-> Game title: AWP Brasil: Treta Suprema
+> Game title: Umain Arena
 >
 > Concept:
-> Create a satirical Brazilian political arena shooter inspired by the classic Counter-Strike 1.6 awp_map layout, but transformed into a fictional, exaggerated, humorous Brazil-themed map. This must feel like a nostalgic CS 1.6-style browser game: low-poly but polished, smooth controls, good lighting, atmospheric textures, strong silhouettes, and fast readable gameplay.
+> Create a playful arena shooter inspired by the classic Counter-Strike 1.6 awp_map layout, but transformed into a fun, exaggerated Designers vs Developers themed map. This must feel like a nostalgic CS 1.6-style browser game: low-poly but polished, smooth controls, good lighting, atmospheric textures, strong silhouettes, and fast readable gameplay.
 >
 > Important tone:
-> This is political satire, not realistic political violence. Make everything absurd, theatrical, and cartoonish. No gore. Use exaggerated fictional archetypes, not real politicians or real private people. Characters can be inspired by recognizable internet/political stereotypes, but do not copy exact real people.
+> This is light-hearted, playful fun, not realistic violence. Make everything absurd, theatrical, and cartoonish. No gore. Use exaggerated fictional workplace archetypes, not real people. Characters can be inspired by recognizable design/developer stereotypes, but do not copy any real person.
 >
 > Visual style:
 > - CS 1.6-era graphics, but polished for browser.
 > - Low-poly models with good textures.
-> - Warm Brazilian sunlight.
+> - Warm sunlight.
 > - Dusty concrete arena.
-> - Strong red vs green/yellow team color language.
+> - Strong two-team color language (one side for Designers, one side for Developers).
 > - Retro FPS feel with modern smoothness.
 > - Create procedural placeholder assets if needed, but make them visually pleasing.
 >
@@ -59,48 +59,47 @@ headshots, SEO/AEO, empacotamento open source).
 > The AWP must feel satisfying: strong sound placeholder, recoil kick, zoom overlay, slow fire rate, high damage, visible tracer.
 >
 > Map:
-> Create a compact awp_map-inspired symmetrical arena, but with Brazilian references:
+> Create a compact awp_map-inspired symmetrical arena, with a fun office/campus theme:
 > - Two elevated spawn platforms facing each other.
 > - Central open combat lane.
 > - Concrete ramps.
 > - Crates and cover.
-> - A central plaza inspired by Brasília / Praça dos Três Poderes, but fictionalized.
-> - Background silhouettes inspired by Congresso Nacional architecture.
-> - A parked caminhão with Brazilian flag colors.
-> - A small sindicato building.
-> - A fake MST camp area with tents and red flags.
-> - A boteco corner with plastic chairs.
-> - A pastel/feira stand.
-> - Graffiti walls with fictional slogans, memes, and jokes.
-> - A giant broken urna eletrônica prop in the middle as cover.
-> - Loudspeaker poles, campaign posters, social media billboard props.
-> Do not use copyrighted logos or real campaign material.
+> - A central plaza with a fictional campus feel.
+> - Background silhouettes of generic office/tech buildings.
+> - A parked van in the team colors.
+> - A small workshop building.
+> - A break-area corner with plastic chairs.
+> - A coffee/snack cart.
+> - Whiteboard and graffiti walls with fictional slogans, jokes, and memes.
+> - A giant broken server rack prop in the middle as cover.
+> - Sign poles, banner props, and a big billboard prop.
+> Do not use copyrighted logos or real brand material.
 >
 > Teams:
-> There are two teams: Petistas and Bolsonaristas.
+> There are two teams: Designers and Developers.
 >
-> Petistas side characters:
-> 1. Esquerdomacho
-> Description: urban leftist stereotype, beard, tote bag, political buttons, red scarf, glasses, ironic T-shirt, academic posture, slightly smug animation.
-> 2. Líder do Sindicato
-> Description: older union leader, red cap, vest with fictional sindicato patches, megaphone accessory, serious stance, worker boots.
-> 3. Líder do MST
-> Description: rural movement leader, red cap, practical clothes, scarf, field boots, backpack, flag accessory, determined posture.
-> 4. Trans Lacrador
-> Description: stylish activist character, colorful hair, bold makeup, red/pink accents, expressive outfit, confident animations, social-media energy.
+> Designers side characters:
+> 1. UX Researcher
+> Description: glasses, tote bag, sticky notes, lanyard, ironic T-shirt, calm and attentive posture, slightly smug animation.
+> 2. Brand Designer
+> Description: bold colorful outfit, sketchbook, statement accessories, confident stance, expressive animations.
+> 3. Motion Designer
+> Description: headphones, stylus, casual creative clothes, energetic posture, playful animations.
+> 4. Design Systems Lead
+> Description: tidy minimalist outfit, color-swatch accents, methodical posture, precise animations.
 >
-> Bolsonaristas side characters:
-> 1. Caminhoneiro com camisa do Brasil
-> Description: truck driver, Brazil football-style shirt, cap, sunglasses, work boots, trucker gloves, bulky silhouette.
-> 2. Influencer com botox que adora Dubai e EUA
-> Description: luxury influencer stereotype, designer-inspired but fictional outfit, sunglasses, blonde hair, flashy accessories, phone/selfie animation, Dubai/USA travel vibe.
-> 3. Cantor Sertanejo
-> Description: cowboy hat, shiny belt buckle, tight jeans, boots, guitar case on back, stage-performer posture.
-> 4. Senhora conspiracionista de 60 anos
-> Description: older woman, green/yellow outfit, oversized sunglasses, phone with forwarded-message stickers, intense expressive animations, conspiracy-board accessory. Avoid using medical terms or mocking mental illness.
+> Developers side characters:
+> 1. Backend Engineer
+> Description: hoodie, coffee mug, sturdy build, focused posture, keyboard-clacking animation.
+> 2. Frontend Developer
+> Description: sticker-covered laptop, casual clothes, cap, energetic and quick animations.
+> 3. DevOps Engineer
+> Description: cap, terminal-green accents, tool belt, pragmatic posture, monitoring-dashboard vibe.
+> 4. Full-stack Hacker
+> Description: multiple gadgets, headset, restless multitasking animation, night-owl energy.
 >
 > For character visuals:
-> Use internet image search only as broad visual reference for clothing, posture, and Brazilian cultural stereotypes. Do not copy exact people, faces, or copyrighted photos. Create original fictional characters.
+> Use image search only as broad visual reference for clothing, posture, and workplace stereotypes. Do not copy exact people, faces, or copyrighted photos. Create original fictional characters.
 >
 > Character requirements:
 > - Each team should have 4 selectable characters.
@@ -120,8 +119,8 @@ headshots, SEO/AEO, empacotamento open source).
 >
 > Logo:
 > Create a retro tactical shooter logo:
-> Text: “AWP Brasil: Treta Suprema”
-> Visual: cracked Brazil map silhouette, two crossed sniper rifles, red on one side and green/yellow on the other, subtle Brasília skyline behind it. Keep it original and fictional.
+> Text: "Umain Arena"
+> Visual: two crossed sniper rifles, one team color on each side, a subtle office/tech skyline behind it. Keep it original and fictional.
 >
 > Technical requirements:
 > - Use Three.js.
@@ -139,10 +138,11 @@ headshots, SEO/AEO, empacotamento open source).
 > 4. Short explanation of controls.
 > 5. Notes on how to replace placeholder models/textures later.
 
-## Notas da iteração
+## Iteration notes
 
-Duas decisões de conteúdo mudaram após o prompt original, por escolha editorial:
+A couple of content decisions changed after the original prompt, as an editorial choice:
 
-- A "Senhora conspiracionista" virou a **Tia Zilá** (nome fictício).
+- The character personas were reworked into neutral design/developer role
+  archetypes (no real people, no politics).
 
-O jogo também mudou de nome: de "AWP Brasil" para **CS BRASIL: Treta Suprema**.
+The game was also renamed along the way, landing on **Umain Arena**.

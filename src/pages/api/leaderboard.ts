@@ -1,4 +1,4 @@
-// GET /api/leaderboard — ranking global (top 100) via service key no servidor.
+// GET /api/leaderboard — global ranking (top 100) via service key on the server.
 import type { APIRoute } from 'astro';
 import { supabaseAdmin, NOT_CONFIGURED } from '../../lib/supabase';
 

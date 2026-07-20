@@ -1,6 +1,6 @@
-// GET /api/badge/<id|nick>.png — badge com stats.
-// Render: resvg-wasm (binário único servido de /wasm/) + fonte DejaVu embutida.
-// Avatar: foto → unavatar(X) → personagem do jogo (SVG) → inicial.
+// GET /api/badge/<id|nick>.png — badge with stats.
+// Render: resvg-wasm (single binary served from /wasm/) + embedded DejaVu font.
+// Avatar: photo → unavatar(X) → game character (SVG) → initial.
 import type { APIRoute } from 'astro';
 import { initWasm, Resvg } from '@resvg/resvg-wasm';
 import sharp from 'sharp';
@@ -35,11 +35,11 @@ async function avatarDataUri(url?: string | null): Promise<string | null> {
   } catch { return null; }
 }
 
-// lado do jogador: P > B = PETISTA, B > P = BOLSONARISTA, empate = NEUTRO
+// player side: P > B = DESIGNER, B > P = DEVELOPER, tie = NEUTRAL
 export function sideOf(mp: number, mb: number): [string, string] {
-  if (mp > mb) return ['PETISTA', '#e03232'];
-  if (mb > mp) return ['BOLSONARISTA', '#1faa4d'];
-  return ['NEUTRO', '#ffd23f'];
+  if (mp > mb) return ['DESIGNER', '#e03232'];
+  if (mb > mp) return ['DEVELOPER', '#1faa4d'];
+  return ['NEUTRAL', '#ffd23f'];
 }
 
 function badgeSvg(p: any, avatarUri: string | null, charId: string | null): string {
@@ -48,9 +48,9 @@ function badgeSvg(p: any, avatarUri: string | null, charId: string | null): stri
   const cName = charName(charId);
 
   const cells: [string, string][] = [
-    ['PARTIDAS', String(p.matches)], ['VITÓRIAS', p.wins > 0 ? String(p.wins) : '—'], ['K/D', kd],
-    ['KILLS', String(p.kills)], ['MORTES', String(p.deaths)], ['HEADSHOTS', String(p.headshots)],
-    ['SEQUÊNCIA', `${p.best_streak}×`], ['ROUNDS', String(p.rounds)], ['TEMPO', displayTime(p)],
+    ['MATCHES', String(p.matches)], ['WINS', p.wins > 0 ? String(p.wins) : '—'], ['K/D', kd],
+    ['KILLS', String(p.kills)], ['DEATHS', String(p.deaths)], ['HEADSHOTS', String(p.headshots)],
+    ['STREAK', `${p.best_streak}×`], ['ROUNDS', String(p.rounds)], ['TIME', displayTime(p)],
   ];
   const grid = cells.map(([label, v], i) => {
     const x = 46 + (i % 3) * 260, y = 228 + Math.floor(i / 3) * 70;
@@ -72,11 +72,11 @@ function badgeSvg(p: any, avatarUri: string | null, charId: string | null): stri
   <rect width="840" height="440" fill="#0c0e11"/>
   <circle cx="748" cy="96" r="200" fill="${sideColor}" opacity="0.07"/>
   <rect width="840" height="6" fill="#e03232"/><rect y="434" width="840" height="6" fill="#1faa4d"/>
-  <text x="56" y="60" font-size="22" font-weight="bold" fill="#ffd23f" font-family="DejaVu Sans" letter-spacing="5">CS BRASIL</text>
+  <text x="56" y="60" font-size="22" font-weight="bold" fill="#ffd23f" font-family="DejaVu Sans" letter-spacing="5">UMAIN ARENA</text>
   <text x="660" y="60" font-size="16" fill="${sideColor}" font-family="DejaVu Sans" text-anchor="end" font-weight="bold">${sideLabel} · ${p.matches_p}P × ${p.matches_b}B</text>
   <text x="56" y="132" font-size="54" font-weight="bold" fill="#f2ead8" font-family="DejaVu Sans">${esc(p.nick)}</text>
   ${p.social ? `<text x="56" y="166" font-size="18" fill="#b8d94a" font-family="DejaVu Sans">${esc(p.social)}</text>` : ''}
-  ${cName ? `<text x="56" y="194" font-size="16" fill="#8a8064" font-family="DejaVu Sans">joga de ${esc(cName)}</text>` : ''}
+  ${cName ? `<text x="56" y="194" font-size="16" fill="#8a8064" font-family="DejaVu Sans">plays as ${esc(cName)}</text>` : ''}
   <rect x="46" y="212" width="748" height="1.5" fill="#3a3325"/>
   ${avatar}
   ${grid}

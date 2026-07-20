@@ -1,35 +1,36 @@
-# CS BRASIL: Treta Suprema
+# Umain Arena
 
-> Jogo FPS gratuito de navegador (desktop): arena de sniper estilo CS 1.6
-> (`awp_map`) em uma Brasília fictícia e satírica, com os times Petistas ×
-> Bolsonaristas, 8 personagens originais, bots, rounds e placar. Sátira
-> política sem gore e sem pessoas reais. Não é afiliado à Valve.
+> Free browser FPS (desktop): a CS 1.6-style sniper arena (`awp_map`)
+> pitting the Designers vs Developers teams, with 8 original characters,
+> bots, rounds and a scoreboard. A fun, lighthearted shootout — no gore,
+> no real people. Not affiliated with Valve.
 
-## Como jogar
+## How to play
 
-- Abra o site num navegador de desktop (Chrome/Edge/Firefox). Sem instalação.
-- Escolha nick, time (Petistas ou Bolsonaristas) e personagem.
-- WASD move, mouse mira, botão esquerdo atira, botão direito abre a luneta
-  da AWP, Ctrl agacha (mira mais estável), Shift corre, Espaço pula, R
-  recarrega, 1/2/3 troca AWP/pistola/faca, Z/X/C comandos de voz, Tab placar.
-- Regras: 4×4 com respawn, rounds de 1:39; mais kills leva o round; 3
-  rounds vencem a partida. Multikills têm anúncios estilo Unreal Tournament.
+- Open the site in a desktop browser (Chrome/Edge/Firefox). No install.
+- Choose a nick, a team (Designers or Developers) and a character.
+- WASD moves, mouse aims, left click shoots, right click opens the AWP
+  Sniper scope, Ctrl crouches (steadier aim), Shift sprints, Space jumps, R
+  reloads, 1/2/3 switch AWP Sniper/Pistol/Knife, Z/X/C voice commands, Tab scoreboard.
+- Rules: 4v4 with respawn, 1:39 rounds; more kills wins the round; 3
+  rounds win the match. Multikills have Unreal Tournament-style announcements.
 
-## Perguntas frequentes
+## Frequently asked questions
 
-- É gratuito? Sim, 100%, roda no navegador.
-- Precisa instalar? Não — é um site estático.
-- Funciona no celular? Desktop é recomendado (mouse + teclado).
-- É um jogo oficial da Valve/Counter-Strike? Não. Paródia independente.
-- Os personagens são pessoas reais? Não — arquétipos fictícios e satíricos.
+- Is it free? Yes, 100%, runs in the browser.
+- Do I need to install it? No — it's a static site.
+- Does it work on mobile? Desktop is recommended (mouse + keyboard).
+- Is it an official Valve/Counter-Strike game? No. Independent parody.
+- Are the characters real people? No — fictional archetypes.
 
-## Tecnologia
+## Technology
 
-- Three.js (WebGL), sem build, assets 100% procedurais (texturas em canvas,
-  modelos low-poly em código, SFX sintetizados + pacote de áudio opcional).
-- Código aberto (MIT) exceto a pasta de áudio.
+- Three.js (WebGL), no build step, 100% procedural assets (canvas textures,
+  low-poly models in code, synthesized SFX + optional audio pack).
+- Open source (MIT) except the audio folder.
 
 ## Links
 
-- Site: https://csbrasil.online/
-- Código: https://github.com/rubenmarcus/csbrasil
+- Site: https://umain-arena.vercel.app/
+- Code: https://github.com/jacksonfdam/umain-arena
+- Based on: https://github.com/rubenmarcus/csbrasil (CS BRASIL: Treta Suprema)

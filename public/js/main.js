@@ -92,8 +92,8 @@ function pvThumb(def) {
 
 /* ---------------- game lifecycle ---------------- */
 let game = null, currentTeam = 'P', currentChar = CHARACTERS[0].id, selChar = null;
-let submitted = true;   // stats da partida atual já enviados?
-let registeredNick = ''; // nick usado no registro da sessão (token está atrelado a ele)
+let submitted = true;   // current match stats already submitted?
+let registeredNick = ''; // nick used when registering the session (the token is tied to it)
 let heartbeatOff = false;
 const params = new URLSearchParams(location.search);
 const testMode = params.get('debug') === '1';
@@ -123,7 +123,7 @@ async function startGame(team, charId) {
     return settings.speech;
   };
   game.start();
-  // registra nick no ranking global (silencioso se a API não estiver no ar)
+  // register the nick in the global ranking (silent if the API is offline)
   const nick = $('nick-input').value.trim();
   registeredNick = nick; heartbeatOff = false;
   if (nick && !testMode) {
@@ -141,20 +141,20 @@ function quitToMenu() {
   show('main-menu');
 }
 
-/* ---------------- heartbeat (presença/mapa) ---------------- */
+/* ---------------- heartbeat (presence/map) ---------------- */
 setInterval(async () => {
   if (!game || !registeredNick || testMode || heartbeatOff) return;
   const res = await api('/api/heartbeat', { nick: registeredNick, token: getToken() });
-  if (res && res.error) heartbeatOff = true;   // token inválido etc. — para de martelar
+  if (res && res.error) heartbeatOff = true;   // invalid token etc. — stop hammering
 }, 30_000);
 
-/* ---------------- avatar upload (sem login — validado por nick+token) ---------------- */
+/* ---------------- avatar upload (no login — validated by nick+token) ---------------- */
 $('avatar-btn').onclick = () => $('avatar-file').click();
 $('avatar-file').onchange = async e => {
   const f = e.target.files[0];
   const nick = registeredNick || (nickEl.value || '').trim();
   if (!f || !nick) return;
-  $('avatar-note').textContent = 'enviando…';
+  $('avatar-note').textContent = 'uploading…';
   try {
     const bmp = await createImageBitmap(f);
     const c = document.createElement('canvas'); c.width = c.height = 128;
@@ -163,8 +163,8 @@ $('avatar-file').onchange = async e => {
     x.drawImage(bmp, (bmp.width - s) / 2, (bmp.height - s) / 2, s, s, 0, 0, 128, 128);
     const dataUrl = c.toDataURL('image/png');
     const res = await api('/api/avatar', { nick, token: getToken(), image: dataUrl });
-    $('avatar-note').textContent = res && res.ok ? 'foto atualizada! ✓' : 'falhou: ' + (res?.error || 'sem conexão');
-  } catch { $('avatar-note').textContent = 'falhou — tente outra imagem'; }
+    $('avatar-note').textContent = res && res.ok ? 'photo updated! ✓' : 'failed: ' + (res?.error || 'no connection');
+  } catch { $('avatar-note').textContent = 'failed — try another image'; }
   e.target.value = '';
 };
 
@@ -172,10 +172,10 @@ $('avatar-file').onchange = async e => {
 $('btn-jogar').onclick = () => {
   if (!(nickEl.value || '').trim()) {
     nickEl.classList.add('invalid');
-    nickEl.placeholder = 'DIGITE UM NICK PRIMEIRO!';
+    nickEl.placeholder = 'ENTER A NICK FIRST!';
     nickEl.focus();
     setTimeout(() => nickEl.classList.remove('invalid'), 1500);
-    return;   // sem nick, sem treta
+    return;   // no nick, no game
   }
   sfx.uiClick();
   const firstEmpty = socials.find(s => !s.handle);
@@ -187,7 +187,7 @@ $('btn-jogar').onclick = () => {
 };
 $('btn-ranking').onclick = () => { sfx.uiClick(); showRanking(); };
 $('ranking-back').onclick = () => { sfx.uiClick(); show('main-menu'); };
-// dropdown de mapas (depois dos campos do usuário, antes do JOGAR)
+// maps dropdown (after the user fields, before PLAY)
 const mapSel = $('map-select');
 for (const id of MAP_IDS) {
   const o = document.createElement('option');
@@ -202,7 +202,7 @@ mapSel.onchange = () => {
   rebuildMenuBackdrop();
 };
 const wpnSel = { value: settings.wpnMode || 'all' };
-// dropdown custom de modo de armas (com ícones SVG originais)
+// custom weapon-mode dropdown (with original SVG icons)
 const WPN_ICONS = {
   all: `<svg width="22" height="14" viewBox="0 0 22 14" fill="none"><path d="M1 9l8-6 1 1-8 6-1-1zm20-2L13 1l-1 1 8 6 1-1z" fill="currentColor"/><rect x="9" y="6" width="4" height="7" fill="currentColor"/></svg>`,
   pistols: `<svg width="20" height="14" viewBox="0 0 20 14" fill="none"><path d="M1 2h12v4H9v6H5V6H1V2z" fill="currentColor"/><rect x="9" y="1" width="4" height="3" fill="currentColor"/></svg>`,
@@ -210,10 +210,10 @@ const WPN_ICONS = {
   awp: `<svg width="26" height="12" viewBox="0 0 26 12" fill="none"><rect x="0" y="4" width="26" height="3" fill="currentColor"/><rect x="7" y="0" width="8" height="4" fill="currentColor"/><rect x="2" y="7" width="6" height="4" fill="currentColor"/></svg>`,
 };
 const WPN_MODES = [
-  { id: 'all', label: 'TODAS' },
-  { id: 'pistols', label: 'SÓ PISTOLAS' },
-  { id: 'knife', label: 'SÓ FACA' },
-  { id: 'awp', label: 'SÓ AWP' },
+  { id: 'all', label: 'ALL' },
+  { id: 'pistols', label: 'PISTOLS ONLY' },
+  { id: 'knife', label: 'KNIFE ONLY' },
+  { id: 'awp', label: 'AWP ONLY' },
 ];
 const wpnDdBtn = $('wpn-dd-btn'), wpnDdList = $('wpn-dd-list'), wpnDdLabel = $('wpn-dd-label');
 function wpnLabel(id) {
@@ -252,7 +252,7 @@ $('btn-quit').onclick = () => {
 };
 $('btn-again').onclick = () => { sfx.uiClick(); startGame(currentTeam, currentChar); };
 $('btn-menu').onclick = () => { sfx.uiClick(); quitToMenu(); };
-// M in-game: escolhe o personagem do novo time antes de trocar
+// M in-game: pick the new team's character before switching
 let switchMode = false;
 function armSwitchHook() {
   game.onRequestSwitch = () => {
@@ -276,20 +276,20 @@ $('char-confirm').onclick = () => {
 const nickEl = $('nick-input');
 nickEl.value = localStorage.getItem(NICK_KEY) || '';
 nickEl.oninput = () => localStorage.setItem(NICK_KEY, nickEl.value);
-const SOCIAL_NET_KEY = 'awpbr_social_net'; // legado (migração pro multi-redes)
+const SOCIAL_NET_KEY = 'awpbr_social_net'; // legacy (migration to multiple networks)
 function sanitizeHandle(v) { return v.replace(/^@+/, '').replace(/[^a-zA-Z0-9._-]/g, ''); }
 function extractFromUrl(v) {
   const m = v.match(/(?:x\.com|twitter\.com|github\.com|instagram\.com|tiktok\.com\/@|youtube\.com\/@|linkedin\.com\/in)\/?@?([A-Za-z0-9._-]+)/i);
   return m ? m[1] : null;
 }
 
-/* ---------------- multi-redes sociais (até 3, sem login) ---------------- */
+/* ---------------- multiple social networks (up to 3, no login) ---------------- */
 const SOCIALS_KEY = 'awpbr_socials';
 const NETS = [['x', 'X / Twitter'], ['github', 'GitHub'], ['instagram', 'Instagram'],
-  ['linkedin', 'LinkedIn'], ['tiktok', 'TikTok'], ['youtube', 'YouTube'], ['site', 'Site próprio']];
+  ['linkedin', 'LinkedIn'], ['tiktok', 'TikTok'], ['youtube', 'YouTube'], ['site', 'Own site']];
 let socials = [];
 try { socials = JSON.parse(localStorage.getItem(SOCIALS_KEY) || '[]'); } catch {}
-// migração do campo único antigo
+// migration from the old single field
 if (!socials.length) {
   const oldNet = localStorage.getItem(SOCIAL_NET_KEY), oldHandle = localStorage.getItem(SOCIAL_KEY);
   if (oldNet && oldHandle) socials = [{ net: oldNet, handle: oldHandle }];
@@ -310,8 +310,8 @@ function renderSocials() {
     row.className = 'pc-row social-item';
     row.innerHTML =
       `<select>${NETS.map(([v, l]) => `<option value="${v}"${v === s.net ? ' selected' : ''}>${l}</option>`).join('')}</select>` +
-      `<input maxlength="40" placeholder="usuário" value="${String(s.handle).replace(/"/g, '&quot;')}">` +
-      `<button class="social-del" title="remover" type="button">✕</button>`;
+      `<input maxlength="40" placeholder="username" value="${String(s.handle).replace(/"/g, '&quot;')}">` +
+      `<button class="social-del" title="remove" type="button">✕</button>`;
     const sel = row.querySelector('select'), inp = row.querySelector('input'), del = row.querySelector('.social-del');
     sel.onchange = () => { s.net = sel.value; saveSocials(); };
     inp.oninput = () => {
@@ -329,7 +329,7 @@ $('social-add').onclick = () => { socials.push({ net: 'x', handle: '' }); saveSo
 nickEl.addEventListener('input', updateAvatarVisibility);
 renderSocials();
 
-/* ---------------- global ranking API (via /api/* do site) ---------------- */
+/* ---------------- global ranking API (via the site's /api/*) ---------------- */
 const TOKEN_KEY = 'awpbr_token';
 function getToken() {
   let t = localStorage.getItem(TOKEN_KEY);
@@ -351,12 +351,12 @@ function submitNote(msg) {
   if (el && !document.getElementById('match-end').classList.contains('hidden')) {
     const d = document.createElement('div');
     d.style.cssText = 'color:#ff8080;font-size:12px;width:100%';
-    d.textContent = '⚠ stats não enviados: ' + msg;
+    d.textContent = '⚠ stats not submitted: ' + msg;
     el.appendChild(d);
   }
 }
 
-// stats parciais quando o jogador abandona a partida (sair pro menu / fechar aba)
+// partial stats when the player leaves the match (quit to menu / close tab)
 function partialPayload() {
   if (!game || submitted || testMode) return null;
   if (!['live', 'roundEnd', 'countdown'].includes(game.state)) return null;
@@ -376,13 +376,13 @@ addEventListener('beforeunload', () => {
   if (pl) navigator.sendBeacon('/api/submit-match', new Blob([JSON.stringify(pl)], { type: 'application/json' }));
 });
 
-/* ---------------- fila de reenvio (rate limit do servidor) ---------------- */
+/* ---------------- resend queue (server rate limit) ---------------- */
 const PENDING_KEY = 'awpbr_pending_submit';
 async function submitGlobal(pl) {
   const res = await api('/api/submit-match', pl);
-  if (res?.error && /aguarde/i.test(res.error)) {
+  if (res?.error && /wait/i.test(res.error)) {
     localStorage.setItem(PENDING_KEY, JSON.stringify(pl));
-    setTimeout(retryPending, 95_000);   // reenvia sozinho quando a janela abrir
+    setTimeout(retryPending, 95_000);   // resends on its own once the window opens
   }
   return res;
 }
@@ -391,10 +391,10 @@ async function retryPending() {
   if (!raw) return;
   const res = await api('/api/submit-match', JSON.parse(raw));
   if (res && !res.error) localStorage.removeItem(PENDING_KEY);
-  else if (res?.error && /aguarde/i.test(res.error)) setTimeout(retryPending, 95_000);
+  else if (res?.error && /wait/i.test(res.error)) setTimeout(retryPending, 95_000);
 }
 
-/* ---------------- local stats (espelhados pro ranking global) ---------------- */
+/* ---------------- local stats (mirrored to the global ranking) ---------------- */
 const STATS_KEY = 'awpbr_stats';
 function loadStats() {
   return Object.assign({ matches: 0, wins: 0, kills: 0, deaths: 0, headshots: 0, bestStreak: 0 },
@@ -409,7 +409,7 @@ async function recordMatchStats(s) {
   st.rounds = (st.rounds || 0) + s.roundsP + s.roundsB;
   st.bestStreak = Math.max(st.bestStreak, s.bestStreak);
   localStorage.setItem(STATS_KEY, JSON.stringify(st));
-  // espelha pro ranking global (avisa na tela se falhar)
+  // mirror to the global ranking (warn on screen if it fails)
   const nick = registeredNick || (nickEl.value || '').trim();
   if (nick && !testMode) {
     const res = await submitGlobal({
@@ -418,7 +418,7 @@ async function recordMatchStats(s) {
       rounds: s.roundsP + s.roundsB, team: s.team, seconds: s.seconds || 0,
       character: s.character,
     });
-    if (!res) submitNote('ranking global indisponível');
+    if (!res) submitNote('global ranking unavailable');
     else if (res.error) submitNote(res.error);
   }
 }
@@ -430,33 +430,33 @@ function showRanking() {
   const tempo = secs > 0 ? fmt(secs)
     : (st.rounds || 0) > 0 ? `~${fmt(st.rounds * 99)}`
     : st.matches > 0 ? `~${fmt(st.matches * 297)}` : '0min';
-  const nick = (nickEl.value || 'VOCÊ').trim();
+  const nick = (nickEl.value || 'YOU').trim();
   const social = socials.find(s => s.handle);
   $('rank-local').innerHTML =
     `<div style="grid-column:1/-1;text-align:center;color:var(--cs);font-size:18px">${nick}` +
     (social ? ` · <span style="color:#8a8064;font-size:12px">${social.net}/${social.handle.replace(/</g, '&lt;')}</span>` : '') + `</div>` +
-    `<div><b>${st.matches}</b>partidas</div><div><b>${st.wins > 0 ? st.wins : "—"}</b>vitórias</div><div><b>${kd}</b>K/D</div><div><b>${tempo}</b>arena</div>` +
-    `<div><b>${st.kills}</b>kills</div><div><b>${st.deaths}</b>mortes</div><div><b>${st.headshots}</b>headshots</div><div><b>${st.rounds || 0}</b>rounds</div>`;
+    `<div><b>${st.matches}</b>matches</div><div><b>${st.wins > 0 ? st.wins : "—"}</b>wins</div><div><b>${kd}</b>K/D</div><div><b>${tempo}</b>arena</div>` +
+    `<div><b>${st.kills}</b>kills</div><div><b>${st.deaths}</b>deaths</div><div><b>${st.headshots}</b>headshots</div><div><b>${st.rounds || 0}</b>rounds</div>`;
   show('ranking-panel');
   renderGlobal(nick);
 }
 async function renderGlobal(nick) {
   const box = $('rank-global');
-  box.innerHTML = '<h3>🌐 RANKING GLOBAL</h3><div class="rg-off">carregando…</div>';
+  box.innerHTML = '<h3>🌐 GLOBAL RANKING</h3><div class="rg-off">loading…</div>';
   const data = await api('/api/leaderboard');
   if (!data || !data.players) {
-    box.innerHTML = '<h3>🌐 RANKING GLOBAL</h3><div class="rg-off">indisponível no momento</div>';
+    box.innerHTML = '<h3>🌐 GLOBAL RANKING</h3><div class="rg-off">unavailable right now</div>';
     return;
   }
   const rows = data.players.slice(0, 10).map((p, i) =>
     `<tr class="${p.nick === nick ? 'me' : ''}"><td>${i + 1}</td><td>${p.nick}</td><td>${p.kd}</td><td>${p.kills}</td><td>${p.wins > 0 ? p.wins : "—"}</td></tr>`).join('');
-  box.innerHTML = '<h3>🌐 RANKING GLOBAL (top 10)</h3>' +
+  box.innerHTML = '<h3>🌐 GLOBAL RANKING (top 10)</h3>' +
     (rows
-      ? `<table><tr><th>#</th><th>JOGADOR</th><th>K/D</th><th>KILLS</th><th>VIT.</th></tr>${rows}</table>`
-      : '<div class="rg-off">ainda vazio — seja o primeiro!</div>') +
-    `<div class="rg-links"><a href="/ranking" target="_blank" style="color:var(--cs)">RANKING COMPLETO ↗</a>` +
-    (nick ? `<a href="/u/${encodeURIComponent(nick)}" target="_blank" style="color:var(--cs)">MEU PERFIL ↗</a>` : '') +
-    `<a href="/mapa" target="_blank" style="color:var(--cs)">MAPA AO VIVO ↗</a></div>`;
+      ? `<table><tr><th>#</th><th>PLAYER</th><th>K/D</th><th>KILLS</th><th>WINS</th></tr>${rows}</table>`
+      : '<div class="rg-off">still empty — be the first!</div>') +
+    `<div class="rg-links"><a href="/ranking" target="_blank" style="color:var(--cs)">FULL RANKING ↗</a>` +
+    (nick ? `<a href="/u/${encodeURIComponent(nick)}" target="_blank" style="color:var(--cs)">MY PROFILE ↗</a>` : '') +
+    `<a href="/mapa" target="_blank" style="color:var(--cs)">LIVE MAP ↗</a></div>`;
 }
 
 function pickTeam(team) {
@@ -473,7 +473,7 @@ function pickTeam(team) {
     list.appendChild(row);
     if (i === 0) firstRow = row;
   });
-  // seleciona DEPOIS de gerar todos os thumbs — senão o preview fica com o último
+  // select AFTER generating all thumbs — otherwise the preview keeps the last one
   if (firstRow) selectChar(chars[0], firstRow);
   show('char-select');
 }
@@ -507,71 +507,7 @@ speechEl.onchange = () => {
 updLabels();
 
 /* ---------------- logo ---------------- */
-(function drawLogo() {
-  const c = $('logo-canvas'), x = c.getContext('2d');
-  const W = 900, H = 360;
-  const g = x.createRadialGradient(W / 2, H / 2, 40, W / 2, H / 2, 420);
-  g.addColorStop(0, 'rgba(255,180,80,0.30)'); g.addColorStop(1, 'rgba(0,0,0,0)');
-  x.fillStyle = g; x.fillRect(0, 0, W, H);
-  // skyline silhouette
-  x.fillStyle = 'rgba(18,16,20,0.9)';
-  x.fillRect(120, 250, 660, 110);
-  x.fillRect(398, 170, 14, 90); x.fillRect(428, 170, 14, 90);   // congress towers
-  x.beginPath(); x.arc(360, 252, 34, Math.PI, 0); x.fill();      // dome
-  x.beginPath(); x.arc(486, 216, 34, 0, Math.PI); x.fill();      // bowl
-  for (let i = 0; i < 7; i++) {                                  // cathedral spikes
-    x.save(); x.translate(210 + i * 16, 260); x.rotate((i - 3) * 0.12);
-    x.fillRect(-2, -46, 4, 46); x.restore();
-  }
-  // crossed rifles
-  const rifle = (color) => {
-    x.fillStyle = '#1c1c1c';
-    x.fillRect(-130, -7, 150, 14);
-    x.fillRect(20, -3.5, 110, 7);
-    x.fillRect(-40, -20, 55, 11);
-    x.beginPath(); x.moveTo(-130, -7); x.lineTo(-165, 14); x.lineTo(-130, 14); x.closePath(); x.fill();
-    x.fillStyle = color; x.fillRect(-128, 5, 145, 4);
-  };
-  x.save(); x.translate(W / 2, 190); x.rotate(-0.42); rifle('#e03232'); x.restore();
-  x.save(); x.translate(W / 2, 190); x.scale(-1, 1); x.rotate(-0.42); rifle('#1faa4d'); x.restore();
-  // Brazil silhouette, split colors + crack
-  const BR = [[.32, .05], [.45, .02], [.58, .07], [.62, .14], [.75, .13], [.85, .20], [.97, .27],
-    [.90, .33], [.86, .40], [.80, .50], [.74, .58], [.70, .68], [.62, .75], [.58, .86], [.52, .97],
-    [.46, .90], [.44, .78], [.38, .72], [.32, .68], [.28, .60], [.30, .50], [.24, .44], [.18, .38], [.16, .28], [.22, .22], [.24, .13]];
-  const bw = 190, bh = 190, bx = W / 2 - bw / 2, by = 92;
-  const path = () => {
-    x.beginPath();
-    BR.forEach((p, i) => i ? x.lineTo(bx + p[0] * bw, by + p[1] * bh) : x.moveTo(bx + p[0] * bw, by + p[1] * bh));
-    x.closePath();
-  };
-  x.save(); path(); x.clip();
-  let hg = x.createLinearGradient(bx, 0, bx + bw, 0);
-  hg.addColorStop(0, '#8f1d1d'); hg.addColorStop(1, '#e03232');
-  x.fillStyle = hg; x.fillRect(bx, by, bw / 2, bh);
-  hg = x.createLinearGradient(bx + bw / 2, 0, bx + bw, 0);
-  hg.addColorStop(0, '#1faa4d'); hg.addColorStop(1, '#e8bd25');
-  x.fillStyle = hg; x.fillRect(bx + bw / 2, by, bw / 2, bh);
-  x.strokeStyle = '#f2ead8'; x.lineWidth = 4; x.beginPath();
-  let cx = bx + bw * 0.52, cy = by;
-  x.moveTo(cx, cy);
-  while (cy < by + bh) { cx += (Math.random() - .5) * 26; cy += 14 + Math.random() * 10; x.lineTo(cx, cy); }
-  x.stroke(); x.restore();
-  path(); x.strokeStyle = '#0c0e11'; x.lineWidth = 5; x.stroke();
-  // title
-  x.textAlign = 'center';
-  x.font = '900 96px "Arial Black",Impact,sans-serif';
-  x.lineWidth = 14; x.strokeStyle = '#0c0e11'; x.lineJoin = 'round';
-  x.strokeText('CS BRASIL', W / 2, 96);
-  const tg = x.createLinearGradient(0, 30, 0, 100);
-  tg.addColorStop(0, '#ffffff'); tg.addColorStop(1, '#ffd9a0');
-  x.fillStyle = tg; x.fillText('CS BRASIL', W / 2, 96);
-  x.font = '900 52px "Arial Black",Impact,sans-serif';
-  x.lineWidth = 10;
-  x.strokeText('TRETA SUPREMA', W / 2, 338);
-  const sg = x.createLinearGradient(200, 0, 700, 0);
-  sg.addColorStop(0, '#ff6b6b'); sg.addColorStop(0.5, '#ffd23f'); sg.addColorStop(1, '#7dff9a');
-  x.fillStyle = sg; x.fillText('TRETA SUPREMA', W / 2, 338);
-})();
+// logo is now a static <img id="logo-img"> in index.html (see menu markup)
 
 /* ---------------- loop ---------------- */
 addEventListener('resize', () => {
@@ -601,7 +537,7 @@ loop();
 
 /* ---------------- boot ---------------- */
 document.querySelector('.footnote').textContent =
-  `v${VERSION} · Sátira política fictícia. Nenhum político real foi consultado (ou poupado).`;
+  `v${VERSION} · Fictional, all in good fun. Designers vs Developers — no hard feelings.`;
 show(isMobile && !testMode ? 'mobile-warning' : 'main-menu');
 if (testMode && params.get('auto')) {
   const [team, char] = params.get('auto').split(',');

@@ -5,7 +5,7 @@ export class Sfx {
   constructor() {
     this.ctx = null; this.master = null; this.vol = 0.7;
     this.pack = null;            // parsed manifest
-    this.speechEnabled = true;   // falas dos times (memes) — vitória/UT/arma sempre tocam
+    this.speechEnabled = true;   // team voice lines (memes) — win/multikill/weapon sounds always play
     this._lastVoice = 0;
     this._radioAudio = null;
   }
@@ -91,14 +91,14 @@ export class Sfx {
     o.start(t); o.stop(t + dur + 0.05);
   }
 
-  // tiro por arma: pack "weapons" por id, senão fallback por classe
+  // shot per weapon: "weapons" pack by id, otherwise fall back by class
   shotWeapon(w) {
     const f = this._pick(this.pack?.weapons?.[w]);
     if (f) { this._sample(f); return; }
     if (w === 'awp') return this.shotAwp();
     if (w === 'pistol' || w === 'deagle') return this.shotPistol();
     if (w === 'knife') return this.knife();
-    // rifles/escopeta: rajada genérica
+    // rifles/shotgun: generic burst
     this._burst(.14, .5, 1600); this._beep('sine', 160, 60, .13, .25);
   }
 
@@ -138,7 +138,7 @@ export class Sfx {
   respawn()   { this.ensure(); this._beep('sine', 440, 880, .18, .18); }
   ricochet()  { this.ensure(); this._beep('sine', 2400, 700, .12, .08); }
 
-  vuvuzela(dur = 1.2) { // round start — Brazilian stadium energy
+  vuvuzela(dur = 1.2) { // round start — stadium energy
     this.ensure();
     if (!this.ctx) return;
     const t = this.ctx.currentTime;
