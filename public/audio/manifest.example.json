@@ -5,21 +5,43 @@
       "audio/designers/ingame/designers-line-02.mp3",
       "audio/designers/ingame/designers-line-03.mp3",
       "audio/designers/ingame/designers-line-04.mp3",
-      "audio/designers/ingame/designers-line-05.mp3"
+      "audio/designers/ingame/designers-line-05.mp3",
+      "audio/designers/ingame/designers-line-06.mp3",
+      "audio/designers/ingame/designers-line-07.mp3",
+      "audio/designers/ingame/designers-line-08.mp3",
+      "audio/designers/ingame/designers-line-09.mp3",
+      "audio/designers/ingame/designers-line-10.mp3",
+      "audio/designers/ingame/designers-line-11.mp3",
+      "audio/designers/ingame/designers-line-12.mp3",
+      "audio/designers/ingame/designers-line-13.mp3",
+      "audio/designers/ingame/designers-line-14.mp3",
+      "audio/designers/ingame/designers-line-15.mp3"
     ],
     "B": [
       "audio/developers/ingame/developers-line-01.mp3",
       "audio/developers/ingame/developers-line-02.mp3",
       "audio/developers/ingame/developers-line-03.mp3",
       "audio/developers/ingame/developers-line-04.mp3",
-      "audio/developers/ingame/developers-line-05.mp3"
+      "audio/developers/ingame/developers-line-05.mp3",
+      "audio/developers/ingame/developers-line-06.mp3",
+      "audio/developers/ingame/developers-line-07.mp3",
+      "audio/developers/ingame/developers-line-08.mp3",
+      "audio/developers/ingame/developers-line-09.mp3",
+      "audio/developers/ingame/developers-line-10.mp3",
+      "audio/developers/ingame/developers-line-11.mp3",
+      "audio/developers/ingame/developers-line-12.mp3",
+      "audio/developers/ingame/developers-line-13.mp3",
+      "audio/developers/ingame/developers-line-14.mp3",
+      "audio/developers/ingame/developers-line-15.mp3"
     ]
   },
   "round": {
     "P": [
+      "audio/designers/round/designers-win-02.mp3",
       "audio/designers/round/designers-win.mp3"
     ],
     "B": [
+      "audio/developers/round/developers-win-02.mp3",
       "audio/developers/round/developers-win.mp3"
     ]
   },

@@ -6,7 +6,7 @@ cd "$(dirname "$0")/.."
 
 # Pack zip URL. Configure via the AUDIO_PACK_URL env var or edit here
 # (e.g. a GitHub Release asset, or a private R2/S3 URL for deploys).
-URL="${AUDIO_PACK_URL:-https://github.com/jacksonfdam/umain-arena/releases/download/audio-pack-v2/audio-pack-v2.zip}"
+URL="${AUDIO_PACK_URL:-https://github.com/jacksonfdam/umain-arena/releases/download/audio-pack-v3/audio-pack-v3.zip}"
 DEST="public/audio"
 
 if [ -f "$DEST/manifest.json" ]; then
