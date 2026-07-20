@@ -1,2 +1,2 @@
 // Game version — bump on each release (follows the git v* tags).
-export const VERSION = '1.13.0';
+export const VERSION = '1.14.0';
