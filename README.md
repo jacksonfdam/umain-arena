@@ -81,10 +81,10 @@ The game loads `audio/manifest.json`:
 ```
 audio/
   manifest.json        # track map (edit when adding files)
-  petista/ingame/      # Designers team lines (radio + kill celebration)
-  petista/round/       # plays when the Designers win the round
-  bolsonaro/ingame/    # Developers team lines
-  bolsonaro/round/     # plays when the Developers win the round
+  designers/ingame/    # Designers team lines (radio + kill celebration)
+  designers/round/     # plays when the Designers win the round
+  developers/ingame/   # Developers team lines
+  developers/round/    # plays when the Developers win the round
   game/                # UT announcements + weapon sounds (awp, usp, knife, clips)
   cs/                  # OPTIONAL: drop-in for your own sounds (see LEIA-ME.txt)
   manifest.example.json  # reference manifest (versioned in git)
