@@ -3,16 +3,37 @@ import * as THREE from 'three';
 import { MAPS, resolveMapId } from './maps.js';
 import { buildCharacter, poseCharacter, byId, CHARACTERS, buildRifle } from './characters.js';
 
+// slot: 'primary' | 'secondary' | 'melee' — drives the 1/2/3 weapon slots and pickup routing.
+// scope: true weapons zoom on right-click; `bolt: true` snipers unscope after each shot (AWP/Scout).
 export const WEAPONS = {
-  awp:    { name: 'AWP Sniper', short: 'AWP', dmg: 400, mag: 5, reserve: 25, rate: 1.7, reload: 3.1, spreadHip: 0.075, spreadScope: 0.0008, recoil: 0.055, scope: true },
-  ak:     { name: 'AK-47', short: 'AK', dmg: 33, mag: 30, reserve: 90, rate: 0.1, reload: 2.5, spreadHip: 0.024, recoil: 0.008, auto: true },
-  m4:     { name: 'M4A1', short: 'M4', dmg: 31, mag: 30, reserve: 90, rate: 0.09, reload: 2.4, spreadHip: 0.02, recoil: 0.007, auto: true },
-  mp5:    { name: 'MP5', short: 'MP5', dmg: 26, mag: 30, reserve: 120, rate: 0.075, reload: 2.2, spreadHip: 0.03, recoil: 0.005, auto: true },
-  shotgun:{ name: 'M3 Shotgun', short: 'M3', dmg: 12, pellets: 8, mag: 7, reserve: 32, rate: 0.9, reload: 3.0, spreadHip: 0.06, recoil: 0.045 },
-  deagle: { name: 'Desert Eagle', short: 'DE', dmg: 53, mag: 7, reserve: 35, rate: 0.28, reload: 2.0, spreadHip: 0.012, recoil: 0.03 },
-  pistol: { name: 'Pistol', short: 'PIST', dmg: 34, mag: 12, reserve: 48, rate: 0.24, reload: 1.6, spreadHip: 0.02, recoil: 0.014, scope: false },
-  knife:  { name: 'Knife', short: 'KNIFE', dmg: 55, rate: 0.55, range: 2.4, reload: 0, recoil: 0.02, scope: false },
+  awp:    { name: 'AWP Sniper', short: 'AWP', slot: 'primary', dmg: 400, mag: 5, reserve: 25, rate: 1.7, reload: 3.1, spreadHip: 0.075, spreadScope: 0.0008, recoil: 0.055, scope: true, bolt: true },
+  scout:  { name: 'Scout SSG', short: 'SCOUT', slot: 'primary', dmg: 180, mag: 10, reserve: 90, rate: 1.25, reload: 2.0, spreadHip: 0.05, spreadScope: 0.0011, recoil: 0.03, scope: true, bolt: true },
+  ak:     { name: 'AK-47', short: 'AK', slot: 'primary', dmg: 33, mag: 30, reserve: 90, rate: 0.1, reload: 2.5, spreadHip: 0.024, recoil: 0.008, auto: true },
+  m4:     { name: 'M4A1', short: 'M4', slot: 'primary', dmg: 31, mag: 30, reserve: 90, rate: 0.09, reload: 2.4, spreadHip: 0.02, recoil: 0.007, auto: true },
+  famas:  { name: 'FAMAS', short: 'FAMAS', slot: 'primary', dmg: 30, mag: 25, reserve: 90, rate: 0.09, reload: 2.6, spreadHip: 0.022, recoil: 0.007, auto: true },
+  galil:  { name: 'Galil', short: 'GALIL', slot: 'primary', dmg: 30, mag: 35, reserve: 90, rate: 0.1, reload: 2.7, spreadHip: 0.026, recoil: 0.008, auto: true },
+  aug:    { name: 'AUG', short: 'AUG', slot: 'primary', dmg: 32, mag: 30, reserve: 90, rate: 0.09, reload: 2.5, spreadHip: 0.02, spreadScope: 0.006, recoil: 0.007, auto: true, scope: true },
+  sg552:  { name: 'SG-552', short: 'SG552', slot: 'primary', dmg: 33, mag: 30, reserve: 90, rate: 0.09, reload: 2.6, spreadHip: 0.022, spreadScope: 0.006, recoil: 0.008, auto: true, scope: true },
+  mp5:    { name: 'MP5', short: 'MP5', slot: 'primary', dmg: 26, mag: 30, reserve: 120, rate: 0.075, reload: 2.2, spreadHip: 0.03, recoil: 0.005, auto: true },
+  p90:    { name: 'P90', short: 'P90', slot: 'primary', dmg: 22, mag: 50, reserve: 100, rate: 0.07, reload: 3.3, spreadHip: 0.03, recoil: 0.004, auto: true },
+  mac10:  { name: 'MAC-10', short: 'MAC10', slot: 'primary', dmg: 25, mag: 30, reserve: 100, rate: 0.07, reload: 3.15, spreadHip: 0.038, recoil: 0.005, auto: true },
+  ump:    { name: 'UMP-45', short: 'UMP', slot: 'primary', dmg: 30, mag: 25, reserve: 100, rate: 0.09, reload: 3.5, spreadHip: 0.028, recoil: 0.006, auto: true },
+  m249:   { name: 'M249 Para', short: 'M249', slot: 'primary', dmg: 32, mag: 100, reserve: 200, rate: 0.08, reload: 4.7, spreadHip: 0.035, recoil: 0.006, auto: true },
+  shotgun:{ name: 'M3 Shotgun', short: 'M3', slot: 'primary', dmg: 12, pellets: 8, mag: 7, reserve: 32, rate: 0.9, reload: 3.0, spreadHip: 0.06, recoil: 0.045 },
+  deagle: { name: 'Desert Eagle', short: 'DE', slot: 'secondary', dmg: 53, mag: 7, reserve: 35, rate: 0.28, reload: 2.0, spreadHip: 0.012, recoil: 0.03 },
+  elite:  { name: 'Dual Berettas', short: 'ELITE', slot: 'secondary', dmg: 36, mag: 30, reserve: 120, rate: 0.12, reload: 3.8, spreadHip: 0.03, recoil: 0.014 },
+  usp:    { name: 'USP', short: 'USP', slot: 'secondary', dmg: 34, mag: 12, reserve: 100, rate: 0.15, reload: 2.2, spreadHip: 0.016, recoil: 0.012 },
+  glock:  { name: 'Glock-18', short: 'GLOCK', slot: 'secondary', dmg: 28, mag: 20, reserve: 120, rate: 0.15, reload: 2.2, spreadHip: 0.022, recoil: 0.01 },
+  pistol: { name: 'Pistol', short: 'PIST', slot: 'secondary', dmg: 34, mag: 12, reserve: 48, rate: 0.24, reload: 1.6, spreadHip: 0.02, recoil: 0.014, scope: false },
+  knife:  { name: 'Knife', short: 'KNIFE', slot: 'melee', dmg: 55, rate: 0.55, range: 2.4, reload: 0, recoil: 0.02, scope: false },
 };
+// grenade defs (throwables, not hitscan). count = how many you spawn with.
+export const GRENADES = {
+  he:    { name: 'HE Grenade', short: 'HE', fuse: 1.7, radius: 6.5, dmg: 98, count: 1, color: 0x3a5a3a },
+  flash: { name: 'Flashbang', short: 'FLASH', fuse: 1.5, radius: 12, count: 2, color: 0xcfcfcf },
+  smoke: { name: 'Smoke', short: 'SMOKE', fuse: 1.5, radius: 3.6, life: 14, count: 1, color: 0xdadada },
+};
+export const GRENADE_ORDER = ['he', 'flash', 'smoke'];
 const ROUND_TIME = 99, ROUNDS_TO_WIN = 3, RESPAWN_DELAY = 2.5, PICKUP_RESPAWN = 8;
 const BOT_SPEED = 3.3, BOT_EYE = 1.5;
 const TEAM_LABEL = { P: 'DESIGNERS', B: 'DEVELOPERS' };
@@ -67,6 +88,8 @@ export class Game {
       yaw: 0, pitch: 0, hp: 100, alive: true, respawnAt: 0, crouchF: 0,
       weapon: 'awp', scoped: false, reloadUntil: 0, nextShotAt: 0, drawUntil: 0,
       ammo: { awp: { mag: WEAPONS.awp.mag, res: WEAPONS.awp.reserve }, pistol: { mag: WEAPONS.pistol.mag, res: WEAPONS.pistol.reserve } },
+      slots: { primary: 'awp', secondary: 'pistol' },   // 1/2/3 keys select these + knife
+      nades: {}, nadeSel: null, lastWeapon: 'awp',        // grenade inventory + previous gun (to return after a throw)
       kills: 0, deaths: 0, headshots: 0, grounded: true, stepPhase: 0, revealedAt: -99,
     };
     this.combatants.push(this.player);
@@ -103,6 +126,9 @@ export class Game {
     this.puffs = [];
     this.flashes = [];
     this.drops = [];
+    this.projectiles = [];   // live thrown grenades
+    this.smokes = [];        // active smoke clouds (block hitscan + bot LOS)
+    this.blindUntil = 0; this.blindPeak = 0;   // player flashbang state
     this.puffTex = this._makePuffTexture();
     this.ray = new THREE.Raycaster();
 
@@ -131,7 +157,7 @@ export class Game {
     const $ = id => document.getElementById(id);
     this.el = {
       hud: $('hud'), crosshair: $('crosshair'), hitmarker: $('hitmarker'),
-      scope: $('scope-overlay'), vignette: $('damage-vignette'),
+      scope: $('scope-overlay'), vignette: $('damage-vignette'), blind: $('flash-blind'),
       hpFill: $('hp-fill'), hpNum: $('hp-num'), weaponName: $('weapon-name'),
       ammoMag: $('ammo-mag'), ammoRes: $('ammo-reserve'), reloadNote: $('reload-note'),
       roundTime: $('round-time'), roundsP: $('rounds-p'), roundsB: $('rounds-b'),
@@ -177,16 +203,52 @@ export class Game {
       g.position.set(0.26, -0.23, -0.5); g.rotation.y = 0.03;
       return g;
     };
+    // bolt a small scope + mount onto a rifle group (aug/sg552/scout)
+    const addScope = (g, z = -0.05) => {
+      const sc = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.026, 0.15, 8), dark(0x111111));
+      sc.rotation.x = Math.PI / 2; sc.position.set(0, 0.075, z); g.add(sc);
+      g.add(new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.04, 0.03), dark(0x222222)).translateY(0.045));
+      return g;
+    };
     const ak = mkRifle(dark(0x2a2a2a), dark(0x6b4f2c), 0.55, 0.16);
     const m4 = mkRifle(dark(0x333333), dark(0x2a2a2a), 0.52, 0.13);
+    const famas = mkRifle(dark(0x23262d), dark(0x23262d), 0.5, 0.12);
+    const galil = mkRifle(dark(0x2b2b2b), dark(0x4a3a24), 0.5, 0.18);
+    const aug = addScope(mkRifle(dark(0x2f2a22), dark(0x2f2a22), 0.5, 0.14));
+    const sg552 = addScope(mkRifle(dark(0x2a2a2a), dark(0x2a2a2a), 0.52, 0.16));
+    const scout = addScope(mkRifle(dark(0x24331f), dark(0x1a1a1a), 0.6, 0.1), 0.0);
     const mp5 = mkRifle(dark(0x2e2e2e), dark(0x2e2e2e), 0.4, 0.14);
+    const p90 = mkRifle(dark(0x33373d), dark(0x33373d), 0.36, 0.04);
+    { const m = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.035, 0.24), dark(0x44484f)); m.position.set(0, 0.08, -0.02); p90.add(m); } // top-mounted mag
+    const mac10 = mkRifle(dark(0x2a2a2a), dark(0x2a2a2a), 0.3, 0.16);
+    const ump = mkRifle(dark(0x2e2e2e), dark(0x1a1a1a), 0.42, 0.14);
+    const m249 = mkRifle(dark(0x2b2b2b), dark(0x2b2b2b), 0.62, 0.1);
+    { const m = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.13, 0.14), dark(0x3a3a3a)); m.position.set(0, -0.11, 0.02); m249.add(m); } // ammo box
     const shotgun = mkRifle(dark(0x1a1a1a), dark(0x7a5230), 0.5, 0.08);
+    // secondaries (pistol-shaped)
+    const mkPistol = (bodyC, gripC, len = 0.22) => {
+      const g = new THREE.Group();
+      g.add(new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.09, len), bodyC));
+      const grip = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.12, 0.06), gripC);
+      grip.position.set(0, -0.09, 0.08); grip.rotation.x = 0.25; g.add(grip);
+      const h = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.1, 0.08), skin); h.position.set(0, -0.1, 0.08); g.add(h);
+      g.position.set(0.24, -0.2, -0.42);
+      return g;
+    };
     const deagle = new THREE.Group();
     deagle.add(new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.11, 0.26), dark(0x8a8a8a)));
     const dgrip = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.12, 0.07), dark(0xc9a227));
     dgrip.position.set(0, -0.1, 0.09); dgrip.rotation.x = 0.25; deagle.add(dgrip);
     const handD = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.1, 0.08), skin); handD.position.set(0, -0.1, 0.09); deagle.add(handD);
     deagle.position.set(0.24, -0.2, -0.42);
+    const usp = mkPistol(dark(0x2a2a2a), dark(0x1c1c1c), 0.24);
+    { const s = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.1, 6), dark(0x111111)); s.rotation.x = Math.PI / 2; s.position.set(0, 0, -0.16); usp.add(s); } // suppressor
+    const glock = mkPistol(dark(0x3a3d42), dark(0x26282c), 0.2);
+    // dual berettas: two mirrored pistols
+    const elite = new THREE.Group();
+    { const pL = mkPistol(dark(0x9a9a9a), dark(0x2a2a2a)); pL.position.set(0.13, -0.2, -0.42);
+      const pR = mkPistol(dark(0x9a9a9a), dark(0x2a2a2a)); pR.position.set(0.34, -0.2, -0.42);
+      elite.add(pL, pR); }
     // pistol
     const pistol = new THREE.Group();
     pistol.add(new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.09, 0.22), dark(0x333333)));
@@ -200,10 +262,16 @@ export class Game {
     knife.add(new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.06, 0.12), dark(0x2a1e14)));
     const handK = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.08, 0.08), skin); handK.position.set(0, -0.02, 0.03); knife.add(handK);
     knife.position.set(0.28, -0.22, -0.4); knife.rotation.set(-0.2, 0.25, -0.15);
-    root.add(awp, ak, m4, mp5, shotgun, deagle, pistol, knife);
-    const models = { awp, ak, m4, mp5, shotgun, deagle, pistol, knife };
+    // grenade in hand (shown for any grenade type; recolored on equip)
+    const grenade = new THREE.Group();
+    const nadeBody = new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 6), dark(0x3a5a3a));
+    grenade.add(nadeBody);
+    { const h = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.1, 0.08), skin); h.position.set(0, -0.06, 0.02); grenade.add(h); }
+    grenade.position.set(0.24, -0.2, -0.4);
+    const models = { awp, scout, ak, m4, famas, galil, aug, sg552, mp5, p90, mac10, ump, m249, shotgun, deagle, elite, usp, glock, pistol, knife, grenade };
+    for (const k in models) root.add(models[k]);
     for (const k in models) models[k].visible = k === 'awp';
-    return { root, models, awp, pistol, knife, kick: 0, bobPhase: 0, reloadDip: 0 };
+    return { root, models, nadeBody, awp, pistol, knife, kick: 0, bobPhase: 0, reloadDip: 0 };
   }
 
   _makePuffTexture() {
@@ -233,9 +301,11 @@ export class Game {
       if (e.code === 'KeyZ') { this._radioShow('z'); return; }
       if (e.code === 'KeyX') { this._radioShow('x'); return; }
       if (e.code === 'KeyV') { this._radioShow('c'); return; }
-      if (e.code === 'Digit1') this._switchWeapon('awp');
-      if (e.code === 'Digit2') this._switchWeapon('pistol');
+      if (e.code === 'Digit1') this._switchWeapon(this.player.slots.primary);
+      if (e.code === 'Digit2') this._switchWeapon(this.player.slots.secondary);
       if (e.code === 'Digit3') this._switchWeapon('knife');
+      if (e.code === 'Digit4') this._selectGrenade();
+      if (e.code === 'KeyG') this._selectGrenade(true);   // G cycles/quick-selects grenades
       if (e.code === 'KeyE' && this.nearPickup) {
         const { pk, dropIdx } = this.nearPickup;
         this._grabPickup(pk, this.player, true);
@@ -351,24 +421,36 @@ export class Game {
     place(this.player, this.playerTeam, 0);
     this.player.yaw = this.playerTeam === 'P' ? Math.PI : 0;
     this.player.pitch = 0; this.player.vel.set(0, 0, 0); this.player.crouchF = 0;
-    this.player.ammo.awp = { mag: WEAPONS.awp.mag, res: WEAPONS.awp.reserve };
-    this.player.ammo.pistol = { mag: WEAPONS.pistol.mag, res: WEAPONS.pistol.reserve };
-    // weapon mode: apply the initial loadout
+    // fresh loadout — clears any weapons/ammo picked up last round
+    const give = w => ({ [w]: { mag: WEAPONS[w].mag, res: WEAPONS[w].reserve } });
     const mode = this.settings.wpnMode || 'all';
+    this.player.nades = {};
     if (mode === 'pistols') {
+      this.player.ammo = give('pistol');
+      this.player.slots = { primary: 'pistol', secondary: 'pistol' };
       this.player.weapon = 'pistol';
-      this.player.ammo.awp = { mag: 0, res: 0 };
     } else if (mode === 'knife') {
+      this.player.ammo = {};
+      this.player.slots = { primary: 'knife', secondary: 'knife' };
       this.player.weapon = 'knife';
-      this.player.ammo.awp = { mag: 0, res: 0 };
-      this.player.ammo.pistol = { mag: 0, res: 0 };
     } else if (mode === 'awp') {
+      this.player.ammo = give('awp');
+      this.player.slots = { primary: 'awp', secondary: 'awp' };
       this.player.weapon = 'awp';
-      this.player.ammo.pistol = { mag: 0, res: 0 };
     } else {
+      this.player.ammo = Object.assign(give('awp'), give('pistol'));
+      this.player.slots = { primary: 'awp', secondary: 'pistol' };
       this.player.weapon = 'awp';
+      for (const k of GRENADE_ORDER) this.player.nades[k] = GRENADES[k].count;   // full nade kit
     }
+    this.player.nadeSel = null; this.player.lastWeapon = this.player.weapon;
     this.player.scoped = false; this.player.reloadUntil = 0;
+    this.blindUntil = 0; this.blindPeak = 0;
+    for (const s of this.smokes) this.scene.remove(s.group);
+    this.smokes = [];
+    for (const pr of this.projectiles) this.scene.remove(pr.mesh);
+    this.projectiles = [];
+    if (this.el.blind) this.el.blind.style.opacity = 0;
     for (const d of this.drops) this.scene.remove(d.mesh);
     this.drops = [];
     for (const k in this.vm.models) this.vm.models[k].visible = k === this.player.weapon;
@@ -506,9 +588,12 @@ export class Game {
   /* ================= weapons ================= */
   _switchWeapon(w) {
     const p = this.player;
-    if (p.weapon === w || !p.alive || !WEAPONS[w]) return;
+    if ((p.weapon === w && !p.nadeSel) || !p.alive || !WEAPONS[w]) return;   // same key while a nade is up = put it away
     if (w !== 'knife' && !p.ammo[w]) p.ammo[w] = { mag: WEAPONS[w].mag, res: WEAPONS[w].reserve };
-    p.weapon = w; p.reloadUntil = 0; p.drawUntil = this.time + 0.28;
+    p.weapon = w; p.nadeSel = null; p.lastWeapon = w;
+    p.reloadUntil = 0; p.drawUntil = this.time + 0.28;
+    if (WEAPONS[w].slot === 'primary') p.slots.primary = w;
+    else if (WEAPONS[w].slot === 'secondary') p.slots.secondary = w;
     this.vm.reloadDip = 0;   // avoids the weapon getting stuck tilted when switching mid-reload
     this.bloom = 0;
     this._scope(false, true);
@@ -521,7 +606,7 @@ export class Game {
   }
   _scope(on, silent = false) {
     const p = this.player;
-    if (on && (p.weapon !== 'awp' || !p.alive || this._reloading())) on = false;
+    if (on && (!WEAPONS[p.weapon].scope || !p.alive || this._reloading() || p.nadeSel)) on = false;
     if (p.scoped === on) return;
     p.scoped = on;
     this.el.scope.classList.toggle('on', on);
@@ -539,8 +624,10 @@ export class Game {
     this.sfx.reloadStart();
   }
   _tryShoot() {
-    const p = this.player, w = WEAPONS[p.weapon];
+    const p = this.player;
     if (!p.alive || this.state !== 'live') return;
+    if (p.nadeSel) { this._throwGrenade(); return; }
+    const w = WEAPONS[p.weapon];
     if (this.time < p.nextShotAt || this._reloading() || this.time < p.drawUntil) return;
     if (p.weapon === 'knife') {
       p.nextShotAt = this.time + w.rate;
@@ -553,12 +640,12 @@ export class Game {
     a.mag--;
     p.nextShotAt = this.time + w.rate;
     p.revealedAt = this.time;
-    if (p.weapon === 'awp') setTimeout(() => this.sfx.bolt(), 420);
+    if (w.bolt) setTimeout(() => this.sfx.bolt(), 420);
     this.sfx.shotWeapon(p.weapon);
     // spread & direction — crouching tightens it up; autos add bloom
     const crouchMul = 1 - 0.5 * p.crouchF;
     this.bloom = Math.min(1.6, (this.bloom || 0) + (w.auto ? 0.22 : 0));
-    const spreadBase = (p.weapon === 'awp' ? (p.scoped ? w.spreadScope : w.spreadHip) : w.spreadHip) * crouchMul;
+    const spreadBase = (p.scoped && w.spreadScope != null ? w.spreadScope : w.spreadHip) * crouchMul;
     const from = this.camera.getWorldPosition(new THREE.Vector3());
     const pellets = w.pellets || 1;
     for (let i = 0; i < pellets; i++) {
@@ -571,7 +658,7 @@ export class Game {
     // recoil + muzzle flash
     p.pitch += w.recoil * (1 - 0.25 * p.crouchF); this.vm.kick = 1;
     this._flash(this.camera.localToWorld(new THREE.Vector3(0.26, -0.2, -1.1)));
-    if (p.weapon === 'awp') this._scope(false, true);
+    if (w.bolt) this._scope(false, true);   // bolt-action snipers re-chamber between shots
     // auto-reload the moment the mag runs dry (no dry-fire click required)
     const a2 = p.ammo[p.weapon];
     if (a2.mag <= 0 && a2.res > 0) this._startReload();
@@ -603,7 +690,7 @@ export class Game {
         o = o.parent;
       }
       end = hC.point;
-      if (bot) {
+      if (bot && !this._segHitsSmoke(from, end)) {   // smoke eats the bullet
         if (bot.team === shooter.team) { /* friendly fire off */ }
         else this._damage(bot, head && dmg < 100 ? 100 : dmg, shooter, weap, head); // headshot: minimum damage 100
       }
@@ -716,6 +803,161 @@ export class Game {
     this.scene.add(s);
     this.flashes.push({ s, ttl: 0.05 });
   }
+  /* ================= grenades ================= */
+  _ownedNades() { return GRENADE_ORDER.filter(k => (this.player.nades[k] || 0) > 0); }
+  _selectGrenade(cycle = false) {
+    const p = this.player;
+    if (!p.alive || this.state !== 'live') return;
+    const owned = this._ownedNades();
+    if (!owned.length) { this.sfx.dryFire(); return; }
+    let next;
+    if (p.nadeSel && cycle) next = owned[(owned.indexOf(p.nadeSel) + 1) % owned.length];
+    else if (p.nadeSel) next = p.nadeSel;
+    else { p.lastWeapon = p.weapon; next = owned[0]; }   // remember the gun to return to
+    p.nadeSel = next;
+    this._scope(false, true);
+    for (const k in this.vm.models) this.vm.models[k].visible = (k === 'grenade');
+    if (this.vm.nadeBody) this.vm.nadeBody.material.color.setHex(GRENADES[next].color);
+    this.el.weaponName.textContent = `${GRENADES[next].name} ×${p.nades[next]}`;
+    this.el.reloadNote.classList.add('hidden');
+    this.sfx.uiClick();
+  }
+  _redrawWeapon() {   // return the held gun's view model + HUD after a grenade is put away
+    const w = this.player.weapon;
+    for (const k in this.vm.models) this.vm.models[k].visible = (k === w);
+    this.el.weaponName.textContent = WEAPONS[w].name;
+  }
+  _throwGrenade() {
+    const p = this.player, kind = p.nadeSel;
+    if (!kind || (p.nades[kind] || 0) <= 0) return;
+    if (this.time < (p.nextShotAt || 0) || this.time < p.drawUntil) return;
+    p.nextShotAt = this.time + 0.8;
+    p.nades[kind]--;
+    const from = this.camera.localToWorld(new THREE.Vector3(0.2, -0.12, -0.5));
+    const dir = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
+    const vel = dir.multiplyScalar(19).add(new THREE.Vector3(0, 3.6, 0)).add(p.vel.clone());
+    const mesh = new THREE.Mesh(new THREE.SphereGeometry(0.09, 8, 6), new THREE.MeshLambertMaterial({ color: GRENADES[kind].color }));
+    mesh.position.copy(from); mesh.castShadow = true; this.scene.add(mesh);
+    this.projectiles.push({ kind, pos: from.clone(), vel, mesh, fuse: GRENADES[kind].fuse, owner: p });
+    this.sfx.uiClick();
+    if ((p.nades[kind] || 0) <= 0) { p.nadeSel = null; this._redrawWeapon(); }   // out — back to the gun
+    else this.el.weaponName.textContent = `${GRENADES[kind].name} ×${p.nades[kind]}`;
+  }
+  _updateProjectiles(dt) {
+    const B = this.world.bounds;
+    for (let i = this.projectiles.length - 1; i >= 0; i--) {
+      const pr = this.projectiles[i];
+      pr.fuse -= dt;
+      pr.vel.y -= 22 * dt;
+      pr.pos.addScaledVector(pr.vel, dt);
+      if (pr.pos.y < 0.09) { pr.pos.y = 0.09; pr.vel.y = -pr.vel.y * 0.4; pr.vel.x *= 0.72; pr.vel.z *= 0.72; }
+      if (pr.pos.x < B.minX + 0.1) { pr.pos.x = B.minX + 0.1; pr.vel.x = Math.abs(pr.vel.x) * 0.5; }
+      if (pr.pos.x > B.maxX - 0.1) { pr.pos.x = B.maxX - 0.1; pr.vel.x = -Math.abs(pr.vel.x) * 0.5; }
+      if (pr.pos.z < B.minZ + 0.1) { pr.pos.z = B.minZ + 0.1; pr.vel.z = Math.abs(pr.vel.z) * 0.5; }
+      if (pr.pos.z > B.maxZ - 0.1) { pr.pos.z = B.maxZ - 0.1; pr.vel.z = -Math.abs(pr.vel.z) * 0.5; }
+      for (const c of this.world.colliders) {
+        if (pr.pos.x > c.minX && pr.pos.x < c.maxX && pr.pos.z > c.minZ && pr.pos.z < c.maxZ && pr.pos.y > c.minY && pr.pos.y < c.maxY) {
+          const dTop = c.maxY - pr.pos.y, dxA = pr.pos.x - c.minX, dxB = c.maxX - pr.pos.x, dzA = pr.pos.z - c.minZ, dzB = c.maxZ - pr.pos.z;
+          const m = Math.min(dTop, dxA, dxB, dzA, dzB);
+          if (m === dTop) { pr.pos.y = c.maxY + 0.01; pr.vel.y = Math.abs(pr.vel.y) * 0.35; pr.vel.x *= 0.8; pr.vel.z *= 0.8; }
+          else if (m === dxA) { pr.pos.x = c.minX - 0.01; pr.vel.x = -Math.abs(pr.vel.x) * 0.5; }
+          else if (m === dxB) { pr.pos.x = c.maxX + 0.01; pr.vel.x = Math.abs(pr.vel.x) * 0.5; }
+          else if (m === dzA) { pr.pos.z = c.minZ - 0.01; pr.vel.z = -Math.abs(pr.vel.z) * 0.5; }
+          else { pr.pos.z = c.maxZ + 0.01; pr.vel.z = Math.abs(pr.vel.z) * 0.5; }
+        }
+      }
+      pr.mesh.position.copy(pr.pos);
+      pr.mesh.rotation.x += dt * 6; pr.mesh.rotation.y += dt * 4;
+      if (pr.fuse <= 0) { this._detonate(pr); this.scene.remove(pr.mesh); pr.mesh.geometry.dispose(); pr.mesh.material.dispose(); this.projectiles.splice(i, 1); }
+    }
+  }
+  _explosion(pos, color = 0xffe9a0) {
+    this._flash(pos);
+    for (let i = 0; i < 6; i++) {
+      const n = new THREE.Vector3((Math.random() - .5), Math.random() * 0.6, (Math.random() - .5)).normalize();
+      this._puff(pos.clone().add(n.clone().multiplyScalar(0.4)), n);
+    }
+  }
+  _detonate(pr) {
+    const g = GRENADES[pr.kind], center = pr.pos.clone();
+    if (pr.kind === 'he') {
+      this._explosion(center);
+      const blast = center.clone().setY(center.y + 0.25);
+      for (const ent of this.combatants) {
+        if (!ent.alive) continue;
+        if (ent !== pr.owner && ent.team === pr.owner.team) continue;   // spare allies (self-damage kept)
+        const mid = ent.pos.clone().setY(ent.pos.y + 1.0);
+        const d = mid.distanceTo(center);
+        if (d > g.radius) continue;
+        if (!this._losClear(blast, mid)) continue;
+        const dmg = Math.round(g.dmg * (1 - d / g.radius));
+        if (dmg > 0) this._damage(ent, dmg, pr.owner, 'HE');
+      }
+      if (!this.sfx.csSound?.('explosion')) this.sfx.shotAwp();
+    } else if (pr.kind === 'flash') {
+      this._flashbang(center, g.radius);
+    } else if (pr.kind === 'smoke') {
+      this._spawnSmoke(center, g.radius, g.life);
+    }
+  }
+  _flashbang(pos, radius) {
+    const blast = pos.clone().setY(pos.y + 0.2);
+    this._explosion(pos, 0xffffff);
+    const cam = this.camera.position.clone(), p = this.player;
+    if (p.alive && cam.distanceTo(pos) < radius && this._losClear(blast, cam)) {
+      const d = cam.distanceTo(pos);
+      const toBlast = pos.clone().sub(cam).normalize();
+      const look = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
+      const facing = Math.max(0, toBlast.dot(look));
+      const intensity = Math.max(0, (0.3 + 0.7 * facing) * (0.35 + 0.65 * (1 - d / radius)));
+      if (intensity > 0.05) {
+        this.blindPeak = Math.max(this.blindPeak, Math.min(1, intensity));
+        this.blindUntil = Math.max(this.blindUntil, this.time + 1.2 + intensity * 3.2);
+        this.sfx.scopeOut?.();
+      }
+    }
+    for (const b of this.bots) {
+      if (!b.alive) continue;
+      const eye = this._botEye(b);
+      if (eye.distanceTo(pos) < radius && this._losClear(blast, eye)) {
+        b.reactAt = Math.max(b.reactAt, this.time + 2.8 * (1 - eye.distanceTo(pos) / radius));
+        b.target = null;
+      }
+    }
+  }
+  _spawnSmoke(pos, radius, life) {
+    const group = new THREE.Group();
+    const puffs = [];
+    for (let i = 0; i < 11; i++) {
+      const m = new THREE.Mesh(
+        new THREE.SphereGeometry(radius * (0.55 + Math.random() * 0.3), 7, 6),
+        new THREE.MeshLambertMaterial({ color: 0xdcdcdc, transparent: true, opacity: 0 }));
+      m.position.set((Math.random() - .5) * radius, Math.random() * radius * 0.6 + 0.4, (Math.random() - .5) * radius);
+      group.add(m); puffs.push(m);
+    }
+    const base = pos.clone(); base.y = Math.max(0, base.y);
+    group.position.copy(base);
+    this.scene.add(group);
+    this.smokes.push({ pos: base.clone().setY(Math.max(1.3, base.y + 1.0)), r: radius, t: 0, life, group, puffs });
+    this.sfx.reloadStart?.();
+  }
+  _updateSmokes(dt) {
+    for (let i = this.smokes.length - 1; i >= 0; i--) {
+      const s = this.smokes[i];
+      s.t += dt;
+      const grow = Math.min(1, s.t / 0.8);
+      const fade = s.t > s.life - 2 ? Math.max(0, (s.life - s.t) / 2) : 1;
+      const op = 0.82 * fade;
+      for (const m of s.puffs) { m.material.opacity = op; m.scale.setScalar(0.45 + 0.55 * grow); m.rotation.y += dt * 0.25; }
+      if (s.t >= s.life) { this.scene.remove(s.group); s.puffs.forEach(m => m.material.dispose()); this.smokes.splice(i, 1); }
+    }
+  }
+  _updateBlind() {
+    if (!this.el.blind) return;
+    let a = 0;
+    if (this.time < this.blindUntil) a = this.blindPeak * Math.min(1, (this.blindUntil - this.time) / 2.5);
+    this.el.blind.style.opacity = a.toFixed(3);
+  }
   _updateFx(dt) {
     for (let i = this.tracers.length - 1; i >= 0; i--) {
       const t = this.tracers[i];
@@ -802,8 +1044,8 @@ export class Game {
       if (!p.grounded && p.vel.y < -6) this.sfx.land();
       p.pos.y = g2; p.vel.y = 0; p.grounded = true;
     } else if (p.pos.y > g2 + 0.05) p.grounded = false;
-    // auto-fire (ak/m4/mp5) while the button is held down
-    if (WEAPONS[p.weapon].auto && this.mouseDown0 && p.alive) this._tryShoot();
+    // auto-fire (autos) while the button is held down — grenades are click-to-throw, never auto
+    if (!p.nadeSel && WEAPONS[p.weapon].auto && this.mouseDown0 && p.alive) this._tryShoot();
     this.bloom = Math.max(0, (this.bloom || 0) - dt * 1.8);
     // camera (eye drops when crouched)
     const eye = 1.62 - 0.52 * p.crouchF;
@@ -867,7 +1109,8 @@ export class Game {
     this.nearPickup = near && this.player.alive && this._pickupAllowed(near.weapon) ? { pk: near, dropIdx: nearDrop } : null;
     if (this.el.pickupHint) {
       if (this.nearPickup && this.state === 'live') {
-        this.el.pickupHint.textContent = `[E] GRAB ${WEAPONS[this.nearPickup.pk.weapon].short}`;
+        { const kw = this.nearPickup.pk.weapon; const lbl = WEAPONS[kw] ? WEAPONS[kw].short : (GRENADES[kw] ? GRENADES[kw].short : kw);
+          this.el.pickupHint.textContent = `[E] GRAB ${lbl}`; }
         this.el.pickupHint.classList.remove('hidden');
       } else this.el.pickupHint.classList.add('hidden');
     }
@@ -894,13 +1137,24 @@ export class Game {
   }
   _pickupAllowed(w) {
     const mode = this.settings.wpnMode || 'all';
-    if (mode === 'pistols') return w === 'pistol' || w === 'deagle';
+    if (GRENADES[w]) return mode === 'all';        // grenades only in the full-loadout mode
+    if (mode === 'pistols') return WEAPONS[w] && WEAPONS[w].slot === 'secondary';
     if (mode === 'knife') return false;
     if (mode === 'awp') return w === 'awp';
     return true; // all
   }
   _grabPickup(pk, who, isPlayer) {
-    const w = pk.weapon;                           // any weapon from WEAPONS
+    const w = pk.weapon;                           // any weapon from WEAPONS (or a grenade)
+    if (GRENADES[w]) {                             // grenade pickup: top up the inventory (bots ignore)
+      if (isPlayer) {
+        who.nades[w] = Math.min(GRENADES[w].count, (who.nades[w] || 0) + 1);
+        if (who.nadeSel === w) this.el.weaponName.textContent = `${GRENADES[w].name} ×${who.nades[w]}`;
+        this.sfx.reloadEnd();
+      } else return false;                          // bots don't pick up grenades
+      if (pk.mesh) pk.mesh.visible = false;
+      pk.readyAt = this.time + PICKUP_RESPAWN;
+      return true;
+    }
     if (!WEAPONS[w]) return false;
     if (isPlayer) {
       if (!who.ammo[w]) who.ammo[w] = { mag: 0, res: 0 };
@@ -938,16 +1192,31 @@ export class Game {
     p.pos.set(s.x, 0, s.z); p.vel.set(0, 0, 0);
     p.hp = 100; p.alive = true; p.crouchF = 0;
     p.yaw = p.team === 'P' ? Math.PI : 0; p.pitch = 0;
-    p.ammo.awp.mag = WEAPONS.awp.mag; p.ammo.pistol.mag = WEAPONS.pistol.mag;
+    for (const k in p.ammo) { p.ammo[k].mag = WEAPONS[k].mag; p.ammo[k].res = WEAPONS[k].reserve; }
+    if ((this.settings.wpnMode || 'all') === 'all') for (const k of GRENADE_ORDER) p.nades[k] = GRENADES[k].count;  // refill nade kit
     this.camera.rotation.z = 0;
     this.el.respawn.classList.add('hidden');
     this.sfx.respawn();
   }
 
   /* ================= bots ================= */
+  // does the segment from→to pass through any active smoke cloud?
+  _segHitsSmoke(from, to) {
+    if (!this.smokes.length) return false;
+    const d = to.clone().sub(from), len = d.length() || 1; d.divideScalar(len);
+    for (const s of this.smokes) {
+      if (s.t < 0.35) continue;   // still puffing up — not yet opaque
+      const oc = s.pos.clone().sub(from);
+      const proj = Math.max(0, Math.min(len, oc.dot(d)));
+      const closest = from.clone().add(d.clone().multiplyScalar(proj));
+      if (closest.distanceToSquared(s.pos) < s.r * s.r) return true;
+    }
+    return false;
+  }
   _losClear(from, to) {
     const dir = to.clone().sub(from), dist = dir.length();
     if (dist < 0.5) return true;
+    if (this._segHitsSmoke(from, to)) return false;
     this.ray.set(from, dir.normalize()); this.ray.far = dist - 0.3;
     return this.ray.intersectObjects(this.world.occluders, false).length === 0;
   }
@@ -1139,8 +1408,12 @@ export class Game {
     this.el.hpFill.style.width = Math.max(0, p.hp) + '%';
     this.el.hpFill.classList.toggle('low', p.hp <= 35);
     this.el.hpNum.classList.toggle('low', p.hp <= 35);
-    if (p.weapon === 'knife') {
+    if (p.nadeSel) {
+      this.el.ammoMag.textContent = p.nades[p.nadeSel] || 0; this.el.ammoRes.textContent = GRENADES[p.nadeSel].short;
+      this.el.ammoMag.classList.toggle('empty', (p.nades[p.nadeSel] || 0) === 0);
+    } else if (p.weapon === 'knife') {
       this.el.ammoMag.textContent = '—'; this.el.ammoRes.textContent = '';
+      this.el.ammoMag.classList.remove('empty');
     } else {
       const a = p.ammo[p.weapon];
       this.el.ammoMag.textContent = a.mag;
@@ -1172,6 +1445,9 @@ export class Game {
     this._updatePlayer(dt);
     for (const b of this.bots) this._updateBot(b, dt);
     this._updatePickups();
+    this._updateProjectiles(dt);
+    this._updateSmokes(dt);
+    this._updateBlind();
     this._updateFx(dt);
     this._updateHud();
     this._updateRadar();

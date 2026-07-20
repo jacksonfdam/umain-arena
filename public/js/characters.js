@@ -33,6 +33,18 @@ export const CHARACTERS = [
   { id: 'tech_lead', team: 'B', name: 'The Tech Lead',
     blurb: 'Blazer, headset and 47 productivity frameworks. Already won before standup — in theory.',
     pal: { skin: 0xf2c9a4, shirt: 0xf0f0f0, pants: 0x2a2a2a, hair: 0x2a2a2a, boots: 0x1a1a1a } },
+  { id: 'content_designer', team: 'P', name: 'The Content Designer',
+    blurb: 'Notebook, a pencil behind the ear and strong opinions on microcopy. Fires only well-labeled shots.',
+    pal: { skin: 0xe0a884, shirt: 0x2e8b8b, pants: 0x3a3f4a, hair: 0x5a3a24, boots: 0x2a2a2a } },
+  { id: 'design_systems', team: 'P', name: 'The Design Systems Lead',
+    blurb: 'Everything on an 8px grid, tokens for days. Reuses every shot — never ships a magic number.',
+    pal: { skin: 0xc98d5e, shirt: 0x5b53c6, pants: 0x2a2e3a, hair: 0x1f1f1f, boots: 0x4a4a4a } },
+  { id: 'mobile_dev', team: 'B', name: 'The Mobile Dev',
+    blurb: 'Beanie, two test phones and a battery pack. Ships to both stores mid-firefight.',
+    pal: { skin: 0xd9a066, shirt: 0x3a3f4a, pants: 0x24303f, hair: 0x2a1e14, boots: 0x1f1f1f } },
+  { id: 'data_engineer', team: 'B', name: 'The Data Engineer',
+    blurb: 'Big headphones, a pipeline on their back and cold coffee. Batches kills overnight.',
+    pal: { skin: 0xeec39a, shirt: 0xe07b39, pants: 0x2e3d55, hair: 0x3a3a3a, boots: 0x3a2a1e } },
 ];
 export const byId = id => CHARACTERS.find(c => c.id === id);
 
@@ -203,6 +215,37 @@ function addAccessories(def, parts, torsoW) {
       head.add(box(0.015, 0.015, 0.14, 0x1a1a1a, 0.14, 0.08, 0.1));   // mic
       torso.add(box(0.16, 0.22, 0.03, 0xf0f0f0, -torsoW / 2 - 0.1, 0.12, 0.08)); // book
       torso.add(box(0.12, 0.03, 0.035, 0xe03232, -torsoW / 2 - 0.1, 0.14, 0.09)); // book title
+      break;
+    case 'content_designer':
+      head.add(box(0.28, 0.09, 0.28, p.hair, 0, 0.29, -0.01));         // side-part hair
+      sunglasses(0.27, 0x30302a);                                       // reading glasses
+      head.add(box(0.02, 0.02, 0.12, 0xe8c25a, 0.13, 0.24, 0.02));      // pencil behind ear
+      torso.add(box(0.18, 0.24, 0.03, 0xf2ecd8, -torsoW / 2 - 0.1, 0.12, 0.08)); // notebook
+      torso.add(box(0.13, 0.015, 0.035, 0x2e8b8b, -torsoW / 2 - 0.1, 0.18, 0.09)); // ruled line
+      torso.add(box(0.34, 0.07, 0.30, 0x1f6f6f, 0, 0.56, 0));           // teal scarf
+      break;
+    case 'design_systems':
+      head.add(box(0.27, 0.10, 0.27, p.hair, 0, 0.30, 0));              // cropped hair
+      sunglasses(0.28, 0x141414);
+      { const grid = box(0.30, 0.34, 0.04, 0x2a2e3a, 0, 0.30, 0.14);    // grid panel on chest
+        torso.add(grid);
+        for (const gx of [-0.09, 0, 0.09]) for (const gy of [0.22, 0.31, 0.40])
+          torso.add(box(0.05, 0.05, 0.02, 0x8b86e6, gx, gy, 0.165)); }  // token swatches
+      break;
+    case 'mobile_dev':
+      head.add(box(0.29, 0.14, 0.29, 0x3a5f8a, 0, 0.30, 0));            // beanie
+      torso.add(box(0.10, 0.16, 0.02, 0x111111, -0.13, 0.34, 0.15));    // phone 1
+      torso.add(box(0.10, 0.16, 0.02, 0x111111, 0.13, 0.30, 0.15));     // phone 2
+      torso.add(box(0.09, 0.14, 0.06, 0x2a2a2a, torsoW / 2 + 0.02, 0.0, 0.02)); // battery pack on hip
+      break;
+    case 'data_engineer':
+      head.add(box(0.28, 0.08, 0.26, p.hair, 0, 0.28, 0));              // hair
+      { const arc = new THREE.Mesh(new THREE.TorusGeometry(0.14, 0.02, 6, 12, Math.PI), M(0x1a1a1a));
+        arc.rotation.z = Math.PI; arc.position.set(0, 0.23, 0); head.add(arc);
+        head.add(box(0.06, 0.1, 0.06, 0x1a1a1a, -0.15, 0.05, 0));       // ear cup L
+        head.add(box(0.06, 0.1, 0.06, 0x1a1a1a, 0.15, 0.05, 0)); }      // ear cup R (big headphones)
+      torso.add(box(0.36, 0.42, 0.16, 0x2e3d55, 0, 0.28, -0.22));       // pipeline backpack
+      torso.add(box(0.05, 0.08, 0.05, 0xf2ecd8, -torsoW / 2 - 0.06, 0.32, 0.08)); // coffee cup
       break;
   }
 }

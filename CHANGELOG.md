@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.13.0] — 2026-07-20
+### Added
+- **12 new weapons** playable alongside the existing arsenal, with dedicated
+  viewmodels and ground pickups on the Pool map:
+  - Rifles: **FAMAS**, **Galil**
+  - Scoped: **AUG**, **SG-552** (zoom without unscoping), **Scout SSG** (bolt-action)
+  - SMG/LMG: **P90**, **MAC-10**, **UMP-45**, **M249 Para**
+  - Secondaries: **Glock-18**, **USP** (suppressed), **Dual Berettas**
+- **Grenades** (full-loadout mode): **HE** (radius damage with line-of-sight
+  falloff), **Flashbang** (screen blind scaled by how directly you're looking at
+  it; also blinds bots) and **Smoke** (a cloud that blocks bullets and bot vision).
+  Select with **4** or **G** (cycles), throw with left-click. Ground pickups top
+  up your kit; you respawn with a full set.
+- **Weapon slots**: **1** = primary, **2** = secondary, **3** = knife — the number
+  keys now remember whatever gun you picked up into that slot.
+- **4 new player skins** (procedural, original personas): Content Designer &
+  Design Systems Lead (Designers), Mobile Dev & Data Engineer (Developers).
+
+### Changed
+- Scope is generalized: any scoped weapon zooms on right-click; only bolt-action
+  snipers (AWP, Scout) re-chamber between shots.
+- PISTOLS ONLY mode now allows every secondary (Glock/USP/Dual Berettas/DE) in pickups.
+
 ## [1.12.3] — 2026-07-18
 ### Fixed
 - **Weapon mode also filters the map**: in PISTOLS ONLY/KNIFE/AWP, incompatible

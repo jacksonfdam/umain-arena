@@ -215,17 +215,34 @@ export function buildPoolDay(scene, T) {
       case 'm4': add(box(0.09, 0.1, 1.0, GM.black, 0, 0.09, 0), box(0.1, 0.14, 0.32, GM.black, 0, 0.1, 0.45), box(0.08, 0.06, 0.3, GM.black, 0, 0.17, 0.02), box(0.08, 0.2, 0.13, GM.black, 0, 0, -0.05)); break;
       case 'mp5': add(box(0.09, 0.11, 0.62, GM.black, 0, 0.09, 0), box(0.09, 0.1, 0.22, GM.black, 0, 0.09, 0.36), box(0.07, 0.22, 0.1, GM.black, 0, 0, -0.02)); break;
       case 'shotgun': add(box(0.1, 0.11, 1.0, GM.black, 0, 0.11, 0), box(0.1, 0.09, 0.9, GM.wood, 0, 0.02, 0.02), box(0.11, 0.15, 0.34, GM.wood, 0, 0.1, 0.5)); break;
+      case 'scout': add(box(0.09, 0.09, 1.25, GM.green, 0, 0.09, 0.05), box(0.1, 0.14, 0.32, GM.black, 0, 0.1, 0.55), cyl(0.045, 0.3, GM.black, 0, 0.18, 0.0), box(0.08, 0.16, 0.14, GM.black, 0, 0.03, -0.12)); break;
+      case 'famas': add(box(0.1, 0.11, 0.9, GM.black, 0, 0.09, 0), box(0.09, 0.13, 0.28, GM.black, 0, 0.1, 0.42), box(0.08, 0.22, 0.12, GM.black, 0, -0.01, -0.05)); break;
+      case 'galil': add(box(0.1, 0.1, 1.0, GM.black, 0, 0.09, 0), box(0.11, 0.13, 0.3, GM.black, 0, 0.1, 0.45), box(0.1, 0.26, 0.14, GM.black, 0, -0.03, -0.02)); break;
+      case 'aug': add(box(0.11, 0.13, 0.95, GM.tan, 0, 0.1, 0), box(0.11, 0.14, 0.3, GM.tan, 0, 0.1, -0.18), cyl(0.04, 0.24, GM.black, 0, 0.2, 0.1), box(0.1, 0.24, 0.14, GM.black, 0, -0.02, 0.1)); break;
+      case 'sg552': add(box(0.1, 0.11, 1.0, GM.black, 0, 0.09, 0), box(0.11, 0.13, 0.3, GM.black, 0, 0.1, 0.45), cyl(0.038, 0.2, GM.black, 0, 0.19, 0.05), box(0.1, 0.24, 0.14, GM.black, 0, -0.03, -0.02)); break;
+      case 'p90': add(box(0.11, 0.12, 0.66, GM.black, 0, 0.1, 0), box(0.09, 0.06, 0.4, GM.steel, 0, 0.17, 0.02), box(0.08, 0.2, 0.12, GM.black, 0, 0, -0.05)); break;
+      case 'mac10': add(box(0.09, 0.12, 0.5, GM.black, 0, 0.1, 0), box(0.08, 0.24, 0.1, GM.black, 0, -0.02, 0.02)); break;
+      case 'ump': add(box(0.09, 0.11, 0.72, GM.black, 0, 0.09, 0), box(0.09, 0.1, 0.24, GM.black, 0, 0.09, 0.4), box(0.08, 0.22, 0.11, GM.black, 0, 0, -0.02)); break;
+      case 'm249': add(box(0.12, 0.13, 1.15, GM.black, 0, 0.11, 0), box(0.14, 0.18, 0.22, GM.black, 0, 0.06, -0.05), box(0.11, 0.13, 0.3, GM.black, 0, 0.11, 0.5)); break;
       case 'deagle': add(box(0.09, 0.13, 0.4, GM.steel, 0, 0.1, 0), box(0.09, 0.2, 0.11, GM.tan, 0, 0.02, 0.15)); break;
+      case 'usp': add(box(0.08, 0.12, 0.34, GM.black, 0, 0.1, 0), cyl(0.035, 0.14, GM.black, 0, 0.11, 0.22), box(0.08, 0.18, 0.1, GM.black, 0, 0.02, -0.11)); break;
+      case 'glock': add(box(0.08, 0.13, 0.3, GM.black, 0, 0.1, 0), box(0.08, 0.18, 0.1, GM.black, 0, 0.02, -0.09)); break;
+      case 'elite': add(box(0.07, 0.12, 0.3, GM.steel, -0.08, 0.1, 0), box(0.07, 0.16, 0.09, GM.black, -0.08, 0.02, -0.09), box(0.07, 0.12, 0.3, GM.steel, 0.08, 0.1, 0), box(0.07, 0.16, 0.09, GM.black, 0.08, 0.02, -0.09)); break;
+      case 'he': add(box(0.14, 0.2, 0.14, GM.green, 0, 0.11, 0)); break;
+      case 'flash': add(box(0.13, 0.19, 0.13, GM.steel, 0, 0.11, 0)); break;
+      case 'smoke': add(box(0.14, 0.2, 0.14, lam({ color: 0x8a9098 }), 0, 0.11, 0)); break;
       default: add(box(0.08, 0.12, 0.3, GM.black, 0, 0.09, 0), box(0.08, 0.16, 0.1, GM.black, 0, 0.03, 0.11));
     }
     g.position.set(x, 0.02, z); g.rotation.y = yaw; g.traverse(o => { if (o.isMesh) o.castShadow = true; }); root.add(g); return g;
   }
-  const RIFLES = ['awp', 'ak', 'm4', 'shotgun', 'mp5'];
+  const RIFLES = ['awp', 'scout', 'ak', 'm4', 'famas', 'galil', 'aug', 'sg552', 'mp5', 'p90', 'mac10', 'ump', 'm249', 'shotgun'];
   const place = (kind, x, z, yaw) => { const mesh = buildGun(kind, x, z, yaw); pickups.push({ x, z, kind, weapon: kind, readyAt: 0, mesh }); };
   let ri = 0;
-  for (const sx of [-1, 1]) { const x = sx * 15.5; for (const z of [-8, -4, 0, 4, 8]) place(RIFLES[ri++ % RIFLES.length], x, z, sx > 0 ? Math.PI / 2 : -Math.PI / 2); }
-  for (const s of [-1, 1]) { const z = 20 * s; ['deagle', 'pistol', 'pistol', 'deagle'].forEach((k, i) => place(k, [-6, -2, 2, 6][i], z, s > 0 ? Math.PI : 0)); }
-  place('awp', -3, 16, 0); place('ak', 3, 16, 0); place('m4', -3, -17, 0); place('shotgun', 3, -17, 0);
+  for (const sx of [-1, 1]) { const x = sx * 15.5; for (const z of [-8, -4, 0, 4, 8, -12, 12]) place(RIFLES[ri++ % RIFLES.length], x, z, sx > 0 ? Math.PI / 2 : -Math.PI / 2); }
+  for (const s of [-1, 1]) { const z = 20 * s; ['deagle', 'usp', 'glock', 'elite'].forEach((k, i) => place(k, [-6, -2, 2, 6][i], z, s > 0 ? Math.PI : 0)); }
+  place('awp', -3, 16, 0); place('ak', 3, 16, 0); place('m4', -3, -17, 0); place('m249', 3, -17, 0);
+  // grenade pickups (full-loadout mode only)
+  place('he', -8, 0, 0); place('he', 8, 0, 0); place('flash', -10, 0, 0); place('flash', 10, 0, 0); place('smoke', 0, 0, 0);
 
   /* ---------------- lighting: bright, even, indoor ---------------- */
   scene.background = T.sky;
