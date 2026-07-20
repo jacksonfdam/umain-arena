@@ -55,10 +55,11 @@ export function buildMidLada(scene, T) {
     B.addBox(w + 0.2, 0.4, d + 0.2, MAT.trim, cx, wallH - 0.4, cz, { ry, collide: false }); // eave trim
     // white cross-brace on the gable face
     B.addBox(0.4, wallH, 0.15, MAT.trim, cx, 0, cz + (ry ? 0 : d / 2 + 0.05), { ry, collide: false });
-    // pitched roof
+    // pitched roof — offset along the barn's yawed local axis
     const rl = Math.hypot(d / 2, 1.8), ang = Math.atan2(1.8, d / 2);
-    B.addBox(w + 0.6, 0.25, rl, MAT.roof, cx, wallH, cz + d / 4, { ry, rx: -ang, collide: false });
-    B.addBox(w + 0.6, 0.25, rl, MAT.roof, cx, wallH, cz - d / 4, { ry, rx: ang, collide: false });
+    const ox = Math.sin(ry) * (d / 4), oz = Math.cos(ry) * (d / 4);
+    B.addBox(w + 0.6, 0.25, rl, MAT.roof, cx + ox, wallH, cz + oz, { ry, rx: ang, collide: false });
+    B.addBox(w + 0.6, 0.25, rl, MAT.roof, cx - ox, wallH, cz - oz, { ry, rx: -ang, collide: false });
     // big dark barn door on the front
     B.addBox(w * 0.4, wallH * 0.7, 0.1, MAT.faluDk, cx, 0, cz + (ry ? 0 : d / 2 + 0.06), { ry, collide: false });
   }
@@ -70,8 +71,9 @@ export function buildMidLada(scene, T) {
     B.addBox(5, h, 4, MAT.falu, cx, 0, cz, { ry, pad: -0.05 });
     B.addBox(5.4, 0.3, 4.4, MAT.trim, cx, h - 0.3, cz, { ry, collide: false });
     const rl = Math.hypot(2, 1.2), ang = Math.atan2(1.2, 2);
-    B.addBox(5.6, 0.2, rl, MAT.roof, cx, h, cz + 1, { ry, rx: -ang, collide: false });
-    B.addBox(5.6, 0.2, rl, MAT.roof, cx, h, cz - 1, { ry, rx: ang, collide: false });
+    const ox = Math.sin(ry) * 1, oz = Math.cos(ry) * 1;
+    B.addBox(5.6, 0.2, rl, MAT.roof, cx + ox, h, cz + oz, { ry, rx: ang, collide: false });
+    B.addBox(5.6, 0.2, rl, MAT.roof, cx - ox, h, cz - oz, { ry, rx: -ang, collide: false });
     B.addPlane(0.9, 0.9, lam({ color: 0x1f6fb2 }), cx, 1.6, cz + (ry ? 0 : 2.03), ry, 0);   // window
   }
   cottage(11, 8);

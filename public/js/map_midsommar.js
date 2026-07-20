@@ -166,11 +166,12 @@ export function buildMidsommar(scene, T) {
     // white corner trim
     addBox(w + 0.15, 0.3, d + 0.15, MAT.trim, cx, 0, cz, { ry, collide: false });
     addBox(w + 0.15, 0.3, d + 0.15, MAT.trim, cx, wallH - 0.3, cz, { ry, collide: false });
-    // pitched roof (two slabs)
+    // pitched roof (two slabs) — offset along the house's yawed local axis
     const rl = Math.hypot(d / 2, 1.3);
     const ang = Math.atan2(1.3, d / 2);
-    addBox(w + 0.5, 0.2, rl, MAT.woodDk, cx, wallH, cz + (d / 4), { ry, rx: -ang, collide: false });
-    addBox(w + 0.5, 0.2, rl, MAT.woodDk, cx, wallH, cz - (d / 4), { ry, rx: ang, collide: false });
+    const ox = Math.sin(ry) * (d / 4), oz = Math.cos(ry) * (d / 4);
+    addBox(w + 0.5, 0.2, rl, MAT.woodDk, cx + ox, wallH, cz + oz, { ry, rx: ang, collide: false });
+    addBox(w + 0.5, 0.2, rl, MAT.woodDk, cx - ox, wallH, cz - oz, { ry, rx: -ang, collide: false });
     // window
     addPlane(0.9, 0.9, MAT.blue, cx, 1.7, cz + (ry ? 0 : d / 2 + 0.03), ry, 0);
   }

@@ -12,9 +12,10 @@ export function createBuilder(root) {
     const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
     m.position.set(x, y + h / 2, z);
     m.castShadow = opts.cast !== false; m.receiveShadow = true;
-    if (opts.ry) m.rotation.y = opts.ry;
-    if (opts.rx) m.rotation.x = opts.rx;
-    if (opts.rz) m.rotation.z = opts.rz;
+    // pitch/roll first (local), then yaw about world Y — so a pitched roof slab
+    // stays pitched when the whole house is yawed (ry). Single-axis callers are unaffected.
+    if (opts.rx || opts.rz) m.rotation.set(opts.rx || 0, 0, opts.rz || 0);
+    if (opts.ry) m.quaternion.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), opts.ry));
     root.add(m);
     if (opts.collide !== false) {
       const pad = opts.pad || 0;
