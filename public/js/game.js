@@ -516,6 +516,8 @@ export class Game {
     this.el.weaponName.textContent = WEAPONS[w].name;
     this.el.reloadNote.classList.add('hidden');
     if (w === 'knife') this.sfx.knifeDeploy(); else this.sfx.uiClick();
+    // drawing a weapon with an empty mag kicks off the reload automatically
+    if (w !== 'knife' && p.ammo[w].mag <= 0 && p.ammo[w].res > 0) this._startReload();
   }
   _scope(on, silent = false) {
     const p = this.player;
@@ -570,6 +572,9 @@ export class Game {
     p.pitch += w.recoil * (1 - 0.25 * p.crouchF); this.vm.kick = 1;
     this._flash(this.camera.localToWorld(new THREE.Vector3(0.26, -0.2, -1.1)));
     if (p.weapon === 'awp') this._scope(false, true);
+    // auto-reload the moment the mag runs dry (no dry-fire click required)
+    const a2 = p.ammo[p.weapon];
+    if (a2.mag <= 0 && a2.res > 0) this._startReload();
   }
   _meleeHit() {
     const from = this.camera.getWorldPosition(new THREE.Vector3());
@@ -992,10 +997,12 @@ export class Game {
       b.yaw += dy * Math.min(1, dt * 7);
       b.strafeT += dt;
       const strafe = Math.sin(b.strafeT * 1.3) * 0.6;
-      const sx = Math.cos(b.yaw) * strafe * dt, sz = -Math.sin(b.yaw) * strafe * dt;
-      b.pos.x += sx; b.pos.z += sz;
+      const dist0 = Math.hypot(dx, dz) || 1;
+      let mvx = Math.cos(b.yaw) * strafe, mvz = -Math.sin(b.yaw) * strafe;
+      if (dist0 > 25) { mvx += (dx / dist0) * 2.0; mvz += (dz / dist0) * 2.0; }  // far away: close the gap
+      b.pos.x += mvx * dt; b.pos.z += mvz * dt;
       this._collide(b.pos, 0.38);
-      moving = Math.abs(strafe) * 0.5;
+      moving = Math.min(1, Math.abs(strafe) * 0.5 + (dist0 > 25 ? 0.6 : 0));
       // fire
       if (this.time > b.reactAt && this.time > b.nextShotAt && Math.abs(dy) < 0.3) {
         b.nextShotAt = this.time + (2.1 + Math.random() * 1.4) / (b.skill * 1.5);
@@ -1033,11 +1040,22 @@ export class Game {
         const W = this.world;
         const from = W.nearestWaypoint(b.pos.x, b.pos.z);
         if (this.time > (b.roamUntil || 0) || b.roamIdx === undefined) {
-          const sign = b.team === 'P' ? 1 : -1;
-          const candidates = W.waypoints.nodes
-            .map((n, i) => ({ n, i }))
-            .filter(o => o.n.z * sign > 6 * sign && Math.abs(o.n.x) < 20);
-          const pick = candidates.length ? candidates[(Math.random() * candidates.length) | 0] : { i: from };
+          // roam target derived from the map's real spawns (not fixed axes):
+          // bias toward the enemy half of the whole map; 15% free exploration
+          const foe = W.spawns[b.team === 'P' ? 'B' : 'P'] || [];
+          const own = W.spawns[b.team] || [];
+          const all = W.waypoints.nodes.map((n, i) => ({ n, i }));
+          let pool = all;
+          if (foe.length && own.length && Math.random() < 0.85) {
+            const ctr = arr => arr.reduce((a, s) => ({ x: a.x + s.x / arr.length, z: a.z + s.z / arr.length }), { x: 0, z: 0 });
+            const ec = ctr(foe), oc = ctr(own);
+            let ax = ec.x - oc.x, az = ec.z - oc.z;
+            const al = Math.hypot(ax, az) || 1; ax /= al; az /= al;
+            const midX = (ec.x + oc.x) / 2, midZ = (ec.z + oc.z) / 2;
+            const fwd = all.filter(o => (o.n.x - midX) * ax + (o.n.z - midZ) * az > 2);
+            if (fwd.length) pool = fwd;
+          }
+          const pick = pool.length ? pool[(Math.random() * pool.length) | 0] : { i: from };
           b.roamIdx = pick.i; b.roamUntil = this.time + 9;
         }
         b.path = W.findPath(from, b.roamIdx); b.pathIdx = 1;
@@ -1046,7 +1064,7 @@ export class Game {
       if (node) {
         const dx = node.x - b.pos.x, dz = node.z - b.pos.z;
         const d = Math.hypot(dx, dz);
-        if (d < 0.7) b.pathIdx++;
+        if (d < 0.7) { b.pathIdx++; if (b.pathIdx >= b.path.length) b.roamUntil = 0; }  // arrived: pick a new target
         else {
           const wantYaw = Math.atan2(dx, dz);
           let dy = wantYaw - b.yaw;

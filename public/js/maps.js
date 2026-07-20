@@ -1,10 +1,12 @@
 // Map registry — single source of truth for selectable arenas.
 import { buildWorld } from './map.js';
 import { buildPoolDay } from './map_pool_day.js';
+import { buildMidsommar } from './map_midsommar.js';
 
 export const MAPS = {
-  awp_map:     { name: 'AWP Arena (Plaza)',   build: buildWorld },
-  fy_pool_day: { name: 'The Pool',            build: buildPoolDay },
+  awp_map:      { name: 'AWP Arena (Plaza)',   build: buildWorld },
+  fy_pool_day:  { name: 'The Pool',            build: buildPoolDay },
+  fy_midsommar: { name: 'Midsummer Meadow',    build: buildMidsommar },
 };
 export const MAP_IDS = Object.keys(MAPS);
 export const DEFAULT_MAP = 'awp_map';
