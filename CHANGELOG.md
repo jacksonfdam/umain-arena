@@ -2,6 +2,17 @@
 
 ## [1.13.0] — 2026-07-20
 ### Added
+- **5 new maps** (7 in total, all in the map picker): **Midsummer Meadow**
+  (`fy_midsommar`), **Tunnelbana** (`fy_tunnelbana`, a Stockholm rock-cave metro),
+  **Moderna Museum** (`de_moderna`), **Dala Horse Square** (`de_dalahast`) and
+  **The Barn / Lada** (`fy_lada`) — Swedish-themed arenas sharing a procedural
+  map kit (nav-graph, spawns, weapon pickups).
+- **Ranks & tiers**: a permanent XP career ladder (Intern → … → Studio Legend,
+  50 levels) plus a dynamic Nordic rating ladder (Tundra → … → VIKING, 18 tiers),
+  shown on the HUD, the match-end screen and the ranking panel.
+- **Live map page**: country flags, city/country totals, an "online now" table
+  and a sortable + filterable city ranking with a per-city / per-country user
+  modal (names link to profiles); a green "online now" dot on the global ranking.
 - **12 new weapons** playable alongside the existing arsenal, with dedicated
   viewmodels and ground pickups on the Pool map:
   - Rifles: **FAMAS**, **Galil**
@@ -22,6 +33,15 @@
 - Scope is generalized: any scoped weapon zooms on right-click; only bolt-action
   snipers (AWP, Scout) re-chamber between shots.
 - PISTOLS ONLY mode now allows every secondary (Glock/USP/Dual Berettas/DE) in pickups.
+- Sharper surfaces: anisotropic filtering and crisp pixel-grid textures; slightly
+  brighter exposure and reduced shadow acne.
+
+### Fixed
+- Auto-reload the moment a magazine empties (on fire and when drawing a weapon).
+- A nick already owned by another player no longer loops 403s on register /
+  heartbeat — the match still runs (local-only stats).
+- Bots now roam the whole map (targets derived from the map's real spawns) and
+  close the distance when far from a target, instead of hugging fixed lanes.
 
 ## [1.12.3] — 2026-07-18
 ### Fixed
