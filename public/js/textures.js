@@ -1,12 +1,15 @@
 // Procedural canvas textures — zero external assets.
 import * as THREE from 'three';
 
+let ANISO = 1; // set by initTextures(renderer.capabilities.getMaxAnisotropy())
+
 function canvas(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
 function tex(c, repeat = 1, ry = null) {
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
   t.magFilter = THREE.NearestFilter;           // retro CS 1.6 pixel look
   t.minFilter = THREE.LinearMipmapLinearFilter;
+  t.anisotropy = ANISO;                         // keeps the ground crisp at grazing angles
   t.wrapS = t.wrapT = THREE.RepeatWrapping;
   t.repeat.set(repeat, ry === null ? repeat : ry);
   return t;
@@ -50,7 +53,40 @@ function concreteBase(w = 256, h = 256, base = '#9a938a', dark = '#7d766d') {
   return c;
 }
 
-export function initTextures() {
+// crisp pixel-grid surfaces (sharper than the soft concrete under NearestFilter)
+function shd(hex, amt) {
+  const n = parseInt(hex.slice(1), 16); let r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+  r = Math.max(0, Math.min(255, r + amt * 255)); g = Math.max(0, Math.min(255, g + amt * 255)); b = Math.max(0, Math.min(255, b + amt * 255));
+  return `rgb(${r | 0},${g | 0},${b | 0})`;
+}
+function pixelWall(w, h, base, dark) {
+  const c = canvas(w, h), x = c.getContext('2d'); x.fillStyle = base; x.fillRect(0, 0, w, h);
+  const bw = w / 4, bh = h / 8;
+  for (let ry = 0; ry < 8; ry++) for (let cx = 0; cx < 5; cx++) {
+    const off = (ry % 2) * bw / 2; x.fillStyle = shd(base, (Math.random() - .5) * 0.10);
+    x.fillRect(cx * bw - off, ry * bh, bw - 2, bh - 2);
+  }
+  x.fillStyle = dark;
+  for (let ry = 0; ry <= 8; ry++) x.fillRect(0, ry * bh - 1, w, 2);
+  for (let cx = 0; cx <= 4; cx++) { const off = (cx * bw); x.fillRect(off - 1, 0, 2, h); }
+  return c;
+}
+function pixelGround(sz) {
+  const c = canvas(sz, sz), x = c.getContext('2d'); const base = '#9a9187'; x.fillStyle = base; x.fillRect(0, 0, sz, sz);
+  const t = sz / 8;
+  for (let a = 0; a < 8; a++) for (let b = 0; b < 8; b++) { x.fillStyle = shd(base, (Math.random() - .5) * 0.09); x.fillRect(a * t, b * t, t - 2, t - 2); }
+  x.fillStyle = 'rgba(55,50,44,0.55)';
+  for (let i = 0; i <= 8; i++) { x.fillRect(i * t - 1, 0, 2, sz); x.fillRect(0, i * t - 1, sz, 2); }
+  return c;
+}
+function pixelMetal(sz) {
+  const c = canvas(sz, sz), x = c.getContext('2d'); const base = '#5a5f66'; x.fillStyle = base; x.fillRect(0, 0, sz, sz);
+  for (let i = 0; i < sz; i += 3) { x.fillStyle = shd(base, (Math.random() - .5) * 0.16); x.fillRect(i, 0, 2, sz); }
+  return c;
+}
+
+export function initTextures(maxAniso = 1) {
+  ANISO = maxAniso;
   const T = {};
 
   // --- ground / structure ---
@@ -67,10 +103,10 @@ export function initTextures() {
     x.beginPath(); x.moveTo(120, -20); x.bezierCurveTo(340, 300, 180, 700, 520, 1050); x.stroke();
     x.beginPath(); x.moveTo(760, -20); x.bezierCurveTo(620, 380, 880, 640, 700, 1050); x.stroke();
   }
-  T.ground = tex(gc, 10, 10);
+  T.ground = tex(pixelGround(512), 10, 10);
 
-  T.concrete = tex(concreteBase(), 1, 1);
-  T.concreteDark = tex(concreteBase(256, 256, '#6f6a62', '#57534c'), 1, 1);
+  T.concrete = tex(pixelWall(256, 256, '#9a938a', '#7d766d'), 1, 1);
+  T.concreteDark = tex(pixelWall(256, 256, '#6f6a62', '#4f4b44'), 1, 1);
 
   { // asphalt for central lane
     const c = canvas(256, 256), x = c.getContext('2d');
@@ -264,7 +300,7 @@ export function initTextures() {
     T.corkboard = tex(c);
   }
   // metal
-  T.metal = tex(concreteBase(128, 128, '#5a5f66', '#464b52'));
+  T.metal = tex(pixelMetal(128));
 
   // --- soft sprites (sun / cloud / muzzle flash) ---
   const clampTex = t => { t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; t.magFilter = THREE.LinearFilter; return t; };

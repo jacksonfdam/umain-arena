@@ -6,6 +6,10 @@ import { MAPS, MAP_IDS, DEFAULT_MAP, resolveMapId } from './maps.js';
 import { Sfx } from './audio.js';
 import { Game } from './game.js';
 import { VERSION } from './version.js';
+import {
+  xpForMatch, ratingDelta, progressFromXp,
+  rankForLevel, eloFromRating, eloProgress,
+} from './ranks.js';
 
 /* ---------------- settings & nickname ---------------- */
 const SETTINGS_KEY = 'awpbr_settings';
@@ -22,10 +26,10 @@ renderer.setSize(innerWidth, innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.06;
+renderer.toneMappingExposure = 1.1;
 container.appendChild(renderer.domElement);
 
-const textures = initTextures();
+const textures = initTextures(renderer.capabilities.getMaxAnisotropy());
 const sfx = new Sfx(); sfx.vol = settings.vol;
 sfx.speechEnabled = settings.speech !== false;
 const sfxReady = sfx.loadManifest();
@@ -95,6 +99,7 @@ let game = null, currentTeam = 'P', currentChar = CHARACTERS[0].id, selChar = nu
 let submitted = true;   // current match stats already submitted?
 let registeredNick = ''; // nick used when registering the session (the token is tied to it)
 let heartbeatOff = false;
+let nickRegistered = false; // true only once /api/register confirms the token owns the nick
 const params = new URLSearchParams(location.search);
 const testMode = params.get('debug') === '1';
 
@@ -125,11 +130,19 @@ async function startGame(team, charId) {
   game.start();
   // register the nick in the global ranking (silent if the API is offline)
   const nick = $('nick-input').value.trim();
-  registeredNick = nick; heartbeatOff = false;
+  registeredNick = nick; heartbeatOff = false; nickRegistered = false;
   if (nick && !testMode) {
     api('/api/register', {
       nick, token: getToken(),
       socials: socials.filter(s => s.handle),
+    }).then(reg => {
+      if (reg && reg.error) {
+        // nick already belongs to another player (token mismatch) — don't hammer the API or loop the login
+        heartbeatOff = true;
+        submitNote('the nick "' + nick + '" already belongs to another player — pick a different nick to save to the ranking (the match still runs normally).');
+      } else {
+        nickRegistered = true; // only from here on are heartbeat/submit valid
+      }
     });
   }
   try { window.va?.('event', { name: 'game_start', data: { team, character: charId, map: currentMap } }); } catch {}
@@ -143,7 +156,7 @@ function quitToMenu() {
 
 /* ---------------- heartbeat (presence/map) ---------------- */
 setInterval(async () => {
-  if (!game || !registeredNick || testMode || heartbeatOff) return;
+  if (!game || !registeredNick || testMode || heartbeatOff || !nickRegistered) return;
   const res = await api('/api/heartbeat', { nick: registeredNick, token: getToken() });
   if (res && res.error) heartbeatOff = true;   // invalid token etc. — stop hammering
 }, 30_000);
@@ -358,7 +371,7 @@ function submitNote(msg) {
 
 // partial stats when the player leaves the match (quit to menu / close tab)
 function partialPayload() {
-  if (!game || submitted || testMode) return null;
+  if (!game || submitted || testMode || !nickRegistered) return null;
   if (!['live', 'roundEnd', 'countdown'].includes(game.state)) return null;
   const g = game, p = g.player;
   const rounds = g.roundsWon.P + g.roundsWon.B;
@@ -400,6 +413,73 @@ function loadStats() {
   return Object.assign({ matches: 0, wins: 0, kills: 0, deaths: 0, headshots: 0, bestStreak: 0 },
     JSON.parse(localStorage.getItem(STATS_KEY) || '{}'));
 }
+/* ---------------- ranks & tiers (XP + local rating) ---------------- */
+const RANK_KEY = 'awpbr_rankdata';
+function loadRankData() {
+  return Object.assign({ totalXp: 0, rating: 0 }, JSON.parse(localStorage.getItem(RANK_KEY) || '{}'));
+}
+function saveRankData(d) { localStorage.setItem(RANK_KEY, JSON.stringify(d)); }
+
+function rankBadgeHtml(level, size = 32) {
+  const r = rankForLevel(level);
+  const scaled = r.icon.replace(/width="32" height="32"/, `width="${size}" height="${size}"`);
+  return `<span class="rank-badge" title="${r.title} (Level ${level})" style="color:${r.color}">${scaled}</span>`;
+}
+function eloBadgeHtml(rating, size = 32) {
+  const e = eloFromRating(rating);
+  const scaled = e.icon.replace(/width="32" height="32"/, `width="${size}" height="${size}"`);
+  return `<span class="elo-badge" title="${e.name} (${rating} pts)" style="color:${e.color}">${scaled}</span>`;
+}
+function updateHudRank() {
+  const el = $('hud-rank');
+  if (!el) return;
+  const { totalXp, rating } = loadRankData();
+  const { level } = progressFromXp(totalXp);
+  const rank = rankForLevel(level);
+  const elo = eloFromRating(rating);
+  el.innerHTML =
+    `<span class="hud-rank-icon" title="${rank.title}" style="color:${rank.color}">${rank.icon.replace('width="32" height="32"', 'width="22" height="22"')}</span>` +
+    `<span class="hud-rank-label" style="color:${rank.color}">LV${level}</span>` +
+    `<span class="hud-rank-sep">·</span>` +
+    `<span class="hud-elo-icon" title="${elo.name}" style="color:${elo.color}">${elo.icon.replace('width="32" height="32"', 'width="22" height="22"')}</span>` +
+    `<span class="hud-rank-label" style="color:${elo.color}">${elo.name}</span>`;
+}
+function showRankProgress(s, prevXp, prevRating) {
+  const el = $('match-rank-progress');
+  if (!el) return;
+  const gained = xpForMatch(s);
+  const delta = ratingDelta(s);
+  const { level: lvlBefore } = progressFromXp(prevXp);
+  const { level: lvlAfter, xpCurrent, xpNeeded } = progressFromXp(prevXp + gained);
+  const rankAfter = rankForLevel(lvlAfter);
+  const newRating = Math.max(0, prevRating + delta);
+  const eloBefore = eloFromRating(prevRating);
+  const eloAfter = eloFromRating(newRating);
+  const leveled = lvlAfter > lvlBefore;
+  const promoted = eloAfter.id !== eloBefore.id && newRating > prevRating;
+  const pct = lvlAfter < 50 ? Math.round((xpCurrent / xpNeeded) * 100) : 100;
+  el.innerHTML = `
+    <div class="rp-row">
+      <div class="rp-block">
+        ${rankBadgeHtml(lvlAfter, 36)}
+        <div class="rp-info">
+          <div class="rp-title" style="color:${rankAfter.color}">${rankAfter.title} · Level ${lvlAfter}</div>
+          ${leveled ? `<div class="rp-event rank-up">▲ LEVEL UP!</div>` : ''}
+          <div class="rp-xp">+${gained} XP</div>
+          <div class="xp-bar-wrap"><div class="xp-bar-fill" style="width:${pct}%"></div></div>
+          <div class="rp-xp-label">${xpCurrent.toLocaleString()} / ${lvlAfter < 50 ? xpNeeded.toLocaleString() : '—'} XP</div>
+        </div>
+      </div>
+      <div class="rp-block">
+        ${eloBadgeHtml(newRating, 36)}
+        <div class="rp-info">
+          <div class="rp-title" style="color:${eloAfter.color}">${eloAfter.name}</div>
+          ${promoted ? `<div class="rp-event elo-up">▲ PROMOTED!</div>` : (newRating < prevRating ? `<div class="rp-event elo-down">▼ ${Math.abs(delta)} pts</div>` : `<div class="rp-event">+${delta} pts</div>`)}
+          <div class="rp-rating">${newRating} pts rating</div>
+        </div>
+      </div>
+    </div>`;
+}
 async function recordMatchStats(s) {
   submitted = true;
   const st = loadStats();
@@ -409,9 +489,17 @@ async function recordMatchStats(s) {
   st.rounds = (st.rounds || 0) + s.roundsP + s.roundsB;
   st.bestStreak = Math.max(st.bestStreak, s.bestStreak);
   localStorage.setItem(STATS_KEY, JSON.stringify(st));
+  // XP & rating
+  const rd = loadRankData();
+  const prevXp = rd.totalXp, prevRating = rd.rating;
+  rd.totalXp += xpForMatch(s);
+  rd.rating = Math.max(0, rd.rating + ratingDelta(s));
+  saveRankData(rd);
+  showRankProgress(s, prevXp, prevRating);
+  updateHudRank();
   // mirror to the global ranking (warn on screen if it fails)
   const nick = registeredNick || (nickEl.value || '').trim();
-  if (nick && !testMode) {
+  if (nick && !testMode && nickRegistered) {
     const res = await submitGlobal({
       nick, token: getToken(), won: s.won, kills: s.kills, deaths: s.deaths,
       headshots: s.headshots, bestStreak: s.bestStreak,
@@ -432,11 +520,40 @@ function showRanking() {
     : st.matches > 0 ? `~${fmt(st.matches * 297)}` : '0min';
   const nick = (nickEl.value || 'YOU').trim();
   const social = socials.find(s => s.handle);
+  const rd = loadRankData();
+  const { level, xpCurrent, xpNeeded } = progressFromXp(rd.totalXp);
+  const rank = rankForLevel(level);
+  const elo = eloFromRating(rd.rating);
+  const { pct } = eloProgress(rd.rating);
+  const xpPct = level < 50 ? Math.round((xpCurrent / xpNeeded) * 100) : 100;
   $('rank-local').innerHTML =
-    `<div style="grid-column:1/-1;text-align:center;color:var(--cs);font-size:18px">${nick}` +
-    (social ? ` · <span style="color:#8a8064;font-size:12px">${social.net}/${social.handle.replace(/</g, '&lt;')}</span>` : '') + `</div>` +
-    `<div><b>${st.matches}</b>matches</div><div><b>${st.wins > 0 ? st.wins : "—"}</b>wins</div><div><b>${kd}</b>K/D</div><div><b>${tempo}</b>arena</div>` +
-    `<div><b>${st.kills}</b>kills</div><div><b>${st.deaths}</b>deaths</div><div><b>${st.headshots}</b>headshots</div><div><b>${st.rounds || 0}</b>rounds</div>`;
+    `<div class="rl-header">
+       <span style="color:var(--cs);font-size:18px">${nick}</span>
+       ${social ? `<span style="color:#8a8064;font-size:12px">${social.net}/${social.handle.replace(/</g, '&lt;')}</span>` : ''}
+     </div>
+     <div class="rl-badges">
+       <div class="rl-badge-block">
+         ${rankBadgeHtml(level, 40)}
+         <div>
+           <div style="color:${rank.color};font-weight:bold;font-size:13px">${rank.title}</div>
+           <div style="color:#8a8064;font-size:11px">Level ${level}/50</div>
+           <div class="xp-bar-wrap" style="margin-top:4px"><div class="xp-bar-fill" style="width:${xpPct}%"></div></div>
+           <div style="color:#6b7280;font-size:10px">${xpCurrent.toLocaleString()} / ${level < 50 ? xpNeeded.toLocaleString() : '—'} XP</div>
+         </div>
+       </div>
+       <div class="rl-badge-block">
+         ${eloBadgeHtml(rd.rating, 40)}
+         <div>
+           <div style="color:${elo.color};font-weight:bold;font-size:13px">${elo.name}</div>
+           <div style="color:#8a8064;font-size:11px">${rd.rating} pts rating</div>
+           <div class="xp-bar-wrap" style="margin-top:4px"><div class="xp-bar-fill" style="width:${pct}%;background:${elo.color}"></div></div>
+         </div>
+       </div>
+     </div>
+     <div class="rl-stats">
+       <div><b>${st.matches}</b>matches</div><div><b>${st.wins > 0 ? st.wins : "—"}</b>wins</div><div><b>${kd}</b>K/D</div><div><b>${tempo}</b>arena</div>
+       <div><b>${st.kills}</b>kills</div><div><b>${st.deaths}</b>deaths</div><div><b>${st.headshots}</b>headshots</div><div><b>${st.rounds || 0}</b>rounds</div>
+     </div>`;
   show('ranking-panel');
   renderGlobal(nick);
 }
@@ -538,6 +655,7 @@ loop();
 /* ---------------- boot ---------------- */
 document.querySelector('.footnote').textContent =
   `v${VERSION} · Fictional, all in good fun. Designers vs Developers — no hard feelings.`;
+updateHudRank();
 show(isMobile && !testMode ? 'mobile-warning' : 'main-menu');
 if (testMode && params.get('auto')) {
   const [team, char] = params.get('auto').split(',');
