@@ -1,5 +1,5 @@
-// GET /api/config — expõe URL + anon key do Supabase (públicas por design;
-// a segurança é o RLS). O client usa pra ligar OAuth/storage.
+// GET /api/config — exposes Supabase URL + anon key (public by design;
+// security is RLS). The client uses it to wire up OAuth/storage.
 import type { APIRoute } from 'astro';
 
 export const prerender = false;

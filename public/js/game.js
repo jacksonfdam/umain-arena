@@ -4,22 +4,22 @@ import { MAPS, resolveMapId } from './maps.js';
 import { buildCharacter, poseCharacter, byId, CHARACTERS, buildRifle } from './characters.js';
 
 export const WEAPONS = {
-  awp:    { name: 'AWP "DELIBERADOR"', short: 'AWP', dmg: 400, mag: 5, reserve: 25, rate: 1.7, reload: 3.1, spreadHip: 0.075, spreadScope: 0.0008, recoil: 0.055, scope: true },
-  ak:     { name: 'AK-47 "BATE-ESTACA"', short: 'AK', dmg: 33, mag: 30, reserve: 90, rate: 0.1, reload: 2.5, spreadHip: 0.024, recoil: 0.008, auto: true },
-  m4:     { name: 'M4A1 "REQUINTE"', short: 'M4', dmg: 31, mag: 30, reserve: 90, rate: 0.09, reload: 2.4, spreadHip: 0.02, recoil: 0.007, auto: true },
-  mp5:    { name: 'MP5 "VASSOURA"', short: 'MP5', dmg: 26, mag: 30, reserve: 120, rate: 0.075, reload: 2.2, spreadHip: 0.03, recoil: 0.005, auto: true },
-  shotgun:{ name: 'M3 "CONVERSA FIADA"', short: 'M3', dmg: 12, pellets: 8, mag: 7, reserve: 32, rate: 0.9, reload: 3.0, spreadHip: 0.06, recoil: 0.045 },
-  deagle: { name: 'DEAGLE "MARTELO"', short: 'DE', dmg: 53, mag: 7, reserve: 35, rate: 0.28, reload: 2.0, spreadHip: 0.012, recoil: 0.03 },
-  pistol: { name: 'PT-38 "APITO"', short: 'PT-38', dmg: 34, mag: 12, reserve: 48, rate: 0.24, reload: 1.6, spreadHip: 0.02, recoil: 0.014, scope: false },
-  knife:  { name: 'FACA "CONVERSA FIADA"', short: 'FACA', dmg: 55, rate: 0.55, range: 2.4, reload: 0, recoil: 0.02, scope: false },
+  awp:    { name: 'AWP Sniper', short: 'AWP', dmg: 400, mag: 5, reserve: 25, rate: 1.7, reload: 3.1, spreadHip: 0.075, spreadScope: 0.0008, recoil: 0.055, scope: true },
+  ak:     { name: 'AK-47', short: 'AK', dmg: 33, mag: 30, reserve: 90, rate: 0.1, reload: 2.5, spreadHip: 0.024, recoil: 0.008, auto: true },
+  m4:     { name: 'M4A1', short: 'M4', dmg: 31, mag: 30, reserve: 90, rate: 0.09, reload: 2.4, spreadHip: 0.02, recoil: 0.007, auto: true },
+  mp5:    { name: 'MP5', short: 'MP5', dmg: 26, mag: 30, reserve: 120, rate: 0.075, reload: 2.2, spreadHip: 0.03, recoil: 0.005, auto: true },
+  shotgun:{ name: 'M3 Shotgun', short: 'M3', dmg: 12, pellets: 8, mag: 7, reserve: 32, rate: 0.9, reload: 3.0, spreadHip: 0.06, recoil: 0.045 },
+  deagle: { name: 'Desert Eagle', short: 'DE', dmg: 53, mag: 7, reserve: 35, rate: 0.28, reload: 2.0, spreadHip: 0.012, recoil: 0.03 },
+  pistol: { name: 'Pistol', short: 'PIST', dmg: 34, mag: 12, reserve: 48, rate: 0.24, reload: 1.6, spreadHip: 0.02, recoil: 0.014, scope: false },
+  knife:  { name: 'Knife', short: 'KNIFE', dmg: 55, rate: 0.55, range: 2.4, reload: 0, recoil: 0.02, scope: false },
 };
 const ROUND_TIME = 99, ROUNDS_TO_WIN = 3, RESPAWN_DELAY = 2.5, PICKUP_RESPAWN = 8;
 const BOT_SPEED = 3.3, BOT_EYE = 1.5;
-const TEAM_LABEL = { P: 'PETISTAS', B: 'BOLSONARISTAS' };
+const TEAM_LABEL = { P: 'DESIGNERS', B: 'DEVELOPERS' };
 const RADIO = {
-  z: { title: 'COMANDOS', items: ['Bora, bora, bora!', 'Cobre eu!', 'Recua, recua!'] },
-  x: { title: 'RESPOSTAS', items: ['Recebido!', 'Negativo!', 'Bonito tiro!'] },
-  c: { title: 'ZOAÇÃO', items: ['Chora na live!', 'É fake news!', 'Vem pra treta!'] },
+  z: { title: 'COMMANDS', items: ['Go go go!', 'Cover me!', 'Fall back!'] },
+  x: { title: 'RESPONSES', items: ['Affirmative!', 'Negative!', 'Nice shot!'] },
+  c: { title: 'TRASH TALK', items: ['Skill issue!', 'Ship it!', 'Get rekt!'] },
 };
 const MK_TIERS = { 2: 'doublekill', 3: 'triplekill', 4: 'multikill', 5: 'megakill' };
 const MK_LABELS = { doublekill: 'DOUBLE KILL', triplekill: 'TRIPLE KILL', multikill: 'MULTI KILL', megakill: 'MEGA KILL', killingspree: 'KILLING SPREE', godlike: 'GODLIKE' };
@@ -44,7 +44,7 @@ export class Game {
     this.scene.add(this.camera);
     this.world = MAPS[resolveMapId(mapId)].build(this.scene, textures);
     this.flashTex = textures.flash;
-    // modo de armas também muda o mapa: pickups fora do modo somem (e suas meshes)
+    // weapon mode also changes the map: pickups outside the mode disappear (along with their meshes)
     if (this.world.pickups) {
       const keep = [];
       for (const pk of this.world.pickups) {
@@ -62,7 +62,7 @@ export class Game {
 
     // ---- player ----
     this.player = {
-      isPlayer: true, name: (nickname || '').trim().slice(0, 14) || 'VOCÊ', def: this.playerDef, team: playerTeam,
+      isPlayer: true, name: (nickname || '').trim().slice(0, 14) || 'YOU', def: this.playerDef, team: playerTeam,
       pos: new THREE.Vector3(), vel: new THREE.Vector3(),
       yaw: 0, pitch: 0, hp: 100, alive: true, respawnAt: 0, crouchF: 0,
       weapon: 'awp', scoped: false, reloadUntil: 0, nextShotAt: 0, drawUntil: 0,
@@ -117,7 +117,7 @@ export class Game {
     this._input();
     this._applyQuality();
     this.radarCtx = this.el.radar ? this.el.radar.getContext('2d') : null;
-    // botões do HUD: configurações + liga/desliga falas (memes)
+    // HUD buttons: settings + toggle voice lines (memes)
     this.el.hudSettings.onclick = () => this.onOpenSettings?.();
     this.el.hudSpeech.textContent = this.settings.speech === false ? '🔇' : '🔊';
     this.el.hudSpeech.onclick = () => {
@@ -163,7 +163,7 @@ export class Game {
     const handR = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.09, 0.11), skin); handR.position.set(0, -0.085, 0.02); awp.add(handR);
     const handL = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.07, 0.09), skin); handL.position.set(0.005, -0.04, -0.3); awp.add(handL);
     awp.position.set(0.26, -0.23, -0.5); awp.rotation.y = 0.03;
-    // rifles genéricos (ak / m4 / mp5 / shotgun / deagle)
+    // generic rifles (ak / m4 / mp5 / shotgun / deagle)
     const mkRifle = (bodyC, woodC, len, magH) => {
       const g = new THREE.Group();
       g.add(new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.09, len), bodyC));
@@ -220,7 +220,7 @@ export class Game {
     this.keys = {};
     this._kd = e => {
       if (e.code === 'Tab') { e.preventDefault(); this._showScoreboard(true); }
-      // em pointer lock, engole atalhos do navegador (Ctrl+S/D/A/R…) — Ctrl+W o Chrome não deixa prevenir, use C pra agachar
+      // in pointer lock, swallow browser shortcuts (Ctrl+S/D/A/R…) — Chrome won't let you prevent Ctrl+W, use C to crouch
       if ((e.ctrlKey || e.metaKey) && document.pointerLockElement) e.preventDefault();
       this.keys[e.code] = true;
       if (this.radioOpen) {
@@ -253,7 +253,7 @@ export class Game {
     this._md = e => {
       if (this.radioOpen) { this.radioOpen = null; this._radioUi(); }
       if (!this._acceptInput()) {
-        // pointer lock não engatou (ou caiu)? qualquer clique tenta de novo
+        // pointer lock didn't engage (or dropped)? any click tries again
         if (!this.testMode && !this.paused && (this.state === 'live' || this.state === 'countdown') && !document.pointerLockElement)
           this._requestLock();
         return;
@@ -273,7 +273,7 @@ export class Game {
       this.player.pitch = Math.max(-1.45, Math.min(1.45, this.player.pitch));
     };
     this._cc = e => e.preventDefault();
-    this._blur = () => { this.keys = {}; };   // alt-tab com tecla pressionada não deixa tecla presa
+    this._blur = () => { this.keys = {}; };   // alt-tab with a key held down won't leave the key stuck
     this._plc = () => {
       if (!document.pointerLockElement && !this.testMode && (this.state === 'live' || this.state === 'countdown') && !this.paused)
         this.setPaused(true);
@@ -318,7 +318,7 @@ export class Game {
     this.sfx.radioVoice(this.playerTeam);
     const log = document.createElement('div');
     log.className = 'radio-line';
-    log.textContent = `${this.player.name} (RÁDIO): ${item}`;
+    log.textContent = `${this.player.name} (RADIO): ${item}`;
     this.el.radioLog.appendChild(log);
     setTimeout(() => log.remove(), 4200);
     while (this.el.radioLog.children.length > 3) this.el.radioLog.firstChild.remove();
@@ -338,7 +338,7 @@ export class Game {
     this.state = 'countdown';
     this.stateUntil = this.time + 3;
     this._showScoreboard(false);
-    this._banner(`ROUND ${this.roundNum}`, this.roundNum === 1 ? 'Que comece a treta!' : 'De volta pra treta!');
+    this._banner(`ROUND ${this.roundNum}`, this.roundNum === 1 ? 'Let the match begin!' : 'Back into it!');
     if (!this.sfx.csSound('roundstart')) this.sfx.vuvuzela(1.4);
   }
   _resetPositions() {
@@ -353,7 +353,7 @@ export class Game {
     this.player.pitch = 0; this.player.vel.set(0, 0, 0); this.player.crouchF = 0;
     this.player.ammo.awp = { mag: WEAPONS.awp.mag, res: WEAPONS.awp.reserve };
     this.player.ammo.pistol = { mag: WEAPONS.pistol.mag, res: WEAPONS.pistol.reserve };
-    // modo de armas: aplica o loadout inicial
+    // weapon mode: apply the initial loadout
     const mode = this.settings.wpnMode || 'all';
     if (mode === 'pistols') {
       this.player.weapon = 'pistol';
@@ -395,11 +395,11 @@ export class Game {
     this.radioOpen = null; this._radioUi();
     this._showScoreboard(true);   // CS-style: scoreboard pops at round end
     if (!winner) {
-      this._banner('EMPATE NA TRETA', `${p} × ${b} — ninguém convenceu ninguém`);
+      this._banner('ROUND DRAW', `${p} × ${b} — nobody budged`);
       this.sfx.roundLose();
     } else {
       const mine = winner === this.playerTeam;
-      this._banner(`${TEAM_LABEL[winner]} LEVARAM O ROUND`, `${p} × ${b} ` + (mine ? '— o povo (você) agradece' : '— a oposição (você) pede revanche'));
+      this._banner(`${TEAM_LABEL[winner]} TAKE THE ROUND`, `${p} × ${b} ` + (mine ? '— your team thanks you' : '— the other side wants a rematch'));
       if (!this.sfx.roundSound(winner)) mine ? this.sfx.roundWin() : this.sfx.roundLose();
     }
     if (this.roundsWon.P >= ROUNDS_TO_WIN || this.roundsWon.B >= ROUNDS_TO_WIN)
@@ -410,15 +410,15 @@ export class Game {
     this.state = 'matchEnd';
     const winner = this.roundsWon.P > this.roundsWon.B ? 'P' : 'B';
     const mine = winner === this.playerTeam;
-    this.el.matchTitle.textContent = `${TEAM_LABEL[winner]} VENCERAM A TRETA!`;
+    this.el.matchTitle.textContent = `${TEAM_LABEL[winner]} WIN THE MATCH!`;
     this.el.matchTitle.style.color = winner === 'P' ? '#ff8080' : '#9dff9d';
     this.el.matchSub.textContent = mine
-      ? 'A praça é sua. O pastel da vitória está pago. 🥟'
-      : 'Derrota na arena. Já pediram CPI da partida.';
+      ? 'The arena is yours. Coffee is on the losers. ☕'
+      : 'Defeat in the arena. Time for a retro.';
     this.el.matchStats.innerHTML =
       `<div><b>${this.roundsWon.P} × ${this.roundsWon.B}</b>rounds</div>` +
-      `<div><b>${this.player.kills}</b>kills de ${this.player.name}</div>` +
-      `<div><b>${this.player.deaths}</b>suas mortes</div>`;
+      `<div><b>${this.player.kills}</b>kills by ${this.player.name}</div>` +
+      `<div><b>${this.player.deaths}</b>your deaths</div>`;
     this.el.matchEnd.classList.remove('hidden');
     if (document.pointerLockElement) document.exitPointerLock();
     try { window.va?.('event', { name: 'match_end', data: { winner, roundsP: this.roundsWon.P, roundsB: this.roundsWon.B } }); } catch {}
@@ -468,12 +468,12 @@ export class Game {
   _switchTeam(charId) {
     if (!this.player.alive || (this.state !== 'live' && this.state !== 'countdown')) return;
     const p = this.player;
-    if (charId) { this.playerDef = byId(charId); p.def = this.playerDef; }   // personagem do novo lado
+    if (charId) { this.playerDef = byId(charId); p.def = this.playerDef; }   // character of the new side
     const oldTeam = this.playerTeam;
     const newTeam = oldTeam === 'P' ? 'B' : 'P';
     this.playerTeam = newTeam; this.enemyTeam = oldTeam;
     p.team = newTeam;
-    // rebalanceia 4×4: um bot do time novo deserta pro time velho
+    // rebalance 4×4: one bot from the new team defects to the old team
     const candidates = this.bots.filter(b => b.team === newTeam);
     const swapBot = candidates[(Math.random() * candidates.length) | 0];
     if (swapBot) {
@@ -494,12 +494,12 @@ export class Game {
       swapBot.mesh.group.position.copy(swapBot.pos);
       swapBot.mesh.group.visible = true;
     }
-    // respawn do jogador no lado novo
+    // respawn the player on the new side
     const s = this.world.spawns[newTeam][(Math.random() * 4) | 0];
     p.pos.set(s.x, 0, s.z); p.vel.set(0, 0, 0);
     p.yaw = newTeam === 'P' ? Math.PI : 0; p.pitch = 0; p.hp = 100;
     this._scope(false, true);
-    this._banner(`VOCÊ AGORA É ${TEAM_LABEL[newTeam]}`, 'trocou de lado na treta — sem penalty, só julgamento');
+    this._banner(`YOU'RE NOW ON ${TEAM_LABEL[newTeam]}`, 'switched sides — no penalty, just side-eye');
     this.sfx.uiClick();
   }
 
@@ -509,7 +509,7 @@ export class Game {
     if (p.weapon === w || !p.alive || !WEAPONS[w]) return;
     if (w !== 'knife' && !p.ammo[w]) p.ammo[w] = { mag: WEAPONS[w].mag, res: WEAPONS[w].reserve };
     p.weapon = w; p.reloadUntil = 0; p.drawUntil = this.time + 0.28;
-    this.vm.reloadDip = 0;   // evita arma travada inclinada ao trocar no meio da recarga
+    this.vm.reloadDip = 0;   // avoids the weapon getting stuck tilted when switching mid-reload
     this.bloom = 0;
     this._scope(false, true);
     for (const k in this.vm.models) this.vm.models[k].visible = k === w;
@@ -553,7 +553,7 @@ export class Game {
     p.revealedAt = this.time;
     if (p.weapon === 'awp') setTimeout(() => this.sfx.bolt(), 420);
     this.sfx.shotWeapon(p.weapon);
-    // spread & direction — crouching tightens it up; autos dão bloom
+    // spread & direction — crouching tightens it up; autos add bloom
     const crouchMul = 1 - 0.5 * p.crouchF;
     this.bloom = Math.min(1.6, (this.bloom || 0) + (w.auto ? 0.22 : 0));
     const spreadBase = (p.weapon === 'awp' ? (p.scoped ? w.spreadScope : w.spreadHip) : w.spreadHip) * crouchMul;
@@ -581,7 +581,7 @@ export class Game {
       const d = to.length();
       if (d < bd && to.normalize().dot(dir) > 0.6) { best = b; bd = d; }
     }
-    if (best) { this.sfx.knifeHit(); this._damage(best, WEAPONS.knife.dmg, this.player, 'FACA'); }
+    if (best) { this.sfx.knifeHit(); this._damage(best, WEAPONS.knife.dmg, this.player, 'KNIFE'); }
   }
   _fireHitscan(shooter, from, dir, dmg, byPlayer = false, weap = 'AWP') {
     this.ray.set(from, dir); this.ray.far = 200;
@@ -600,7 +600,7 @@ export class Game {
       end = hC.point;
       if (bot) {
         if (bot.team === shooter.team) { /* friendly fire off */ }
-        else this._damage(bot, head && dmg < 100 ? 100 : dmg, shooter, weap, head); // headshot: dano mínimo 100
+        else this._damage(bot, head && dmg < 100 ? 100 : dmg, shooter, weap, head); // headshot: minimum damage 100
       }
     } else if (hW) {
       end = hW.point;
@@ -626,13 +626,13 @@ export class Game {
       this._hitmarker(ent.hp <= 0);
     }
     if (!ent.isPlayer && attacker && attacker.team !== ent.team && !ent.target && attacker.alive)
-      ent.target = attacker;   // bot caça quem o atingiu
+      ent.target = attacker;   // bot hunts down whoever hit it
     if (ent.hp <= 0) this._kill(ent, attacker, weap, head);
   }
   _kill(ent, attacker, weap = 'AWP', head = false) {
     ent.alive = false; ent.hp = 0; ent.deaths++;
     ent.respawnAt = this.time + RESPAWN_DELAY;
-    // CS: larga a arma no chão onde morreu
+    // CS: drop the weapon on the ground where it died
     this._dropWeapon(ent.pos.x, ent.pos.z, ent.isPlayer ? (ent.weapon === 'knife' ? 'awp' : ent.weapon) : 'awp');
     if (attacker) {
       attacker.kills++; this.roundKills[attacker.team]++;
@@ -679,7 +679,7 @@ export class Game {
     const cn = e => `<span class="${e.team === 'P' ? 'kp' : 'kb'}">${e.name}</span>`;
     row.innerHTML = attacker && attacker !== victim
       ? `${cn(attacker)} <span class="kx">[${weap}${head ? ' 💀' : ''}]</span> ${cn(victim)}`
-      : `${cn(victim)} <span class="kx">tropeçou na treta</span>`;
+      : `${cn(victim)} <span class="kx">fell off</span>`;
     this.el.killfeed.prepend(row);
     setTimeout(() => row.remove(), 4600);
     while (this.el.killfeed.children.length > 6) this.el.killfeed.lastChild.remove();
@@ -756,11 +756,11 @@ export class Game {
       this.camera.rotation.z = Math.min(0.5, (this.camera.rotation.z || 0) + dt * 0.8);
       return;
     }
-    // crouch (CTRL ou C) — slower, steadier aim
+    // crouch (CTRL or C) — slower, steadier aim
     const wantCrouch = (this.keys.ControlLeft || this.keys.ControlRight || this.keys.KeyC) && p.grounded;
     p.crouchF = Math.max(0, Math.min(1, p.crouchF + (wantCrouch ? dt * 7 : -dt * 7)));
     const sprint = (this.keys.ShiftLeft || this.keys.ShiftRight) && p.crouchF < 0.3;
-    const slowMul = this.world.slowAt && this.world.slowAt(p.pos.x, p.pos.z) ? 0.45 : 1;  // água/lago
+    const slowMul = this.world.slowAt && this.world.slowAt(p.pos.x, p.pos.z) ? 0.45 : 1;  // water/lake
     const maxSp = (sprint && slowMul === 1 ? 6.6 : 4.7) * (p.scoped ? 0.5 : 1) * (1 - 0.5 * p.crouchF) * slowMul;
     let ix = (this.keys.KeyD ? 1 : 0) - (this.keys.KeyA ? 1 : 0);
     let iz = (this.keys.KeyS ? 1 : 0) - (this.keys.KeyW ? 1 : 0);
@@ -797,7 +797,7 @@ export class Game {
       if (!p.grounded && p.vel.y < -6) this.sfx.land();
       p.pos.y = g2; p.vel.y = 0; p.grounded = true;
     } else if (p.pos.y > g2 + 0.05) p.grounded = false;
-    // auto-fire (ak/m4/mp5) enquanto o botão está segurado
+    // auto-fire (ak/m4/mp5) while the button is held down
     if (WEAPONS[p.weapon].auto && this.mouseDown0 && p.alive) this._tryShoot();
     this.bloom = Math.max(0, (this.bloom || 0) - dt * 1.8);
     // camera (eye drops when crouched)
@@ -826,7 +826,7 @@ export class Game {
     if (this._reloading()) {
       this.vm.reloadDip = Math.min(1, this.vm.reloadDip + dt * 4);
     } else {
-      this.vm.reloadDip = Math.max(0, this.vm.reloadDip - dt * 6); // safety: nunca trava inclinado
+      this.vm.reloadDip = Math.max(0, this.vm.reloadDip - dt * 6); // safety: never gets stuck tilted
       if (p.reloadUntil > 0) {
         p.reloadUntil = 0;
         for (const k of Object.keys(p.ammo)) {
@@ -849,7 +849,7 @@ export class Game {
   // pickups (e.g. awp_map). Called once per frame from update().
   _updatePickups() {
     const list = this.world.pickups || [];
-    // jogador: captura manual com E (bots pegam andando mesmo)
+    // player: manual pickup with E (bots grab it just by walking over)
     let near = null, nearDrop = -1, nearDist = 1.9 * 1.9;
     const consider = (pk, isDrop, idx) => {
       if (this.time < pk.readyAt) return;
@@ -862,7 +862,7 @@ export class Game {
     this.nearPickup = near && this.player.alive && this._pickupAllowed(near.weapon) ? { pk: near, dropIdx: nearDrop } : null;
     if (this.el.pickupHint) {
       if (this.nearPickup && this.state === 'live') {
-        this.el.pickupHint.textContent = `[E] PEGAR ${WEAPONS[this.nearPickup.pk.weapon].short}`;
+        this.el.pickupHint.textContent = `[E] GRAB ${WEAPONS[this.nearPickup.pk.weapon].short}`;
         this.el.pickupHint.classList.remove('hidden');
       } else this.el.pickupHint.classList.add('hidden');
     }
@@ -870,14 +870,14 @@ export class Game {
       // respawn a taken weapon
       if (pk.mesh && !pk.mesh.visible && this.time >= pk.readyAt) pk.mesh.visible = true;
       if (this.time < pk.readyAt) continue;        // still taken
-      // bot grab (andando por cima)
+      // bot grab (by walking over it)
       for (const b of this.bots) {
         if (!b.alive) continue;
         const dx = pk.x - b.pos.x, dz = pk.z - b.pos.z;
         if (dx * dx + dz * dz <= 1.7 * 1.7) { this._grabPickup(pk, b, false); break; }
       }
     }
-    // drops: bots pegam andando (jogador só com E, acima)
+    // drops: bots grab them by walking over (player only with E, above)
     for (let i = this.drops.length - 1; i >= 0; i--) {
       const pk = this.drops[i];
       for (const b of this.bots) {
@@ -895,14 +895,14 @@ export class Game {
     return true; // all
   }
   _grabPickup(pk, who, isPlayer) {
-    const w = pk.weapon;                           // qualquer arma de WEAPONS
+    const w = pk.weapon;                           // any weapon from WEAPONS
     if (!WEAPONS[w]) return false;
     if (isPlayer) {
       if (!who.ammo[w]) who.ammo[w] = { mag: 0, res: 0 };
       who.ammo[w].mag = WEAPONS[w].mag;
       who.ammo[w].res = WEAPONS[w].reserve;
       if (who.weapon !== w) { this._switchWeapon(w); this.sfx.reloadEnd(); }
-      else this.sfx.uiClick();                     // mesma arma = só munição
+      else this.sfx.uiClick();                     // same weapon = ammo only
     } else {
       who.weapon = w === 'knife' ? 'awp' : w;      // bot grabs it
     }
@@ -910,7 +910,7 @@ export class Game {
     pk.readyAt = this.time + PICKUP_RESPAWN;        // respawns later (map pickups)
     return true;
   }
-  // CS: morto larga a arma no chão
+  // CS: a dead player drops the weapon on the ground
   _dropWeapon(x, z, weapon) {
     let mesh;
     if (weapon === 'awp') {
@@ -1002,7 +1002,7 @@ export class Game {
         b.revealedAt = this.time;
         const dist = Math.hypot(dx, dz);
         const eSpeed = e.isPlayer ? Math.hypot(e.vel.x, e.vel.z) : BOT_SPEED;
-        const crouchBonus = dist > 25 ? 1.18 : 1;   // bot parado em posição = mais preciso
+        const crouchBonus = dist > 25 ? 1.18 : 1;   // bot holding a position = more accurate
         let chance = (0.72 * b.skill - dist * 0.006 - eSpeed * 0.035) * 1.5 * crouchBonus;
         chance = Math.max(0.07, Math.min(0.92, chance));
         const hit = Math.random() < chance;
@@ -1019,7 +1019,7 @@ export class Game {
         let end = hitsW ? hitsW.point : from.clone().add(dir.clone().multiplyScalar(120));
         if (hit) {
           end = teye;
-          const dmg = e.isPlayer ? 63 : 100;   // 1.5x dano
+          const dmg = e.isPlayer ? 63 : 100;   // 1.5x damage
           this._damage(e, dmg, b, 'AWP');
         } else if (hitsW && Math.random() < 0.5) this._puff(hitsW.point, hitsW.face ? hitsW.face.normal : null);
         this._tracer(from.clone().add(dir.clone().multiplyScalar(0.7)), end);
@@ -1052,7 +1052,7 @@ export class Game {
           let dy = wantYaw - b.yaw;
           while (dy > Math.PI) dy -= Math.PI * 2; while (dy < -Math.PI) dy += Math.PI * 2;
           b.yaw += dy * Math.min(1, dt * 8);
-          const bSlow = this.world.slowAt && this.world.slowAt(b.pos.x, b.pos.z) ? 0.5 : 1;  // bots também vadear
+          const bSlow = this.world.slowAt && this.world.slowAt(b.pos.x, b.pos.z) ? 0.5 : 1;  // bots wade too
           b.pos.x += Math.sin(b.yaw) * BOT_SPEED * bSlow * dt;
           b.pos.z += Math.cos(b.yaw) * BOT_SPEED * bSlow * dt;
           this._collide(b.pos, 0.38);
@@ -1106,7 +1106,7 @@ export class Game {
   _showScoreboard(v) {
     if (v) {
       document.querySelector('#scoreboard h3').textContent =
-        `PLACAR — PET ${this.roundsWon.P} × ${this.roundsWon.B} BOL · ROUND ${this.roundNum}`;
+        `SCORE — DES ${this.roundsWon.P} × ${this.roundsWon.B} DEV · ROUND ${this.roundNum}`;
       const rows = [...this.combatants].sort((a, b) => b.kills - a.kills).map(c =>
         `<tr class="${c.team === 'P' ? 'tp' : 'tb'}${c.isPlayer ? ' me' : ''}">
           <td>${c.name}${c.isPlayer ? ' ★' : ''}</td><td>${c.def.name}</td>
@@ -1133,8 +1133,8 @@ export class Game {
     this.el.roundTime.textContent = `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
     this.el.roundsP.textContent = this.roundsWon.P;
     this.el.roundsB.textContent = this.roundsWon.B;
-    this.el.scoreP.innerHTML = `PET <b>${this.roundKills.P}</b>`;
-    this.el.scoreB.innerHTML = `BOL <b>${this.roundKills.B}</b>`;
+    this.el.scoreP.innerHTML = `DES <b>${this.roundKills.P}</b>`;
+    this.el.scoreB.innerHTML = `DEV <b>${this.roundKills.B}</b>`;
   }
 
   /* ================= main update ================= */
@@ -1143,7 +1143,7 @@ export class Game {
     this.time += dt;
     if (this.state === 'countdown' && this.time >= this.stateUntil) {
       this.state = 'live';
-      this._banner('VALENDO!', 'A treta está liberada');
+      this._banner('LIVE!', 'Fight!');
     } else if (this.state === 'live') {
       this.timeLeft -= dt;
       if (this.timeLeft <= 0) this._endRound();
@@ -1157,7 +1157,7 @@ export class Game {
     this._updateFx(dt);
     this._updateHud();
     this._updateRadar();
-    // hint de pointer lock: visível só quando o jogo está ativo mas sem lock
+    // pointer lock hint: visible only when the game is active but without lock
     if (this.el.lockHint)
       this.el.lockHint.classList.toggle('hidden',
         this.testMode || this.paused || !!document.pointerLockElement ||

@@ -149,7 +149,7 @@ export function buildPoolDay(scene, T) {
     clock.rotation.x = Math.PI / 2; clock.position.set(-8, 4.6, HALF_Z); root.add(clock);
     addPlane(1.5, 1.5, MAT.white, -8, 4.6, HALF_Z - 0.06, Math.PI);
     addPlane(1.1, 1.1, MAT.navy, -8, 4.6, HALF_Z - 0.08, Math.PI);
-    addPlane(6, 2.2, signTexture('#1b3566', '#dff2ff', 'PISCINÃO DA TRETA', 'CLUBE AQUÁTICO PIXELÂNDIA'), 6, 4.4, HALF_Z - 0.06, Math.PI);
+    addPlane(6, 2.2, signTexture('#1b3566', '#dff2ff', 'THE POOL', 'PIXELVILLE AQUATIC CLUB'), 6, 4.4, HALF_Z - 0.06, Math.PI);
   }
 
   /* ---------------- glass skylight roof (keeps it enclosed) ---------------- */
@@ -168,7 +168,7 @@ export function buildPoolDay(scene, T) {
 
   /* ---------------- spawns' end signage ---------------- */
   for (const s of [1, -1]) {
-    const label = s < 0 ? signTexture('#c62f2f', '#ffffff', 'PETISTAS', 'VESTIÁRIO A') : signTexture('#1faa4d', '#ffd23f', 'BOLSONARISTAS', 'VESTIÁRIO B');
+    const label = s < 0 ? signTexture('#c62f2f', '#ffffff', 'DESIGNERS', 'LOCKER ROOM A') : signTexture('#1faa4d', '#ffd23f', 'DEVELOPERS', 'LOCKER ROOM B');
     addPlane(8, 2.4, label, 0, 4.4, (HALF_Z - 0.06) * s, s < 0 ? 0 : Math.PI);
   }
 
@@ -294,19 +294,19 @@ export function buildPoolDay(scene, T) {
   const mk = s => [-6, -2, 2, 6].map(x => ({ x, z: (HALF_Z - 4) * s, yaw: s < 0 ? 0 : Math.PI }));
   const spawns = { P: mk(-1), B: mk(1) };
 
-  /* ---------------- mais obstáculos (cover no deck) ---------------- */
-  // pilares de sustentação (cover alto)
+  /* ---------------- more obstacles (cover on the deck) ---------------- */
+  // support pillars (tall cover)
   for (const px of [-10, 10]) for (const pz of [-14, 0, 14]) {
     addBox(1.1, 6.5, 1.1, lam({ map: T.concrete }), px, 0, pz);
   }
-  // bancos de vestiário (cover baixo em fileira)
+  // locker-room benches (low cover in a row)
   for (const s of [-1, 1]) for (let i = 0; i < 3; i++) {
     const bz = s * (6 + i * 5), bx = s * 4;
     addBox(3.2, 0.45, 0.8, GM.wood, bx, 0, bz);
     addBox(0.15, 0.45, 0.7, lam({ color: 0x2a2a2a }), bx - 1.4, 0, bz, { collide: false });
     addBox(0.15, 0.45, 0.7, lam({ color: 0x2a2a2a }), bx + 1.4, 0, bz, { collide: false });
   }
-  // boxes de chuveiro (cabines fechadas = cover sólido)
+  // shower boxes (enclosed stalls = solid cover)
   for (const sx of [-1, 1]) {
     const cx = sx * (typeof HALF_X !== 'undefined' ? HALF_X - 3.2 : 14);
     for (let i = 0; i < 2; i++) {
@@ -316,7 +316,7 @@ export function buildPoolDay(scene, T) {
       addBox(1.8, 2.4, 0.15, lam({ color: 0xd8d4cc }), cx + sx * 0.8, 0, cz - 1.1);
     }
   }
-  // lixeiras de toalha (cover pequeno espalhado)
+  // towel bins (small scattered cover)
   for (const [tx, tz] of [[-7, -18], [7, 18], [-3, 10], [3, -10]])
     addBox(0.9, 1.1, 0.9, lam({ color: 0x3a5a8f }), tx, 0, tz);
 

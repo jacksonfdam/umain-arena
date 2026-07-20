@@ -1,4 +1,4 @@
-// awp_map-inspired arena, Brazilian satire edition. Procedural geometry only.
+// awp_map-inspired arena. Procedural geometry only.
 import * as THREE from 'three';
 
 const WALL_H = 4.5;
@@ -43,18 +43,18 @@ export function buildWorld(scene, T) {
   ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; root.add(ground);
   // central asphalt lane
   addPlane(14, 92, lam({ map: T.asphalt }), 0, 0.03, 0, 0, -Math.PI / 2);
-  // plaza disc (fictional Praça dos Três Poderes)
+  // plaza disc (fictional central plaza)
   const plaza = new THREE.Mesh(new THREE.CylinderGeometry(13, 13, 0.08, 28), lam({ map: T.concrete }));
   plaza.position.y = 0.04; plaza.receiveShadow = true; root.add(plaza);
-  // dirt patch (MST camp) + grass decor
+  // dirt patch (camp) + grass decor
   addPlane(14, 12, lam({ map: T.dirt }), -18, 0.05, -36, 0, -Math.PI / 2);
   for (const [gx, gz] of [[14, -26], [-12, 22], [20, 14], [-8, -14]])
     addPlane(5, 4, lam({ map: T.grass }), gx, 0.04, gz, 0, -Math.PI / 2);
 
   /* ---------------- perimeter walls with graffiti ---------------- */
   const wallMat = () => lam({ map: T.graffiti[(Math.random() * T.graffiti.length) | 0] });
-  addBox(54, WALL_H, 1, wallMat(), 0, 0, -46.5);              // south (Petistas)
-  addBox(54, WALL_H, 1, wallMat(), 0, 0, 46.5);               // north (Bolsonaristas)
+  addBox(54, WALL_H, 1, wallMat(), 0, 0, -46.5);              // south (Designers)
+  addBox(54, WALL_H, 1, wallMat(), 0, 0, 46.5);               // north (Developers)
   addBox(1, WALL_H, 94, wallMat(), -26.5, 0, 0);              // west
   addBox(1, WALL_H, 94, wallMat(), 26.5, 0, 0);               // east
 
@@ -74,7 +74,7 @@ export function buildWorld(scene, T) {
     addPlane(6, 4, lam({ map: bannerT }), 0, 3.2, 45.9 * s, s < 0 ? 0 : Math.PI);
   }
 
-  /* ---------------- central cover: giant broken urna eletrônica ---------------- */
+  /* ---------------- central cover: giant broken voting machine ---------------- */
   {
     const urna = addBox(3.2, 4.2, 2.2, lam({ map: T.urna }), 0, 0, 0, { rz: 0.06, pad: 0.1 });
     addBox(3.6, 0.5, 2.6, lam({ map: T.concreteDark }), 0, 0, 0, { collide: false }); // base slab
@@ -101,7 +101,7 @@ export function buildWorld(scene, T) {
   for (const [wx, wz] of [[-18, -18], [18, 18], [18, -22], [-18, 22]])
     addBox(4.2, 1.15, 0.8, lam({ map: T.concrete }), wx, 0, wz);
 
-  /* ---------------- caminhão (east) ---------------- */
+  /* ---------------- truck (east) ---------------- */
   {
     const side = lam({ map: T.truckSide });
     const plain = lam({ color: 0x1faa4d });
@@ -118,7 +118,7 @@ export function buildWorld(scene, T) {
     }
   }
 
-  /* ---------------- sindicato (west) ---------------- */
+  /* ---------------- design guild (west) ---------------- */
   {
     addBox(7, 4, 6, lam({ map: T.concrete }), -20, 0, 10);
     addPlane(5.6, 1.4, lam({ map: T.signSindicato }), -16.4, 3.1, 10, Math.PI / 2);
@@ -126,7 +126,7 @@ export function buildWorld(scene, T) {
     addBox(2, 0.3, 1.2, lam({ map: T.concreteDark }), -16.2, 0, 10, { collide: false }); // step
   }
 
-  /* ---------------- MST camp (north-west corner) ---------------- */
+  /* ---------------- camp (north-west corner) ---------------- */
   {
     const tentMat = lam({ map: T.tent });
     for (const [tx, tz, tr] of [[-19, -34, .3], [-15, -38, -.4], [-21, -39, 1.2]]) {
@@ -145,7 +145,7 @@ export function buildWorld(scene, T) {
     addBox(1.2, 0.5, 1.2, lam({ color: 0x6b4f2c }), -17, 0, -36.5, { collide: false }); // fire pit
   }
 
-  /* ---------------- boteco (south-east) ---------------- */
+  /* ---------------- dev bar (south-east) ---------------- */
   {
     addBox(3.2, 2.5, 2.4, lam({ map: T.concreteDark }), 20, 0, 37);
     addPlane(3, 0.8, lam({ map: T.signBoteco }), 20, 2.9, 35.7, Math.PI);
@@ -161,7 +161,7 @@ export function buildWorld(scene, T) {
     addBox(0.08, 0.75, 0.08, lam({ color: 0x888888 }), 18.2, 0, 33.8, { collide: false });
   }
 
-  /* ---------------- pastel stand (west mid) ---------------- */
+  /* ---------------- snack stand (west mid) ---------------- */
   {
     addBox(1.8, 2.1, 3.4, lam({ map: T.concrete }), -24.2, 0, 0);
     addPlane(2.8, 0.7, lam({ map: T.signPastel }), -23.2, 2.6, 0, Math.PI / 2);
@@ -201,11 +201,11 @@ export function buildWorld(scene, T) {
     }
   }
 
-  /* ---------------- skyline: fictional Brasília silhouettes ---------------- */
+  /* ---------------- skyline: fictional city silhouettes ---------------- */
   {
     const sil = lam({ color: 0x5f7089 });
     const skyline = new THREE.Group(); root.add(skyline);
-    // Congresso-inspired: twin towers + dome + bowl (north)
+    // parliament-inspired: twin towers + dome + bowl (north)
     const congress = new THREE.Group();
     for (const tx of [-2.2, 2.2]) {
       const tower = new THREE.Mesh(new THREE.BoxGeometry(3, 30, 3), sil);

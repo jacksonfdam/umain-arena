@@ -1,15 +1,15 @@
-// Mini-portraits SVG dos 8 personagens (compartilhado: badge, ranking, perfil).
+// SVG mini-portraits of the 10 characters (shared: badge, ranking, profile).
 export const CHARS: Record<string, { name: string; skin: string; shirt: string; hair: string; feat: string }> = {
-  esquerdomacho: { name: 'Esquerdomacho', skin: '#e8b98a', shirt: '#b03a2e', hair: '#4a3428', feat: 'beard-glasses' },
-  sindicato: { name: 'Líder do Sindicato', skin: '#c98d5e', shirt: '#777777', hair: '#3a3a3a', feat: 'cap-vest' },
-  mst: { name: 'Líder do MST', skin: '#8d5a3b', shirt: '#7a6a45', hair: '#2a1e14', feat: 'cap' },
-  doutora: { name: 'Doutora do SUS', skin: '#d9a580', shirt: '#f0f0f0', hair: '#3a2a1e', feat: 'ponytail-coat' },
-  caminhoneiro: { name: 'Caminhoneiro', skin: '#d9a066', shirt: '#ffd23f', hair: '#3a2a1e', feat: 'capblue-shades' },
-  influencer: { name: 'Influencer de Dubai', skin: '#f2c9a4', shirt: '#f0f0f0', hair: '#f5d76e', feat: 'blonde-shades' },
-  sertanejo: { name: 'Cantor Sertanejo', skin: '#c98d5e', shirt: '#8a2f2f', hair: '#2a1e14', feat: 'cowboy-stache' },
-  senhora: { name: 'Tia Zilá', skin: '#eec39a', shirt: '#1faa4d', hair: '#d8d8d8', feat: 'bun-shades' },
-  mistico: { name: 'Jovem Místico', skin: '#e8b98a', shirt: '#9b59b6', hair: '#4a3428', feat: 'headband-beard' },
-  coach: { name: 'Coach Quântico', skin: '#f2c9a4', shirt: '#1a2a4a', hair: '#2a2a2a', feat: 'blazer-headset' },
+  ux_lead: { name: 'The UX Lead', skin: '#e8b98a', shirt: '#b03a2e', hair: '#4a3428', feat: 'beard-glasses' },
+  brand_designer: { name: 'The Brand Designer', skin: '#c98d5e', shirt: '#777777', hair: '#3a3a3a', feat: 'cap-vest' },
+  motion_designer: { name: 'The Motion Designer', skin: '#8d5a3b', shirt: '#7a6a45', hair: '#2a1e14', feat: 'cap' },
+  product_designer: { name: 'The Product Designer', skin: '#d9a580', shirt: '#f0f0f0', hair: '#3a2a1e', feat: 'ponytail-coat' },
+  backend_dev: { name: 'The Backend Dev', skin: '#d9a066', shirt: '#ffd23f', hair: '#3a2a1e', feat: 'capblue-shades' },
+  frontend_dev: { name: 'The Frontend Dev', skin: '#f2c9a4', shirt: '#f0f0f0', hair: '#f5d76e', feat: 'blonde-shades' },
+  devops_engineer: { name: 'The DevOps Engineer', skin: '#c98d5e', shirt: '#8a2f2f', hair: '#2a1e14', feat: 'cowboy-stache' },
+  qa_engineer: { name: 'The QA Engineer', skin: '#eec39a', shirt: '#1faa4d', hair: '#d8d8d8', feat: 'bun-shades' },
+  illustrator: { name: 'The Illustrator', skin: '#e8b98a', shirt: '#9b59b6', hair: '#4a3428', feat: 'headband-beard' },
+  tech_lead: { name: 'The Tech Lead', skin: '#f2c9a4', shirt: '#1a2a4a', hair: '#2a2a2a', feat: 'blazer-headset' },
 };
 export const charName = (id?: string | null) => (id && CHARS[id] ? CHARS[id].name : null);
 
@@ -50,13 +50,13 @@ function charInner(id: string, sideColor: string, clipId: string): string {
   </g>`;
 }
 
-// retrato completo no círculo padrão (748,96,r56) com anel
+// full portrait in the default circle (748,96,r56) with ring
 export function charSvg(id: string, sideColor: string, clipId = 'cav'): string {
   return charInner(id, sideColor, clipId) +
     `<circle cx="748" cy="96" r="56" fill="none" stroke="${sideColor}" stroke-width="4"/>`;
 }
 
-// versão escalada pra qualquer posição/tamanho de círculo
+// scaled version for any circle position/size
 export function charSvgScaled(id: string, sideColor: string, cx: number, cy: number, r: number, clipId: string): string {
   return `<g transform="translate(${cx - 748},${cy - 96}) scale(${r / 56})">${charSvg(id, sideColor, clipId)}</g>`;
 }

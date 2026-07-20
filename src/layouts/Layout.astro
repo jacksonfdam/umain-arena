@@ -4,10 +4,10 @@ interface Props {
   description?: string;
   ogImage?: string;
 }
-const { title, description = 'FPS gratuito de navegador estilo CS 1.6: arena de sniper satírica Petistas × Bolsonaristas numa Brasília fictícia.', ogImage = 'https://csbrasil.online/og-image.png' } = Astro.props;
+const { title, description = 'Free browser FPS sniper arena: Designers vs Developers in a fast, playful team shootout.', ogImage = 'https://umain-arena.vercel.app/og-image.png' } = Astro.props;
 ---
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +15,7 @@ const { title, description = 'FPS gratuito de navegador estilo CS 1.6: arena de 
 <meta name="description" content={description}>
 <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)}>
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="CS BRASIL: Treta Suprema">
+<meta property="og:site_name" content="Umain Arena">
 <meta property="og:title" content={title}>
 <meta property="og:description" content={description}>
 <meta property="og:image" content={ogImage}>
@@ -77,18 +77,18 @@ code{color:var(--amber)}
 <div id="bg-scan"></div>
 <script type="module" src="/js/site-bg.js"></script>
 <header>
-  <a class="logo" href="/">CS BRASIL</a>
+  <a class="logo" href="/">UMAIN ARENA</a>
   <nav>
-    <a href="/sobre">SOBRE</a>
-    <a href="/personagens">PERSONAGENS</a>
-    <a href="/como-jogar">COMO JOGAR</a>
+    <a href="/sobre">ABOUT</a>
+    <a href="/personagens">CHARACTERS</a>
+    <a href="/como-jogar">HOW TO PLAY</a>
     <a href="/ranking">RANKING</a>
-    <a href="/mapa">MAPA</a>
-    <a href="https://github.com/rubenmarcus/csbrasil">GITHUB</a>
+    <a href="/mapa">MAP</a>
+    <a href="https://github.com/jacksonfdam/umain-arena">GITHUB</a>
   </nav>
-  <a class="btn-play" href="/">▶ JOGAR</a>
+  <a class="btn-play" href="/">▶ PLAY</a>
 </header>
 <main><slot /></main>
-<footer>Sátira política fictícia, sem lado e sem ódio — celebração da cultura brasileira 🇧🇷 · código MIT · feito com Kimi K3</footer>
+<footer>A fun internal browser FPS — Designers vs Developers · MIT licensed</footer>
 </body>
 </html>

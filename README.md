@@ -1,169 +1,175 @@
-# CS BRASIL: Treta Suprema
+# Umain Arena
 
 [![built with Kimi K3](https://img.shields.io/badge/built%20with-Kimi%20K3-6b5bff?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI+PGNpcmNsZSBjeD0iOCIgY3k9IjgiIHI9IjciIGZpbGw9IiNmZmYiLz48L3N2Zz4=)](https://www.kimi.com/)
 [![license: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![astro](https://img.shields.io/badge/site-astro-ff5d01?logo=astro)](https://astro.build)
 
-![CS BRASIL: Treta Suprema — arena de sniper estilo CS 1.6 numa Brasília fictícia](public/og-image.png)
+![Umain Arena — CS 1.6-style sniper arena, Designers vs Developers](public/og-image.png)
 
-FPS de navegador em Three.js: arena de sniper estilo CS 1.6 (`awp_map`) em uma Brasília
-fictícia e satírica. Personagens 100% fictícios, sem gore — só arquétipos exagerados.
+Browser FPS in Three.js: a CS 1.6-style sniper arena (`awp_map`) where Designers
+take on Developers. 100% fictional characters, no gore — just playful, exaggerated
+role personas.
 
-> 📝 Este jogo foi gerado do zero por IA (Kimi K3) a partir de um único prompt —
-> [leia o prompt original em PROMPT.md](PROMPT.md).
+> 📝 This game was generated from scratch by AI (Kimi K3) from a single prompt —
+> [read the original prompt in PROMPT.md](PROMPT.md).
 
-## Arquitetura
+## Credits
 
-Monorepo com duas zonas:
+Umain Arena is a rebrand based on the original project
+**"CS BRASIL: Treta Suprema"** by [@rubenmarcus](https://github.com/rubenmarcus)
+— [github.com/rubenmarcus/csbrasil](https://github.com/rubenmarcus/csbrasil).
 
-- **Jogo** (`public/` — rota `/` do site) — vanilla JS + Three.js vendored, **zero build**:
-  roda sozinho com qualquer servidor estático. Nunca vira framework.
-- **Site** (raiz, [Astro](https://astro.build)) — landing `/`, `/personagens`,
-  `/como-jogar` (SEO/AEO real) + **API routes SSR** (`/api/*`) pro ranking
-  global: a `service_role` key do Supabase fica no servidor, nunca no browser.
+## Architecture
 
-## Rodar localmente
+Monorepo with two zones:
 
-Só o jogo (zero dependências):
+- **Game** (`public/` — the site's `/` route) — vanilla JS + vendored Three.js,
+  **zero build**: runs on its own with any static server. Never becomes a framework.
+- **Site** (root, [Astro](https://astro.build)) — landing `/`, `/personagens`,
+  `/como-jogar` (real SEO/AEO) + **SSR API routes** (`/api/*`) for the global
+  ranking: the Supabase `service_role` key stays on the server, never in the browser.
+
+## Run locally
+
+Just the game (zero dependencies):
 
 ```bash
 cd public
 python3 -m http.server 8123
-# abra http://localhost:8123
+# open http://localhost:8123
 ```
 
-Site completo (landing + jogo em `/game/` + API):
+Full site (landing + game at `/game/` + API):
 
 ```bash
-git clone https://github.com/rubenmarcus/csbrasil.git
-cd csbrasil
+git clone https://github.com/jacksonfdam/umain-arena.git
+cd umain-arena
 npm install
-npm run fetch-audio   # pacote de áudio (opcional — sem ele roda com sons sintetizados)
-npm run dev           # dev server Astro
-npm run build         # gera dist/ (client + server)
-npm run preview       # serve dist/client estaticamente
+npm run fetch-audio   # audio pack (optional — without it, runs with synthesized sounds)
+npm run dev           # Astro dev server
+npm run build         # builds dist/ (client + server)
+npm run preview       # serves dist/client statically
 ```
 
-## Controles
+## Controls
 
-| Tecla | Ação |
+| Key | Action |
 | --- | --- |
-| W A S D | Mover |
-| Mouse | Mirar |
-| Shift | Correr |
-| **Ctrl ou C** | **Agachar — mira mais estável** |
-| Espaço | Pular |
-| Clique esq. | Atirar |
-| Clique dir. | Luneta da AWP |
-| R | Recarregar |
-| 1 / 2 / 3 | AWP / Pistola / Faca |
-| **Z / X / V** | **Rádio estilo CS (comandos de voz)** |
-| **M** | **Trocar de time (a qualquer momento)** |
-| Tab | Placar |
-| Esc | Pausar |
+| W A S D | Move |
+| Mouse | Aim |
+| Shift | Sprint |
+| **Ctrl or C** | **Crouch — steadier aim** |
+| Space | Jump |
+| Left click | Shoot |
+| Right click | AWP scope |
+| R | Reload |
+| 1 / 2 / 3 | AWP / Pistol / Knife |
+| **Z / X / V** | **CS-style radio (voice commands)** |
+| **M** | **Switch team (any time)** |
+| Tab | Scoreboard |
+| Esc | Pause |
 
-**Regras:** 4×4 com respawn (2,5s). Round de 1:39; o time com mais kills leva o round;
-vence quem levar 3 rounds. AWP mata com 1 tiro; headshot tem som próprio. Multikills
-disparam anúncios estilo Unreal Tournament. Defina seu **nick** no menu principal
-(fica salvo, com stats locais na tela RANKING).
+**Rules:** 4v4 with respawn (2.5s). Rounds last 1:39; the team with the most kills
+wins the round; first to 3 rounds wins. The AWP kills in one shot; headshots have
+their own sound. Multikills trigger Unreal Tournament-style announcements. Set your
+**nick** in the main menu (it's saved, with local stats on the RANKING screen).
 
-## Áudios (pasta `public/audio/`)
+## Audio (`public/audio/` folder)
 
-O jogo carrega `audio/manifest.json`:
+The game loads `audio/manifest.json`:
 
 ```
 audio/
-  manifest.json        # mapa de faixas (edite ao adicionar arquivos)
-  petista/ingame/      # falas do time P (rádio + celebração de kill)
-  petista/round/       # toca quando o time P vence o round
-  bolsonaro/ingame/    # falas do time B
-  bolsonaro/round/     # toca quando o time B vence o round
-  game/                # anúncios UT + sons de arma (awp, usp, faca, clipes)
-  cs/                  # OPCIONAL: drop-in de sons próprios (ver LEIA-ME.txt)
-  manifest.example.json  # manifest de referência (versionado no git)
+  manifest.json        # track map (edit when adding files)
+  petista/ingame/      # Designers team lines (radio + kill celebration)
+  petista/round/       # plays when the Designers win the round
+  bolsonaro/ingame/    # Developers team lines
+  bolsonaro/round/     # plays when the Developers win the round
+  game/                # UT announcements + weapon sounds (awp, usp, knife, clips)
+  cs/                  # OPTIONAL: drop-in for your own sounds (see LEIA-ME.txt)
+  manifest.example.json  # reference manifest (versioned in git)
 ```
 
-- **Kill/death:** ao matar, toca fala aleatória do time do matador (throttle de 3,5s).
-- **Rádio (Z/X/V + 1-3):** toca fala aleatória do seu time e mostra a linha no HUD.
-- **Fim de round:** toca a faixa `round/` do time vencedor.
-- **Multikill do jogador:** `doublekill` (2), `triplekill` (3), `multikill` (4),
-  `megakill` (5), `godlike` (6+); 5 kills sem morrer = `killingspree`;
+- **Kill/death:** on a kill, plays a random line from the killer's team (3.5s throttle).
+- **Radio (Z/X/V + 1-3):** plays a random line from your team and shows it in the HUD.
+- **End of round:** plays the winning team's `round/` track.
+- **Player multikills:** `doublekill` (2), `triplekill` (3), `multikill` (4),
+  `megakill` (5), `godlike` (6+); 5 kills without dying = `killingspree`;
   headshot = `headshot`.
-- **Adicionar faixas:** copie o arquivo para a pasta e registre o caminho em
-  `audio/manifest.json` (mesmas chaves). Sem manifest, o jogo usa sons sintetizados.
+- **Adding tracks:** copy the file into the folder and register the path in
+  `audio/manifest.json` (same keys). Without a manifest, the game uses synthesized sounds.
 
-### Pacote de áudio (open source)
+### Audio pack (open source)
 
-A pasta `audio/` **não é versionada** (`.gitignore`) porque as vozes/memes têm
-direitos incertos — o repositório público leva só o código (MIT). Para obter
-o pacote:
+The `audio/` folder is **not versioned** (`.gitignore`) because the voices/clips
+have uncertain rights — the public repo ships only the code (MIT). To get the pack:
 
 ```bash
-# com a env AUDIO_PACK_URL apontando pro zip (default: Release audio-pack-v1 deste repo)
+# with the AUDIO_PACK_URL env pointing to the zip (default: this repo's Release audio-pack-v1)
 bash scripts/fetch-audio.sh
 ```
 
-- **Contribuidores**: rodam o script (ou montam a própria pasta seguindo
-  `manifest.example.json`). Sem os arquivos, o jogo usa sons sintetizados.
-- **Criar/atualizar o pacote**: `cd public/audio && zip -r ../../../../audio-pack.zip . -x '*.DS_Store'`
+- **Contributors**: run the script (or assemble their own folder following
+  `manifest.example.json`). Without the files, the game uses synthesized sounds.
+- **Create/update the pack**: `cd public/audio && zip -r ../../../../audio-pack.zip . -x '*.DS_Store'`
 
-### Sobre sons "reais" do CS 1.6
+### About "real" CS 1.6 sounds
 
-Um som de AWP estilo CS 1.6 já está configurado (`audio/game/awp-cs-1-6.mp3`).
-Os samples originais do CS 1.6 são **propriedade da Valve** e não são distribuídos com
-este jogo. Se você possui o jogo legalmente, pode usar seus próprios arquivos: copie de
-`cstrike/sound/` para `audio/cs/` e registre no manifest, chave `"cs"`.
+A CS 1.6-style AWP sound is already configured (`audio/game/awp-cs-1-6.mp3`).
+The original CS 1.6 samples are **property of Valve** and are not distributed with
+this game. If you own the game legally, you can use your own files: copy them from
+`cstrike/sound/` to `audio/cs/` and register them in the manifest under the `"cs"` key.
 
-## Ranking global (Supabase)
+## Global ranking (Supabase)
 
-- **Fase 1 (atual):** nick + link social e stats no `localStorage` (tela RANKING no jogo).
-- **Fase 2:** schema pronto em `supabase/schema.sql` (players com token UUID, RPC
-  `register_player`/`submit_match`, RLS, rate limit, view `leaderboard`).
-  Os endpoints SSR `GET /api/leaderboard` e `POST /api/submit-match` já estão no
-  site — sobem quando as envs `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`
-  (só no servidor!) forem configuradas no projeto da Vercel.
-- **Fase 3 (futuro):** Supabase Auth (magic link / OAuth) substitui o token local.
+- **Phase 1 (current):** nick + social link and stats in `localStorage` (in-game RANKING screen).
+- **Phase 2:** schema ready in `supabase/schema.sql` (players with UUID token, RPC
+  `register_player`/`submit_match`, RLS, rate limit, `leaderboard` view).
+  The SSR endpoints `GET /api/leaderboard` and `POST /api/submit-match` are already
+  in the site — they go live once the `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`
+  envs (server only!) are configured in the Vercel project.
+- **Phase 3 (future):** Supabase Auth (magic link / OAuth) replaces the local token.
 
 ## SEO / AEO
 
-Landing Astro com meta/OG/canonical + JSON-LD `VideoGame`, FAQ visível,
-`robots.txt`, `sitemap.xml` e `llms.txt` em `public/`. O jogo (`/game/`) tem
-seu próprio head otimizado + JSON-LD `FAQPage`.
+Astro landing with meta/OG/canonical + `VideoGame` JSON-LD, visible FAQ,
+`robots.txt`, `sitemap.xml` and `llms.txt` in `public/`. The game (`/game/`) has
+its own optimized head + `FAQPage` JSON-LD.
 
-## Estrutura
+## Structure
 
 ```
-astro.config.mjs    Astro 7 + adapter Vercel (SSR endpoints)
+astro.config.mjs    Astro 7 + Vercel adapter (SSR endpoints)
 vercel.json         build (fetch-audio + astro build) + cache headers
 src/
-  layouts/Layout.astro   shell (nav, footer, CSS global)
-  pages/sobre.astro      landing/FAQ (JSON-LD VideoGame)
+  layouts/Layout.astro   shell (nav, footer, global CSS)
+  pages/sobre.astro      landing/FAQ (VideoGame JSON-LD)
   pages/personagens.astro
   pages/como-jogar.astro
-  pages/api/leaderboard.ts    GET ranking (service key no servidor)
-  pages/api/submit-match.ts   POST partida (rate limit por IP + RPC)
-  lib/supabase.ts        client admin (envs SUPABASE_URL/SERVICE_ROLE_KEY)
-public/               O JOGO na rota / (vanilla, zero build)
+  pages/api/leaderboard.ts    GET ranking (service key on the server)
+  pages/api/submit-match.ts   POST match (per-IP rate limit + RPC)
+  lib/supabase.ts        admin client (SUPABASE_URL/SERVICE_ROLE_KEY envs)
+public/               THE GAME on the / route (vanilla, zero build)
   index.html style.css js/ vendor/ audio/
   og-image.png robots.txt sitemap.xml llms.txt
-scripts/fetch-audio.sh   baixa o pacote de áudio pra public/audio/
-supabase/schema.sql      schema do ranking (Fase 2)
+scripts/fetch-audio.sh   downloads the audio pack to public/audio/
+supabase/schema.sql      ranking schema (Phase 2)
 ```
 
-## Trocar placeholders por assets reais
+## Swapping placeholders for real assets
 
-- **Modelos:** personagens são montados em `public/js/characters.js`
-  (`buildCharacter`). Para GLTF, carregue o modelo em `mkBot`
-  (`public/js/game.js`) e adapte `poseCharacter`.
-- **Texturas:** tudo sai de `initTextures()` em `public/js/textures.js`.
-- **Sons:** veja a seção Áudios acima.
-- **Mapa:** colisores são AABBs declarados junto de cada mesh em `public/js/map.js`.
+- **Models:** characters are assembled in `public/js/characters.js`
+  (`buildCharacter`). For GLTF, load the model in `mkBot`
+  (`public/js/game.js`) and adapt `poseCharacter`.
+- **Textures:** everything comes from `initTextures()` in `public/js/textures.js`.
+- **Sounds:** see the Audio section above.
+- **Map:** colliders are AABBs declared alongside each mesh in `public/js/map.js`.
 
-## Licenças / créditos
+## Licenses / credits
 
-- Three.js r160 — licença MIT (© Three.js authors), arquivo em `public/vendor/`.
-- Código, texturas, personagens e logo: originais, gerados proceduralmente.
-- Áudios em `audio/`: conteúdo fornecido pelo usuário (memes); verifique direitos
-  antes de publicar comercialmente. Sons de CS 1.6 **não inclusos** (Valve).
+- Three.js r160 — MIT license (© Three.js authors), file in `public/vendor/`.
+- Code, textures, characters and logo: original, procedurally generated.
+- Audio in `audio/`: user-supplied content; verify rights before publishing
+  commercially. CS 1.6 sounds **not included** (Valve).
 
-*Sátira política fictícia. Feito para rir, não para brigar.*
+*Fictional, playful fun. Made to laugh, not to fight.*

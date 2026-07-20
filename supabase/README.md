@@ -1,24 +1,24 @@
 # supabase/
 
-Esta pasta é pública **de propósito** — e deve continuar assim.
+This folder is public **on purpose** — and should stay that way.
 
-## O que pode ficar aqui (seguro)
+## What can live here (safe)
 
-- `schema.sql` e migrations: estrutura de tabelas, RPCs, policies, views.
-  Publicar schema NÃO enfraquece a segurança: as defesas (RLS, validação de
-  token nos RPCs, rate limits) não dependem de segredo — um atacante já
-  descobriria os endpoints observando o tráfego do client de qualquer forma.
+- `schema.sql` and migrations: table structure, RPCs, policies, views.
+  Publishing the schema does NOT weaken security: the defenses (RLS, token
+  validation in the RPCs, rate limits) don't depend on secrecy — an attacker
+  would discover the endpoints by watching the client's traffic anyway.
 
-## O que NUNCA pode entrar aqui (ou em qualquer lugar do git)
+## What can NEVER go here (or anywhere in git)
 
-- `.env` / `.env.*` (ignorados globalmente no `.gitignore`)
-- `service_role` key, senha do banco, connection strings com senha
-- chaves de API de terceiros
+- `.env` / `.env.*` (ignored globally in `.gitignore`)
+- `service_role` key, database password, connection strings with a password
+- third-party API keys
 
-A `service_role` e a `SUPABASE_URL` vivem **só** nas env vars da Vercel.
-A `anon` key do client é pública por design — a segurança vem do RLS,
-não de esconder a chave.
+The `service_role` and `SUPABASE_URL` live **only** in Vercel's env vars.
+The client's `anon` key is public by design — security comes from RLS,
+not from hiding the key.
 
-Se um segredo for commitado por acidente: **revogue imediatamente**
-(Project Settings → API → regenerate) e reforce as envs na Vercel —
-apagar o commit não basta, o histórico do git preserva.
+If a secret is committed by accident: **revoke it immediately**
+(Project Settings → API → regenerate) and refresh the envs on Vercel —
+deleting the commit is not enough, git history preserves it.

@@ -19,15 +19,15 @@ const totalPages = Math.max(1, Math.ceil(players.length / PAGE_SIZE));
 const curPage = Math.min(page, totalPages);
 const rows = players.slice((curPage - 1) * PAGE_SIZE, curPage * PAGE_SIZE);
 ---
-<Layout title="Ranking global — CS BRASIL: Treta Suprema" description="Leaderboard global do CS BRASIL: os maiores abatedores da arena Treta Suprema.">
-  <h1>🌐 RANKING GLOBAL</h1>
-  {!configured && <p>Ranking ainda não configurado (envs do Supabase pendentes).</p>}
-  {configured && players.length === 0 && <p>Ainda ninguém na arena. Seja o primeiro a cravar seu nome na treta: <a href="/">▶ JOGAR</a></p>}
+<Layout title="Global ranking — Umain Arena" description="Umain Arena global leaderboard: the top fraggers in the arena.">
+  <h1>🌐 GLOBAL RANKING</h1>
+  {!configured && <p>Ranking not configured yet (Supabase envs pending).</p>}
+  {configured && players.length === 0 && <p>Nobody in the arena yet. Be the first to put your name on the board: <a href="/">▶ PLAY</a></p>}
   {players.length > 0 && (
     <table>
       <thead>
         <tr>
-          <th>#</th><th>JOGADOR</th><th>PART.</th><th>VIT.</th><th>K/D</th><th>KILLS</th><th>MORTES</th><th>HS</th><th>SEQ.</th><th>TEMPO</th><th>LADO</th>
+          <th>#</th><th>PLAYER</th><th>MATCHES</th><th>WINS</th><th>K/D</th><th>KILLS</th><th>DEATHS</th><th>HS</th><th>STREAK</th><th>TIME</th><th>SIDE</th>
         </tr>
       </thead>
       <tbody>
@@ -67,7 +67,7 @@ const rows = players.slice((curPage - 1) * PAGE_SIZE, curPage * PAGE_SIZE);
             <td>{p.best_streak}×</td>
             <td>{displayTime(p)}</td>
             <td>
-              <span style="color:#ff8080">{p.matches_p}P</span> × <span style="color:#9dff9d">{p.matches_b}B</span>
+              <span style="color:#ff8080">{p.matches_p} DES</span> × <span style="color:#9dff9d">{p.matches_b} DEV</span>
             </td>
           </tr>
         ))}
@@ -76,10 +76,10 @@ const rows = players.slice((curPage - 1) * PAGE_SIZE, curPage * PAGE_SIZE);
   )}
   {players.length > 0 && (
     <div style="display:flex;gap:10px;justify-content:center;margin-top:16px;font-size:13px;align-items:center">
-      {curPage > 1 && <a href={`/ranking?page=${curPage - 1}`}>← ANTERIOR</a>}
-      <span style="color:var(--amber-dim)">página {curPage}/{totalPages} · {players.length} jogadores</span>
-      {curPage < totalPages && <a href={`/ranking?page=${curPage + 1}`}>PRÓXIMA →</a>}
+      {curPage > 1 && <a href={`/ranking?page=${curPage - 1}`}>← PREVIOUS</a>}
+      <span style="color:var(--amber-dim)">page {curPage}/{totalPages} · {players.length} players</span>
+      {curPage < totalPages && <a href={`/ranking?page=${curPage + 1}`}>NEXT →</a>}
     </div>
   )}
-  <p style="margin-top:18px;font-size:13px">Atualiza a cada partida. Seu perfil público fica em <code>/u/seu-nick</code> — compartilhe a badge nas redes.</p>
+  <p style="margin-top:18px;font-size:13px">Updates after every match. Your public profile lives at <code>/u/your-nick</code> — share the badge on social.</p>
 </Layout>

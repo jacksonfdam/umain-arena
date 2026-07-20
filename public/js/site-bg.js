@@ -1,4 +1,4 @@
-// Fundo das páginas do site: o mesmo mundo 3D do menu do jogo, orbitando.
+// Site pages background: the same 3D world as the game menu, orbiting.
 import * as THREE from 'three';
 import { initTextures } from './textures.js';
 import { buildWorld } from './map.js';

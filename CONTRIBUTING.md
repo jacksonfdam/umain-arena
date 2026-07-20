@@ -1,68 +1,69 @@
-# Contribuindo com o CS BRASIL: Treta Suprema
+# Contributing to Umain Arena
 
-Valeu por querer contribuir! 🎮 Este é um projeto de fãs, open source, feito
-para celebrar a **cultura brasileira** com humor — a zoeira é universal e
-distribuída igualmente para todos os lados.
+Thanks for wanting to contribute! 🎮 This is an open source project, made
+for fun — a light-hearted Designers vs Developers rivalry, shared equally
+across both sides.
 
-## Nossa posição (leia antes de contribuir)
+## Where we stand (read before contributing)
 
-- **O jogo NÃO tem lado político.** Petistas e Bolsonaristas são times com a
-  mesma mecânica, mesmos personagens exagerados, mesma zoeira.
-- **O jogo NÃO incita ódio** contra nenhuma pessoa ou grupo. É sátira leve,
-  cartunesca e fictícia — sem gore, sem violência realista.
-- **Sem pessoas reais.** Nada de políticos, celebridades ou pessoas privadas
-  identificáveis (nome, rosto, voz imitada). Só arquétipos originais.
-- Contribuições que violem esses princípios serão recusadas.
+- **The game takes no sides.** Designers and Developers are teams with the
+  same mechanics, the same exaggerated personas, the same playful humor.
+- **The game does NOT promote hate** against any person or group. It's light,
+  cartoonish, fictional fun — no gore, no realistic violence.
+- **No real people.** No public figures, celebrities or identifiable private
+  people (name, face, imitated voice). Only original fictional personas.
+- Contributions that break these principles will be rejected.
 
-## Feito com Kimi K3
+## Made with Kimi K3
 
-Este projeto foi criado com o auxílio do **Kimi K3** (Kimi Code CLI) — do
-código ao design dos personagens. Contribuições humanas e/ou assistidas por IA
-são bem-vindas, desde que revisadas e testadas por você.
+This project was created with the help of **Kimi K3** (Kimi Code CLI) — from
+code to character design. Human and/or AI-assisted contributions are
+welcome, as long as you review and test them yourself.
 
-## Rodando localmente
+## Running locally
 
 ```bash
-git clone https://github.com/rubenmarcus/csbrasil.git
-cd csbrasil
+git clone https://github.com/jacksonfdam/umain-arena.git
+cd umain-arena
 npm install
-npm run fetch-audio      # baixa o pacote de áudio (não versionado)
-npm run dev              # site completo (Astro) — jogo em /game/
-# ou só o jogo, sem dependências: cd public && python3 -m http.server 8123
+npm run fetch-audio      # downloads the audio pack (not versioned)
+npm run dev              # full site (Astro) — game at /game/
+# or just the game, no dependencies: cd public && python3 -m http.server 8123
 ```
 
-Sem o pacote de áudio o jogo funciona com sons sintetizados (fallback).
+Without the audio pack the game works with synthesized sounds (fallback).
 
-## Regras de contribuição
+## Contribution rules
 
-**Conteúdo**
-- Nada de assets com copyright: sprites, sons ou modelos de jogos comerciais,
-  logos, marcas, fotos — só material original ou livre com licença compatível.
-- Novos personagens/times seguem o padrão: arquétipo fictício, nome fictício,
-  humor sem crueldade, sem mirar grupos protegidos.
-- Arquivos de áudio/imagens grandes **não vão pro git** — o diretório `audio/`
-  é ignorado; novos sons entram no pacote via `audio/manifest.example.json`.
+**Content**
+- No copyrighted assets: sprites, sounds or models from commercial games,
+  logos, brands, photos — only original material or freely licensed material
+  with a compatible license.
+- New characters/teams follow the pattern: fictional persona, fictional name,
+  humor without cruelty, no targeting protected groups.
+- Large audio/image files **do not go into git** — the `audio/` directory
+  is ignored; new sounds go into the pack via `audio/manifest.example.json`.
 
-**Código — duas zonas**
-- **Jogo (`public/`)**: vanilla JS com ES modules, **sem framework e sem
-  build** — decisão de projeto (o jogo deve rodar arrastando a pasta pra
-  qualquer host estático). Three.js vendored em `public/vendor/` — não
-  adicione CDNs nem deps de runtime no jogo sem abrir issue antes.
-- **Site (raiz, Astro)**: landing, páginas de conteúdo e API routes. Aqui
-  framework é bem-vindo — mas mantenha páginas leves e o jogo intocado.
-- **Segredos**: nunca commite `service_role` keys nem `.env` — envs só na Vercel.
-- Mantenha o estilo do código ao redor (nomes, comentários em pt-BR, padrões).
-- PRs pequenos e focados: uma feature ou um fix por PR.
+**Code — two zones**
+- **Game (`public/`)**: vanilla JS with ES modules, **no framework and no
+  build** — a project decision (the game must run by dragging the folder to
+  any static host). Three.js is vendored in `public/vendor/` — do not
+  add CDNs or runtime deps to the game without opening an issue first.
+- **Site (root, Astro)**: landing, content pages and API routes. Here a
+  framework is welcome — but keep the pages light and the game untouched.
+- **Secrets**: never commit `service_role` keys or `.env` — envs only on Vercel.
+- Match the surrounding code style (naming, comments, patterns).
+- Small, focused PRs: one feature or one fix per PR.
 
-**Processo**
-1. Para features grandes, abra uma **issue** antes (veja `IDEAS.md`).
-2. Fork + branch (`feat/minha-ideia`), PR com descrição clara e screenshots.
-3. Teste antes de enviar: jogo abre, console sem erros, partida completa
-   roda (round termina, placar abre com Tab).
-4. Ao contribuir, você concorda em licenciar sua contribuição sob a **MIT**
-   (ver `LICENSE`).
+**Process**
+1. For large features, open an **issue** first (see `IDEAS.md`).
+2. Fork + branch (`feat/my-idea`), PR with a clear description and screenshots.
+3. Test before submitting: game opens, no console errors, a full match
+   runs (round ends, scoreboard opens with Tab).
+4. By contributing, you agree to license your contribution under the **MIT**
+   license (see `LICENSE`).
 
-## Reportando bugs
+## Reporting bugs
 
-Abra uma issue com: o que aconteceu, o que esperava, passos pra reproduzir,
-navegador/SO e, se possível, print do console (F12).
+Open an issue with: what happened, what you expected, steps to reproduce,
+browser/OS and, if possible, a screenshot of the console (F12).

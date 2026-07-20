@@ -1,36 +1,37 @@
-// 8 fictional satirical archetypes — procedural low-poly meshes.
+// 10 fictional archetypes — procedural low-poly meshes.
+// NOTE: names are placeholders pending final roster sign-off; ids are stable (used by DB/badges).
 import * as THREE from 'three';
 
 export const CHARACTERS = [
-  { id: 'esquerdomacho', team: 'P', name: 'Esquerdomacho',
-    blurb: 'Barba, tote bag e 47 bottons. Mira acadêmica: analisa a treta antes de atirar.',
+  { id: 'ux_lead', team: 'P', name: 'The UX Lead',
+    blurb: 'Beard, tote bag and 47 stickers. Analyzes the whole flow before taking a shot.',
     pal: { skin: 0xe8b98a, shirt: 0xb03a2e, pants: 0x3a4a5a, hair: 0x4a3428, boots: 0x2a2a2a } },
-  { id: 'sindicato', team: 'P', name: 'Líder do Sindicato',
-    blurb: 'Boné vermelho, colete de assembleia e megafone. Convoca greve de fogo a cada round.',
+  { id: 'brand_designer', team: 'P', name: 'The Brand Designer',
+    blurb: 'Red cap, brand guidelines and a megaphone. Calls a kickoff every round.',
     pal: { skin: 0xc98d5e, shirt: 0x777777, pants: 0x2e3d55, hair: 0x3a3a3a, boots: 0x4a3428 } },
-  { id: 'mst', team: 'P', name: 'Líder do MST',
-    blurb: 'Do campo pra arena. Bandeira na mochila, bota no barro e tiro certeiro de enxada.',
+  { id: 'motion_designer', team: 'P', name: 'The Motion Designer',
+    blurb: 'From storyboard to arena. Steady hands, tidy keyframes and a pixel-precise shot.',
     pal: { skin: 0x8d5a3b, shirt: 0x7a6a45, pants: 0x4a4030, hair: 0x2a1e14, boots: 0x5a3d1e } },
-  { id: 'doutora', team: 'P', name: 'Doutora do SUS',
-    blurb: 'Jaleco, estetoscópio e plantão de 24h. Receita tiro certeiro, na veia.',
+  { id: 'product_designer', team: 'P', name: 'The Product Designer',
+    blurb: 'Lab coat, roadmap and a 24h on-call. Prescribes shots straight to the point.',
     pal: { skin: 0xd9a580, shirt: 0xf0f0f0, pants: 0x3a4a5a, hair: 0x3a2a1e, boots: 0x6b6b6b } },
-  { id: 'mistico', team: 'P', name: 'Jovem Místico',
-    blurb: 'Faixa na testa, cristal no peito e aura calibrada. Só atira quando Mercúrio permite.',
+  { id: 'illustrator', team: 'P', name: 'The Illustrator',
+    blurb: 'Headband, tablet and a calibrated aura. Only fires when the palette feels right.',
     pal: { skin: 0xe8b98a, shirt: 0x9b59b6, pants: 0x3a4a5a, hair: 0x4a3428, boots: 0x5a3d1e } },
-  { id: 'caminhoneiro', team: 'B', name: 'Caminhoneiro',
-    blurb: 'Camisa do Brasil, luva de estrada e 40h de BR na semana. Freia pra ninguém.',
+  { id: 'backend_dev', team: 'B', name: 'The Backend Dev',
+    blurb: 'Server tee, road gloves and 40h of uptime a week. Brakes for no one.',
     pal: { skin: 0xd9a066, shirt: 0xffd23f, pants: 0x2e3d55, hair: 0x3a2a1e, boots: 0x3a3a3a } },
-  { id: 'influencer', team: 'B', name: 'Influencer de Dubai',
-    blurb: 'Óculos dourado, stories em 3 fusos e mira patrocinada. Atira, posta, engaja.',
+  { id: 'frontend_dev', team: 'B', name: 'The Frontend Dev',
+    blurb: 'Golden shades, stories across 3 time zones and sponsored aim. Ship, post, engage.',
     pal: { skin: 0xf2c9a4, shirt: 0xf0f0f0, pants: 0xe8c25a, hair: 0xf5d76e, boots: 0xffffff } },
-  { id: 'sertanejo', team: 'B', name: 'Cantor Sertanejo',
-    blurb: 'Chapéu de cowboy, fivela de ouro e violão nas costas. Moda de viola em dose dupla.',
+  { id: 'devops_engineer', team: 'B', name: 'The DevOps Engineer',
+    blurb: 'Cowboy hat, gold buckle and a pipeline on his back. Deploys in double time.',
     pal: { skin: 0xc98d5e, shirt: 0x8a2f2f, pants: 0x2e3d55, hair: 0x2a1e14, boots: 0x5a3d1e } },
-  { id: 'senhora', team: 'B', name: 'Tia Zilá',
-    blurb: '60 anos, 300 grupos de mensagem e um quadro de pistas nas costas. Ela SABE de tudo.',
+  { id: 'qa_engineer', team: 'B', name: 'The QA Engineer',
+    blurb: 'Sees every edge case and reads 300 chat threads. Somehow always knows where you are.',
     pal: { skin: 0xeec39a, shirt: 0x1faa4d, pants: 0xffd23f, hair: 0xd8d8d8, boots: 0xf0f0f0 } },
-  { id: 'coach', team: 'B', name: 'Coach Quântico',
-    blurb: 'Blazer, headset e 47 técnicas de manifestação. Já venceu antes de começar — no quântico.',
+  { id: 'tech_lead', team: 'B', name: 'The Tech Lead',
+    blurb: 'Blazer, headset and 47 productivity frameworks. Already won before standup — in theory.',
     pal: { skin: 0xf2c9a4, shirt: 0xf0f0f0, pants: 0x2a2a2a, hair: 0x2a2a2a, boots: 0x1a1a1a } },
 ];
 export const byId = id => CHARACTERS.find(c => c.id === id);
@@ -63,7 +64,7 @@ export function buildRifle(color = 0x2e4a2e) {
 export function buildCharacter(def) {
   const p = def.pal, g = new THREE.Group();
   const parts = {};
-  const bulky = def.id === 'caminhoneiro';
+  const bulky = def.id === 'backend_dev';
 
   // legs (pivot at hip)
   for (const s of [-1, 1]) {
@@ -88,7 +89,7 @@ export function buildCharacter(def) {
   // arms holding rifle forward (pivot at shoulder)
   for (const s of [-1, 1]) {
     const geo = new THREE.BoxGeometry(0.11, 0.5, 0.13); geo.translate(0, -0.25, 0);
-    const arm = new THREE.Mesh(geo, M(def.id === 'senhora' ? 0xffd23f : p.shirt));
+    const arm = new THREE.Mesh(geo, M(def.id === 'qa_engineer' ? 0xffd23f : p.shirt));
     arm.castShadow = true;
     arm.position.set((torsoW / 2 + 0.06) * s, 0.52, 0);
     arm.rotation.x = -1.35;                                            // forward hold
@@ -118,7 +119,7 @@ function addAccessories(def, parts, torsoW) {
     head.add(box(w, 0.07, 0.04, color, 0, 0.17, 0.14));
   };
   switch (def.id) {
-    case 'esquerdomacho':
+    case 'ux_lead':
       head.add(box(0.24, 0.12, 0.06, 0x3a2a1e, 0, 0.02, 0.13));       // beard
       head.add(box(0.26, 0.10, 0.12, p.hair, 0, 0.30, -0.02));        // hair
       sunglasses(0.26, 0x222222);                                      // glasses
@@ -127,7 +128,7 @@ function addAccessories(def, parts, torsoW) {
       torso.add(box(0.04, 0.04, 0.02, 0xffd23f, -0.12, 0.42, 0.14));  // button 1
       torso.add(box(0.04, 0.04, 0.02, 0xe03232, -0.05, 0.38, 0.14));  // button 2
       break;
-    case 'sindicato':
+    case 'brand_designer':
       cap(0xc0392b);
       torso.add(box(torsoW + 0.04, 0.5, 0.30, 0x8e2f24, 0, 0.28, 0)); // vest
       torso.add(box(0.07, 0.05, 0.02, 0xffd23f, -0.13, 0.4, 0.16));   // patch
@@ -136,7 +137,7 @@ function addAccessories(def, parts, torsoW) {
         mega.rotation.x = 2.4; mega.position.set(-torsoW / 2 - 0.1, 0.02, 0.08);
         mega.castShadow = true; torso.add(mega); }                     // megaphone at hip
       break;
-    case 'mst':
+    case 'motion_designer':
       cap(0xc0392b);
       torso.add(box(0.32, 0.07, 0.28, 0xd32f2f, 0, 0.55, 0));         // scarf
       torso.add(box(0.34, 0.42, 0.16, 0x3f5a34, 0, 0.28, -0.22));     // backpack
@@ -144,7 +145,7 @@ function addAccessories(def, parts, torsoW) {
         pole.position.set(0.14, 0.75, -0.24); torso.add(pole);
         torso.add(box(0.02, 0.16, 0.24, 0xe03232, 0.14, 0.9, -0.36)); } // little red flag
       break;
-    case 'doutora':
+    case 'product_designer':
       head.add(box(0.28, 0.08, 0.28, p.hair, 0, 0.29, 0));              // hair top
       head.add(box(0.08, 0.22, 0.08, p.hair, 0, 0.14, -0.18));          // ponytail
       torso.add(box(torsoW + 0.04, 0.56, 0.30, 0xf0f0f0, 0, 0.28, 0));  // lab coat
@@ -156,13 +157,13 @@ function addAccessories(def, parts, torsoW) {
       torso.add(box(0.06, 0.06, 0.02, 0x2b4d8f, -0.13, 0.44, 0.16));    // ID badge
       torso.add(box(0.16, 0.22, 0.02, 0xd8cfc0, -torsoW / 2 - 0.1, 0.12, 0.08)); // clipboard
       break;
-    case 'caminhoneiro':
+    case 'backend_dev':
       cap(0x2456a6);
       sunglasses();
       torso.add(box(0.46, 0.08, 0.28, 0x1faa4d, 0, 0.56, 0));         // green collar stripe
       parts.armR.add(box(0.13, 0.1, 0.15, 0x8a6b48, 0, -0.44, 0));    // trucker glove
       break;
-    case 'influencer':
+    case 'frontend_dev':
       head.add(box(0.29, 0.12, 0.29, p.hair, 0, 0.31, -0.02));        // blonde
       head.add(box(0.29, 0.26, 0.08, p.hair, 0, 0.16, -0.15));        // long back hair
       sunglasses(0.30, 0xc9a227);                                      // gold shades
@@ -170,7 +171,7 @@ function addAccessories(def, parts, torsoW) {
       parts.armL.add(box(0.09, 0.02, 0.14, 0xffffff, 0, -0.5, 0.04)); // phone
       torso.add(box(0.4, 0.06, 0.28, 0xc9a227, 0, 0.06, 0));          // gold belt
       break;
-    case 'sertanejo':
+    case 'devops_engineer':
       { const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.26, 0.03, 10), M(0x7a5230));
         brim.position.y = 0.27; brim.castShadow = true; head.add(brim);
         head.add(box(0.24, 0.14, 0.24, 0x7a5230, 0, 0.35, 0)); }      // cowboy hat
@@ -178,7 +179,7 @@ function addAccessories(def, parts, torsoW) {
       { const gc = box(0.22, 0.72, 0.1, 0x2a2a2a, 0.05, 0.3, -0.24);  // guitar case
         gc.rotation.z = 0.18; torso.add(gc); }
       break;
-    case 'senhora':
+    case 'qa_engineer':
       { const bun = new THREE.Mesh(new THREE.SphereGeometry(0.09, 8, 6), M(0xd8d8d8));
         bun.position.set(0, 0.34, -0.1); head.add(bun); }
       head.add(box(0.28, 0.06, 0.26, 0xd8d8d8, 0, 0.28, 0.02));       // gray hair
@@ -189,19 +190,19 @@ function addAccessories(def, parts, torsoW) {
       torso.add(box(0.02, 0.2, 0.02, 0xd33, -0.04, 0.33, -0.215));    // red string
       parts.armR.add(box(0.1, 0.02, 0.15, 0x2b4d8f, 0, -0.44, 0.02)); // stickered phone
       break;
-    case 'mistico':
+    case 'illustrator':
       head.add(box(0.29, 0.05, 0.29, 0xe8bd25, 0, 0.22, 0));          // headband
-      head.add(box(0.24, 0.22, 0.06, p.hair, 0, -0.02, 0.13));        // barba comprida
+      head.add(box(0.24, 0.22, 0.06, p.hair, 0, -0.02, 0.13));        // long beard
       { const cry = new THREE.Mesh(new THREE.OctahedronGeometry(0.045), M(0x2fd3c0));
-        cry.position.set(0, 0.42, 0.15); torso.add(cry); }            // cristal
+        cry.position.set(0, 0.42, 0.15); torso.add(cry); }            // crystal
       break;
-    case 'coach':
+    case 'tech_lead':
       torso.add(box(torsoW + 0.05, 0.5, 0.30, 0x1a2a4a, 0, 0.28, 0)); // blazer navy
       { const band = new THREE.Mesh(new THREE.TorusGeometry(0.13, 0.015, 6, 12, Math.PI), M(0x1a1a1a));
-        band.rotation.z = Math.PI; band.position.set(0, 0.24, 0); head.add(band); } // headset arco
+        band.rotation.z = Math.PI; band.position.set(0, 0.24, 0); head.add(band); } // headset arc
       head.add(box(0.015, 0.015, 0.14, 0x1a1a1a, 0.14, 0.08, 0.1));   // mic
-      torso.add(box(0.16, 0.22, 0.03, 0xf0f0f0, -torsoW / 2 - 0.1, 0.12, 0.08)); // livro
-      torso.add(box(0.12, 0.03, 0.035, 0xe03232, -torsoW / 2 - 0.1, 0.14, 0.09)); // título do livro
+      torso.add(box(0.16, 0.22, 0.03, 0xf0f0f0, -torsoW / 2 - 0.1, 0.12, 0.08)); // book
+      torso.add(box(0.12, 0.03, 0.035, 0xe03232, -torsoW / 2 - 0.1, 0.14, 0.09)); // book title
       break;
   }
 }

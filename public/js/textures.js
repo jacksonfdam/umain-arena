@@ -29,9 +29,9 @@ function stains(ctx, w, h, n, col) {
 }
 
 export const GRAFFITI = [
-  'É TRETA!', 'PASTEL > TUDO', 'CAPIVARA LIVRE', 'ABAXO O IMPOSTO DO PASTEL',
-  'ZÉ CAPIVARA 99', 'FEIJOADA SUPREMA', 'TRETA 4 EVER', 'VOTE NINGUÉM',
-  'SNIPER SEM CAUSA', 'O MURO É FAKE NEWS', 'BORA PRO CLÁSSICO', 'MIOJO 3 ESTRELAS'
+  'SHIP IT!', 'CSS > ALL', 'DARK MODE 4EVER', 'MERGE CONFLICT',
+  'PIXEL PERFECT', 'IT WORKS ON MY MACHINE', '404 NOT FOUND', 'PUSH TO PROD',
+  'NO REGRETS ONLY REFACTORS', 'DEPLOY ON FRIDAY', 'COFFEE = CODE', 'LGTM 🚀'
 ];
 const GCOLORS = ['#ff3b3b', '#ffd23f', '#3bd1ff', '#ff7ad9', '#7dff9a', '#ff8a3b'];
 
@@ -79,7 +79,7 @@ export function initTextures() {
     stains(x, 256, 256, 4, 'rgba(30,28,26,0.3)');
     T.asphalt = tex(c, 4, 4);
   }
-  { // dirt (MST camp)
+  { // dirt (camp)
     const c = canvas(256, 256), x = c.getContext('2d');
     x.fillStyle = '#8a6b48'; x.fillRect(0, 0, 256, 256);
     noiseOver(x, 256, 256, 0.35, ['#75583a', '#9c7d56', '#63482e']);
@@ -98,7 +98,7 @@ export function initTextures() {
     x.strokeStyle = '#6b4f2c'; x.lineWidth = 4; x.strokeRect(3, 3, 122, 122);
     x.beginPath(); x.moveTo(4, 4); x.lineTo(124, 124); x.moveTo(124, 4); x.lineTo(4, 124); x.stroke();
     x.fillStyle = 'rgba(40,25,10,0.8)'; x.font = 'bold 17px Arial Black,sans-serif';
-    x.textAlign = 'center'; x.fillText('FRÁGIL', 64, 60); x.fillText('TRETA®', 64, 82);
+    x.textAlign = 'center'; x.fillText('FRAGILE', 64, 60); x.fillText('ARENA®', 64, 82);
     T.crate = tex(c);
   }
 
@@ -150,9 +150,9 @@ export function initTextures() {
     return tex(c);
   };
   T.posters = [
-    poster('#c62f2f', '#fff', ['ZÉ', 'CAPIVARA', '99'], true),
-    poster('#1faa4d', '#ffd23f', ['DONA', 'MARIA', '77'], true),
-    poster('#2b4d8f', '#fff', ['CANDIDATO', 'FICTÍCIO', 'PROMETO NADA']),
+    poster('#c62f2f', '#fff', ['TEAM', 'DESIGN', '99'], true),
+    poster('#1faa4d', '#ffd23f', ['TEAM', 'DEV', '77'], true),
+    poster('#2b4d8f', '#fff', ['SHIP', 'FASTER', 'PROMISE NOTHING']),
   ];
 
   // --- billboard: fictional social network ---
@@ -164,24 +164,24 @@ export function initTextures() {
     x.strokeStyle = '#ffd23f'; x.lineWidth = 8; x.strokeRect(6, 6, 500, 244);
     x.textAlign = 'center';
     x.font = 'bold 64px Arial Black,sans-serif'; x.fillStyle = '#fff';
-    x.fillText('TretaTok', 256, 110);
+    x.fillText('DevTok', 256, 110);
     x.font = 'bold 22px Arial,sans-serif'; x.fillStyle = '#ffd23f';
-    x.fillText('a rede social da treta™ — 40 milhões de tretas/dia', 256, 155);
+    x.fillText('the social network for shipping™ — 40M commits/day', 256, 155);
     x.font = '18px Arial,sans-serif'; x.fillStyle = '#9adcff';
-    x.fillText('@zecapivara segue você', 256, 200);
+    x.fillText('@merge_bot is following you', 256, 200);
     for (let i = 0; i < 3; i++) { x.fillStyle = ['#ff3b3b', '#7dff9a', '#ff7ad9'][i]; x.beginPath(); x.arc(70 + i * 30, 200, 9, 0, 7); x.fill(); }
     T.billboard = tex(c);
   }
 
-  // --- urna eletrônica front (fictional, generic) ---
+  // --- voting machine front (fictional, generic) ---
   {
     const c = canvas(256, 256), x = c.getContext('2d');
     x.fillStyle = '#3a3f45'; x.fillRect(0, 0, 256, 256);
     x.fillStyle = '#2b2f34'; x.fillRect(0, 0, 256, 30);
     x.fillStyle = '#bfe8c8'; x.fillRect(18, 44, 220, 90);            // screen
     x.fillStyle = '#22331f'; x.font = 'bold 20px monospace'; x.textAlign = 'center';
-    x.fillText('VOTAÇÃO', 128, 82); x.fillText('ENCERRADA', 128, 108);
-    x.fillText('FIM ⏻', 128, 128);
+    x.fillText('BUILD', 128, 82); x.fillText('PASSED', 128, 108);
+    x.fillText('CI ✓', 128, 128);
     for (let r = 0; r < 4; r++) for (let k = 0; k < 3; k++) {          // keypad
       x.fillStyle = '#d8d8d8'; x.fillRect(30 + k * 70, 150 + r * 24, 56, 18);
       x.fillStyle = '#333'; x.fillRect(30 + k * 70 + 22, 150 + r * 24 + 5, 12, 8);
@@ -211,9 +211,9 @@ export function initTextures() {
     x.fillStyle = '#ffd23f'; x.fillRect(0, 88, 512, 40);
     x.font = 'bold 44px Arial Black,sans-serif'; x.fillStyle = '#fff'; x.textAlign = 'center';
     x.strokeStyle = '#0d5c28'; x.lineWidth = 8;
-    x.strokeText('FRETE SUPREMO', 256, 58); x.fillText('FRETE SUPREMO', 256, 58);
+    x.strokeText('SHIP SUPREME', 256, 58); x.fillText('SHIP SUPREME', 256, 58);
     x.font = 'bold 17px Arial,sans-serif'; x.fillStyle = '#0d5c28';
-    x.fillText('ENTREGA RÁPIDA · SÓ NÃO ENTREGA O JOGO', 256, 112);
+    x.fillText('FAST DELIVERY · JUST NOT THE FEATURE', 256, 112);
     T.truckSide = tex(c);
   }
 
@@ -227,9 +227,9 @@ export function initTextures() {
     if (sub) { x.font = 'bold 13px Arial,sans-serif'; x.fillText(sub, 128, 52); }
     return tex(c);
   };
-  T.signSindicato = sign('#8f1d1d', '#ffd23f', 'SINDICATO DOS SNIPERS', 'CATEGORIA T-1337 · FUNDADO EM PIXELÂNDIA');
-  T.signBoteco = sign('#22331f', '#ffe9c4', 'BOTECO DO ZÉ', 'PASTEL · CALDO · TRETA NO FIADO');
-  T.signPastel = sign('#e8bd25', '#8f1d1d', 'PASTEL DA TRETA', 'DE QUEIJO · DE CARNE · DE CLÍMAX');
+  T.signSindicato = sign('#8f1d1d', '#ffd23f', 'DESIGN GUILD', 'CHAPTER T-1337 · EST. IN PIXELVILLE');
+  T.signBoteco = sign('#22331f', '#ffe9c4', 'THE DEV BAR', 'COFFEE · SNACKS · TABS ALWAYS OPEN');
+  T.signPastel = sign('#e8bd25', '#8f1d1d', 'THE SNACK BAR', 'CHEESE · MEAT · EXTRA CRUNCH');
 
   // striped awning
   {
@@ -243,7 +243,7 @@ export function initTextures() {
     x.fillStyle = '#b03030'; x.fillRect(0, 0, 128, 128);
     noiseOver(x, 128, 128, 0.25, ['#992626', '#c24343']);
     x.fillStyle = 'rgba(255,255,255,0.85)'; x.font = 'bold 20px Arial Black,sans-serif'; x.textAlign = 'center';
-    x.fillText('ACAMP.', 64, 58); x.fillText('TRETA LIVRE', 64, 84);
+    x.fillText('CAMP', 64, 58); x.fillText('FREE WIFI', 64, 84);
     T.tent = tex(c);
   }
   // conspiracy corkboard
@@ -251,7 +251,7 @@ export function initTextures() {
     const c = canvas(128, 128), x = c.getContext('2d');
     x.fillStyle = '#a97f4e'; x.fillRect(0, 0, 128, 128);
     x.strokeStyle = '#5c3d1e'; x.lineWidth = 6; x.strokeRect(3, 3, 122, 122);
-    const notes = ['XÊROX', 'ZAP', '51??', 'PRINT', 'ÁUDIO'];
+    const notes = ['TODO', 'SLACK', 'v2?!', 'PRINT', 'STANDUP'];
     notes.forEach((n, i) => {
       const px = 12 + (i % 3) * 40, py = 14 + ((i / 3) | 0) * 52;
       x.save(); x.translate(px, py); x.rotate((Math.random() - .5) * .4);

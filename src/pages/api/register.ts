@@ -1,4 +1,4 @@
-// POST /api/register — registra nick (único) + token do jogador.
+// POST /api/register — registers nick (unique) + player token.
 import type { APIRoute } from 'astro';
 import { supabaseAdmin, NOT_CONFIGURED } from '../../lib/supabase';
 import { buildSocialUrl } from '../../lib/social';
@@ -11,7 +11,7 @@ export const POST: APIRoute = async ({ request }) => {
   if (!supabaseAdmin)
     return new Response(NOT_CONFIGURED, { status: 503, headers: { 'content-type': 'application/json' } });
 
-  // rate limit de registro: 10/min por IP (anti nick-farming)
+  // registration rate limit: 10/min per IP (anti nick-farming)
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
   const now = Date.now();
   const prev = regHits.get(ip) || [];
@@ -34,7 +34,7 @@ export const POST: APIRoute = async ({ request }) => {
   if (error)
     return new Response(JSON.stringify({ error: error.message }), { status: 409, headers: { 'content-type': 'application/json' } });
 
-  // multi-redes: [{net, handle}] → [{net, url}] + social_link = primeira
+  // multi-network: [{net, handle}] → [{net, url}] + social_link = first one
   if (Array.isArray(socials) && socials.length) {
     const list = socials
       .filter((s: any) => s && typeof s.net === 'string' && typeof s.handle === 'string')
@@ -48,7 +48,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
   }
 
-  // se veio sessão OAuth, vincula auth_user + avatar do provedor/custom
+  // if an OAuth session came through, link auth_user + provider/custom avatar
   if (typeof accessToken === 'string' && accessToken.length > 20) {
     const { data: { user } } = await supabaseAdmin.auth.getUser(accessToken);
     if (user) {

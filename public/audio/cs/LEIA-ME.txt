@@ -1,10 +1,10 @@
-audio/cs/ — OPCIONAL
+audio/cs/ — OPTIONAL
 
-Esta pasta NÃO é necessária. Os sons já configurados ficam em audio/game/ e
-funcionam sem ela.
+This folder is NOT required. The sounds that are already configured live in
+audio/game/ and work without it.
 
-Use-a apenas se quiser trocar/adicionar sons por arquivos seus
-(ex.: sons do seu CS 1.6 instalado, em cstrike/sound/). Depois de copiar,
-registre os caminhos em audio/manifest.json na chave "cs".
+Use it only if you want to swap/add sounds with your own files
+(e.g. sounds from your installed CS 1.6, in cstrike/sound/). After copying,
+register the paths in audio/manifest.json under the "cs" key.
 
-Chaves disponíveis: "awp", "pistol", "reload", "roundstart", "footsteps".
+Available keys: "awp", "pistol", "reload", "roundstart", "footsteps".
