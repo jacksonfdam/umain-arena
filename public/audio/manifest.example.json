@@ -3,12 +3,16 @@
     "P": [
       "audio/designers/ingame/designers-line-01.mp3",
       "audio/designers/ingame/designers-line-02.mp3",
-      "audio/designers/ingame/designers-line-03.mp3"
+      "audio/designers/ingame/designers-line-03.mp3",
+      "audio/designers/ingame/designers-line-04.mp3",
+      "audio/designers/ingame/designers-line-05.mp3"
     ],
     "B": [
       "audio/developers/ingame/developers-line-01.mp3",
       "audio/developers/ingame/developers-line-02.mp3",
-      "audio/developers/ingame/developers-line-03.mp3"
+      "audio/developers/ingame/developers-line-03.mp3",
+      "audio/developers/ingame/developers-line-04.mp3",
+      "audio/developers/ingame/developers-line-05.mp3"
     ]
   },
   "round": {
