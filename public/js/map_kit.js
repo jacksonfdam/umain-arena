@@ -12,10 +12,14 @@ export function createBuilder(root) {
     const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
     m.position.set(x, y + h / 2, z);
     m.castShadow = opts.cast !== false; m.receiveShadow = true;
-    // pitch/roll first (local), then yaw about world Y — so a pitched roof slab
-    // stays pitched when the whole house is yawed (ry). Single-axis callers are unaffected.
-    if (opts.rx || opts.rz) m.rotation.set(opts.rx || 0, 0, opts.rz || 0);
-    if (opts.ry) m.quaternion.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), opts.ry));
+    // 'YXZ' order applies yaw (Y) before pitch (X), giving matrix Ry·Rx — i.e. a roof slab is
+    // pitched in the house's LOCAL frame, then the house is yawed about world Y. With the default
+    // 'XYZ' order the pitch was applied after the yaw, so a 90°-yawed slab (ry = π/2) had its
+    // pitch land on the ridge axis and rendered flat. Single-axis callers are unaffected.
+    if (opts.rx || opts.ry || opts.rz) {
+      m.rotation.order = 'YXZ';
+      m.rotation.set(opts.rx || 0, opts.ry || 0, opts.rz || 0);
+    }
     root.add(m);
     if (opts.collide !== false) {
       const pad = opts.pad || 0;
